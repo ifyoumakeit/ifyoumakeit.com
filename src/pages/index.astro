@@ -1,0 +1,38 @@
+---
+import { db, post, category, eq } from "astro:db";
+import Layout from "../layouts/Layout.astro";
+
+const posts = await db
+  .select({
+    id: post.id,
+    title: post.title,
+    title_slug: post.title_slug,
+    subtitle: post.subtitle,
+    excerpt: post.excerpt,
+    date: post.date,
+    bgcolor: post.bgcolor,
+    category_title: category.title,
+    category_slug: category.slug,
+  })
+  .from(post)
+  .innerJoin(category, eq(post.category_id, category.id))
+  .where(eq(post.publish, 1));
+---
+
+<Layout title="Home">
+  <main>
+    <h1>if you make it</h1>
+    <ul>
+      {
+        posts.map((p) => (
+          <li>
+            <a href={`/${p.category_slug}/${p.title_slug}`}>
+              <h2>{p.title}</h2>
+              <p>{p.excerpt}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Layout>
