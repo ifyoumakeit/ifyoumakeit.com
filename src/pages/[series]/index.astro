@@ -99,6 +99,8 @@ const sortedYears = [...byYear.keys()].sort((a, b) => b - a);
     font-size: clamp(2rem, 5vw, 3.5rem);
     margin: 0 0 0.5rem;
     color: var(--accent-text, var(--color-ink));
+    animation: stamp-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    transform-origin: left bottom;
   }
   .series-description {
     font-size: 1.05rem;
