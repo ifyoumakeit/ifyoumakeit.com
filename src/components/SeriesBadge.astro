@@ -2,15 +2,17 @@
 interface Props {
   title: string;
   slug: string;
+  as?: "a" | "span";
 }
 
-const { title, slug } = Astro.props;
+const { title, slug, as: Tag = "a" } = Astro.props;
+const linkProps = Tag === "a" ? { href: `/${slug}/` } : {};
 ---
 
-<a class="series-badge" href={`/${slug}/`} data-series={slug}>
+<Tag class="series-badge" {...linkProps} data-series={slug}>
   <span class="series-badge__dot" aria-hidden="true"></span>
   {title}
-</a>
+</Tag>
 
 <style>
   .series-badge {
