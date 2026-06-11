@@ -1,0 +1,115 @@
+# CLAUDE.md
+
+Guidance for AI agents working on this repository.
+
+## What this is
+
+[ifyoumakeit.com](https://ifyoumakeit.com) — "If You Make It", a DIY punk video
+archive run by Dave Garwacke. Famous for the **Pink Couch Sessions** (bands
+playing acoustic on a pink couch, ~2007 onward), plus **Live and Direct**
+recordings and full **Shows**. ~99% of videos are YouTube embeds, a few Vimeo,
+a couple of unmigrated Flash-era files.
+
+## Hard constraints (do not violate)
+
+1. **Fully static.** No SSR adapter, no server. Every dynamic route MUST export
+   `getStaticPaths`. API routes are prerendered JSON only.
+2. **Near-zero client JS.** The only JavaScript shipped is the click-to-play
+   embed shim inside `VideoEmbed.astro`. No client frameworks, no client-side
+   routing, no animation libraries. Interactivity comes from HTML/CSS.
+3. **No runtime third-party requests except media.** Fonts are self-hosted via
+   `@fontsource` packages. YouTube thumbnails (`i.ytimg.com`) and the
+   embed-on-click (`youtube-nocookie.com`) are the only external resources.
+4. **No iframes in initial HTML.** YouTube embeds are facades (thumbnail + play
+   button) until clicked.
+
+## Commands
+
+- `npm install` — install (lockfile has been out of sync with `npm ci` before;
+  prefer `npm install`)
+- `npm run dev` — dev server (astro db local mode, seeded from `db/seed.ts`)
+- `npm run build` — `astro check && astro build` → `dist/` (this is what CI runs)
+- `npx astro check` — type-check only
+
+Always run `npm run build` before committing; it must pass with 0 errors.
+
+## Architecture
+
+Astro 5 + `@astrojs/db` (astro:db). All queries run at build time.
+
+### Data model (`db/config.ts`)
+
+- `series` — the three video series. `slug` is used in URLs and in
+  `data-series` attributes for accent theming. Ordered by `sort`.
+- `artist` — bands. `hometown`/`website` nullable.
+- `video` — core table: `artist_id`, `series_id`, `recorded_at` (Date),
+  `location`, `provider` (`"youtube" | "vimeo" | "flash"`), `provider_id`,
+  `featured` (0/1), `publish` (0/1).
+- `song` — setlist entries per video, ordered by `position`.
+- `tag` / `videoTag` — content tags, powering "Similar vibes" related videos.
+
+Always filter `publish = 1` on `series` and `video`. Convention: fetch whole
+tables and join/sort in JS (datasets are small) rather than complex SQL joins.
+
+`db/seed.ts` is a **development seed** — realistic but not the real archive
+(some real YouTube IDs, rest `PLACEHOLDER`). Production data lives in a legacy
+external database (WordPress-style `post`/`postmeta`/`category`); the import
+mapping is `category`→`series`, `post`→`video`, `postmeta`→provider IDs. Do not
+treat seed contents as canonical facts.
+
+### URL structure (stable — don't break links)
+
+- `/{series.slug}/` — series listing
+- `/{series.slug}/{video.slug}/` — video page
+- `/artists/`, `/artists/{slug}/`
+- `/years/`, `/years/{year}/`
+- `/tags/`, `/tags/{slug}/`
+- `/api/videos.json` — prerendered full-archive index (future search)
+
+### Video pages compute related videos at build time
+
+Same artist → recorded around the same time (date distance, any series) →
+similar vibes (shared-tag count), each up to 4 cards, deduped in that order;
+plus prev/next within the series by `recorded_at`. Keep this when editing
+`src/pages/[series]/[slug].astro`.
+
+## Design system
+
+DIY zine / punk-flyer. The contract lives in `src/styles/global.css`:
+
+- Tokens: `--color-paper` (#FAF3E7), `--color-ink` (#16121A), `--color-pink`
+  (#FF4D8D), `--color-pink-deep`, `--color-blue`, `--color-yellow`,
+  `--color-muted`, `--font-display` (Archivo Black), `--font-body` (Archivo
+  Variable), `--font-mono` (Space Mono), `--border` (3px solid ink),
+  `--shadow-hard` (hard offset, no blur), `--radius`.
+- Utilities: `.container`, `.grid-videos`, `.btn`, `.tag-chip`, `.meta-line`.
+- **Series accent theming**: put `data-series={series.slug}` on an element and
+  `--accent` resolves per series (pink-couch-sessions → pink, live-and-direct →
+  blue, shows → yellow). Use `var(--accent, var(--color-pink))` in styles.
+
+New UI should use these tokens/utilities plus minimal page-scoped `<style>`.
+Don't introduce new global CSS without good reason, and keep the aesthetic:
+thick borders, hard shadows, uppercase display headings, sticker-like badges.
+
+### Component contracts (`src/components/`)
+
+- `Layout.astro` — `{ title: string; description?: string }`; full shell with
+  header/nav/footer. Use on every page.
+- `VideoCard.astro` — `{ title, href, artistName, seriesTitle, seriesSlug,
+  recordedAt: Date, provider, providerId }`; use inside `.grid-videos`.
+- `VideoEmbed.astro` — `{ provider, providerId, title }`; the player facade.
+  `flash` renders an archival notice, not a player.
+- `SeriesBadge.astro` — `{ title, slug }`.
+- `SectionHeading.astro` — `{ title, href?, count? }`.
+
+Change a component's props only if you update every call site in `src/pages/`.
+
+## Conventions
+
+- Dates: format with `Intl.DateTimeFormat("en-US", { timeZone: "UTC", ... })`
+  and compute years via UTC getters — keeps builds stable across machines.
+- Slugs: kebab-case; video slugs unique within their series.
+- Prettier is configured (`.prettierrc`, with `prettier-plugin-astro`).
+- CI (`.github/workflows/ci.yml`) runs `npm run build` on pushes/PRs to `main`.
+- Deployment is platform-side (no adapter/config in repo); output is plain
+  static files in `dist/`.
