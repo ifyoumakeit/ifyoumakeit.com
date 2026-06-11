@@ -3,9 +3,11 @@ interface Props {
   provider: string;
   providerId: string;
   title: string;
+  /** Local archive thumbnail (/thumbs/video/{slug}.jpg) if one exists. */
+  thumbnail?: string | null;
 }
 
-const { provider, providerId, title } = Astro.props;
+const { provider, providerId, title, thumbnail = null } = Astro.props;
 
 const isYouTube = provider === "youtube";
 const isVimeo = provider === "vimeo";
@@ -24,8 +26,12 @@ const isArchival = provider === "flash";
       >
         <img
           class="embed__thumb"
-          src={`https://i.ytimg.com/vi/${providerId}/maxresdefault.jpg`}
-          onerror={`this.onerror=null;this.src='https://i.ytimg.com/vi/${providerId}/hqdefault.jpg'`}
+          src={thumbnail ?? `https://i.ytimg.com/vi/${providerId}/maxresdefault.jpg`}
+          onerror={
+            thumbnail
+              ? undefined
+              : `this.onerror=null;this.src='https://i.ytimg.com/vi/${providerId}/hqdefault.jpg'`
+          }
           alt={title}
           loading="lazy"
           decoding="async"
@@ -74,6 +80,15 @@ const isArchival = provider === "flash";
   {
     isArchival && (
       <div class="embed__archival">
+        {thumbnail && (
+          <img
+            class="embed__archival-thumb"
+            src={thumbnail}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+          />
+        )}
         <svg class="embed__archival-mark" viewBox="0 0 64 40" aria-hidden="true">
           <g
             stroke="var(--color-ink)"
@@ -227,6 +242,20 @@ const isArchival = provider === "flash";
       rgba(22, 18, 26, 0.05) 12px,
       rgba(22, 18, 26, 0.05) 24px
     );
+  }
+  .embed__archival-thumb {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+    filter: grayscale(40%);
+  }
+  .embed__archival-mark,
+  .embed__archival-text {
+    position: relative;
+    z-index: 1;
   }
   .embed__archival-mark {
     width: clamp(70px, 22%, 120px);

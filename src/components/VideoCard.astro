@@ -1,5 +1,6 @@
 ---
 import SeriesBadge from "./SeriesBadge.astro";
+import { getLocalThumb } from "../lib/thumbs";
 
 interface Props {
   title: string;
@@ -24,14 +25,15 @@ const {
 } = Astro.props;
 
 const year = new Date(recordedAt).getUTCFullYear();
-// YouTube and Vimeo have predictable thumbnail URLs (vumbnail.com proxies
-// Vimeo's thumbnail API); dailymotion/flash show the styled placeholder.
-// Only YouTube has a stable public thumbnail URL at build time.
-// Vimeo/dailymotion/flash use the styled placeholder.
+// Thumbnail priority: local archive image (public/thumbs/video/{slug}.jpg,
+// keyed by the video slug — the last segment of href) → YouTube's CDN →
+// styled placeholder for everything else.
+const slug = href.split("/").filter(Boolean).pop() ?? "";
 const thumb =
-  provider === "youtube"
+  getLocalThumb(slug) ??
+  (provider === "youtube"
     ? `https://i.ytimg.com/vi/${providerId}/hqdefault.jpg`
-    : null;
+    : null);
 ---
 
 <a class="card" href={href} data-series={seriesSlug}>

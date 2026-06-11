@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout.astro";
 import VideoCard from "../components/VideoCard.astro";
 import VideoEmbed from "../components/VideoEmbed.astro";
 import SectionHeading from "../components/SectionHeading.astro";
+import { getLocalThumb } from "../lib/thumbs";
 
 // Fetch all published series ordered by sort
 const allSeries = await db
@@ -109,7 +110,7 @@ function formatDate(d: Date) {
     <section class="featured container">
       <SectionHeading title="Featured" />
       <div class="featured-inner" data-series={featuredSeries.slug}>
-        <VideoEmbed provider={featuredVideo.provider as "youtube" | "vimeo" | "dailymotion" | "flash"} providerId={featuredVideo.provider_id} title={featuredVideo.title} />
+        <VideoEmbed provider={featuredVideo.provider as "youtube" | "vimeo" | "dailymotion" | "flash"} providerId={featuredVideo.provider_id} title={featuredVideo.title} thumbnail={getLocalThumb(featuredVideo.slug)} />
         <div class="featured-meta">
           <h2 class="featured-title">
             <a href={`/${featuredSeries.slug}/${featuredVideo.slug}/`}>{featuredVideo.title}</a>

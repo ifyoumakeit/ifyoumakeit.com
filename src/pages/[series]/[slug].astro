@@ -5,6 +5,7 @@ import VideoEmbed from "../../components/VideoEmbed.astro";
 import VideoCard from "../../components/VideoCard.astro";
 import SeriesBadge from "../../components/SeriesBadge.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
+import { getLocalThumb } from "../../lib/thumbs";
 
 export async function getStaticPaths() {
   const allVideos = await db
@@ -153,6 +154,7 @@ function videoCard(v: typeof videoData) {
         provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
         providerId={videoData.provider_id}
         title={videoData.title}
+        thumbnail={getLocalThumb(videoData.slug)}
       />
     </div>
 

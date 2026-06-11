@@ -64,8 +64,12 @@ To change content, edit the JSON or re-run the importer. The legacy dump also
 contains albums (with tracklists), comics, and articles categories — not yet
 imported; a potential future section.
 
-Thumbnails: YouTube via `i.ytimg.com`, Vimeo via `vumbnail.com`;
-dailymotion/flash get a styled CSS placeholder.
+Thumbnails: local archive images in `public/thumbs/video/{video.slug}.jpg`
+take priority (indexed at build time by `src/lib/thumbs.ts` — no db column;
+the slug is the reference, missing files just fall back). Fallbacks: YouTube
+via `i.ytimg.com`; everything else gets a styled CSS placeholder. On video
+pages the local image is also the player poster, and Flash-era videos show
+it behind the archival notice.
 
 ### URL structure (stable — don't break links)
 
