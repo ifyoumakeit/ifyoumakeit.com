@@ -67,8 +67,6 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  /* Grid-breaking elements (tape marquee) bleed past the edge on purpose. */
-  overflow-x: clip;
   font-family: var(--font-body);
   font-size: 1.0625rem;
   line-height: 1.55;
