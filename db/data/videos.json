@@ -306,8 +306,8 @@
   "series_id": 1,
   "description": "<p>Video montage of a couple of their shows. One of my first stabs at editing.</p>",
   "recorded_at": "2007-08-28",
-  "provider": "flash",
-  "provider_id": "potboiler.flv",
+  "provider": "youtube",
+  "provider_id": "aujKPKfmaMA",
   "featured": 0,
   "views": 5335
  },
@@ -345,8 +345,8 @@
   "series_id": 1,
   "description": "<p>Kickball can do no wrong, and I can't stop posting them.</p>",
   "recorded_at": "2007-08-30",
-  "provider": "flash",
-  "provider_id": "shoulders.flv",
+  "provider": "youtube",
+  "provider_id": "FqKKRZ4KO_k",
   "featured": 0,
   "views": 5688
  },
@@ -371,8 +371,8 @@
   "series_id": 1,
   "description": "<p>Paul at Stay True Paltz Part Deux. It was such a beautiful day out.</p>",
   "recorded_at": "2007-09-05",
-  "provider": "flash",
-  "provider_id": "paul.flv",
+  "provider": "youtube",
+  "provider_id": "K08-uspv-Aw",
   "featured": 0,
   "views": 8288
  },
@@ -2971,8 +2971,8 @@
   "series_id": 2,
   "description": "<p>Mike and In The Red was supposed to drop by a couple of months ago, unfortunately they came down with something on their way through New Jersey. In a karmic turnaround, Mike and tour buddies Ninja Gun were able to meet and see Willie Nelson play on their way through the Garden State. You can even see a signature on the guitar if you look close enough.</p>\n<p>Mike has recently decided to devote his life to just traveling and playing his music. You can read about it over at buddy site Punknews.org, and get his new album for free at liveslikemine.suburbanhomerecords.com.</p>",
   "recorded_at": "2009-04-29",
-  "provider": "vimeo",
-  "provider_id": "4395737",
+  "provider": "youtube",
+  "provider_id": "XXqE58_bum8",
   "featured": 0,
   "views": 1126371
  },
@@ -2997,8 +2997,8 @@
   "series_id": 1,
   "description": "<p>This is from last year&#039;s Make Music Day in Brooklyn. I love being able to shoot outdoors, it always looks so amazing with all the colors and scenery. On a side note, make sure to buy their newish 7 inch &quot;Hot Green&quot;, it&#039;s amazing.</p>\n<p>Everyone in Brooklyn should come see this band tonight. Check out the events link at the top of site to find out more.</p>",
   "recorded_at": "2009-05-13",
-  "provider": "vimeo",
-  "provider_id": "4626815",
+  "provider": "youtube",
+  "provider_id": "PB0hxYUxZLQ",
   "featured": 0,
   "views": 10294
  },
@@ -3140,8 +3140,8 @@
   "series_id": 2,
   "description": "<p>These four lovely people came over during their recent tour with Letters to the Moon. At first the garbage can was set up on the floor, and it was making the camera shake like crazy. It got really distracting and felt like you are witnessing an earthquake.</p>\n<p>You used to be able to download their demo from ohym.org, but the site seems to be in the works. I&#039;ll link to it once it goes back up.</p>",
   "recorded_at": "2009-06-17",
-  "provider": "vimeo",
-  "provider_id": "5208638",
+  "provider": "youtube",
+  "provider_id": "TtzTk11hj64",
   "featured": 0,
   "views": 16149
  },
@@ -3621,8 +3621,8 @@
   "series_id": 2,
   "description": "<p>I&#039;ve had been talking to Jon over the internet for about a month, when he told me that he&#039;d be in the city for one of the last Nakatomi shows. I ran into him at the tail end of the show, but unfortunately I had forgotten that he&#039;d be there, so I stared at him blankly as he talked about setting up this pink couch.</p>\n<p>These three are from Philadelphia, so they are back in New York all the time.</p>",
   "recorded_at": "2009-11-10",
-  "provider": "vimeo",
-  "provider_id": "7525552",
+  "provider": "youtube",
+  "provider_id": "voE4lcM6-Zs",
   "featured": 0,
   "views": 7117
  },
@@ -3647,8 +3647,8 @@
   "series_id": 1,
   "description": "<p>From this year&#039;s Fest at the Kickstand. They recently released &quot;Hello&quot; on Quote Unquote, and it&#039;s a really amazing record. Get it for free and throw some buckaroonies to the guys.</p>\n<p>The band features members of Shinobu, Pteradon and Classics of Love.</p>\n<p>http://www.ifyoumakeit.com/blog/recommendations/hard-girls/</p>",
   "recorded_at": "2009-11-15",
-  "provider": "vimeo",
-  "provider_id": "7636281",
+  "provider": "youtube",
+  "provider_id": "F4cs87oFmQ4",
   "featured": 0,
   "views": 7253
  },
@@ -5731,5 +5731,31 @@
   "provider_id": "bMxqqSvlkX4",
   "featured": 0,
   "views": 9409
+ },
+ {
+  "id": 831,
+  "title": "No One Else",
+  "slug": "bomb-the-music-industry-no-one-else",
+  "artist_id": 48,
+  "series_id": 1,
+  "description": "<p>From a 2010 Bomb the Music Industry! Weezer cover show. People wanted me to film the whole night, but I looked around and saw enough cameras doing that exact thing.</p>\n<p>Congratulations to Jeff and company for pulling this off. It was pretty much flawless, with all the guitar solos and falsetto voices that Weezer is known for.</p>",
+  "recorded_at": "2010-10-11",
+  "provider": "youtube",
+  "provider_id": "vJCU9MsvoQM",
+  "featured": 0,
+  "views": 456
+ },
+ {
+  "id": 832,
+  "title": "For Things That Haven't Come Yet",
+  "slug": "nana-grizol-for-things-that-havent-come-yet",
+  "artist_id": 79,
+  "series_id": 1,
+  "description": "<p>Nana Grizol at the Cake Shop in Manhattan in 2008. Crappy quality, but I realized I had this set to private forever.</p>",
+  "recorded_at": "2008-06-10",
+  "provider": "youtube",
+  "provider_id": "sFvgRXESpfU",
+  "featured": 0,
+  "views": 393
  }
 ]
