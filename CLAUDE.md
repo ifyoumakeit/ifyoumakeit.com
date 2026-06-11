@@ -33,6 +33,13 @@ a couple of unmigrated Flash-era files.
 
 Always run `npm run build` before committing; it must pass with 0 errors.
 
+- `YOUTUBE_API_KEY=… npm run update:youtube` — refresh YouTube view counts in
+  `db/data/videos.json` and set `publish: 0` on any video that went
+  private/deleted (or has a malformed id). Add `--` `--dry` to preview. Needs a
+  YouTube Data API v3 key; ~6 API calls for the whole archive. A weekly GitHub
+  Action (`.github/workflows/update-youtube.yml`) runs this and commits the
+  result; it needs the `YOUTUBE_API_KEY` repo secret.
+
 ## Architecture
 
 Astro 5 + `@astrojs/db` (astro:db). All queries run at build time.

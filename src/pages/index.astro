@@ -40,12 +40,6 @@ const formattedViews = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 }).format(totalViews);
 
-// Most Watched: top 6 published videos by views desc
-const mostWatched = [...allVideos]
-  .sort((a, b) => b.views - a.views)
-  .slice(0, cap)
-  .filter((v) => (v.views) > 0);
-
 // Featured video: featured=1, most recent
 const featuredVideos = allVideos
   .filter((v) => v.featured === 1)
@@ -54,14 +48,14 @@ const featuredVideo = featuredVideos[0] ?? null;
 const featuredArtist = featuredVideo ? artistMap.get(featuredVideo.artist_id) : null;
 const featuredSeries = featuredVideo ? seriesMap.get(featuredVideo.series_id) : null;
 
-// Videos sorted newest-first for series sections
+// Videos sorted by views (most-watched first) for series sections
 const videosBySeriesId = new Map<number, typeof allVideos>();
 for (const v of allVideos) {
   if (!videosBySeriesId.has(v.series_id)) videosBySeriesId.set(v.series_id, []);
   videosBySeriesId.get(v.series_id)!.push(v);
 }
 for (const [, vids] of videosBySeriesId) {
-  vids.sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+  vids.sort((a, b) => b.views - a.views);
 }
 
 // Distinct years for browse strip (desc)
@@ -125,33 +119,6 @@ function formatDate(d: Date) {
             <div class="featured-description" set:html={featuredVideo.description} />
           )}
         </div>
-      </div>
-    </section>
-  )}
-
-  {mostWatched.length > 0 && (
-    <section class="series-section container">
-      <SectionHeading title="Most Watched" />
-      <div class="grid-videos">
-        {mostWatched.map((v) => {
-          const a = artistMap.get(v.artist_id);
-          const s = seriesMap.get(v.series_id);
-          if (!s) return null;
-          return (
-            <VideoCard
-              title={v.title}
-              href={getVideoUrl(v, a!)}
-              artistName={a?.name ?? ""}
-              seriesTitle={s.title}
-              seriesSlug={s.slug}
-              recordedAt={new Date(v.recorded_at)}
-              provider={v.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
-              providerId={v.provider_id}
-              thumbnailSlug={v.slug}
-              showBadge
-            />
-          );
-        })}
       </div>
     </section>
   )}

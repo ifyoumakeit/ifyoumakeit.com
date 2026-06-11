@@ -1,0 +1,50 @@
+name: Update YouTube views
+
+# Weekly refresh of YouTube view counts + auto-hide of videos that went
+# private/deleted. Edits db/data/videos.json and commits it back to main so
+# the repo stays the source of truth. Requires a repo secret YOUTUBE_API_KEY
+# (a YouTube Data API v3 key). Also runnable on demand from the Actions tab.
+
+on:
+  schedule:
+    - cron: "0 8 * * 1" # Mondays 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Refresh view counts
+        run: npm run update:youtube
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+
+      # Verify the data still builds before committing it.
+      - name: Build
+        run: npm run build
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet db/data/videos.json; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add db/data/videos.json
+          git commit -m "chore: refresh youtube views [skip ci]"
+          git push
