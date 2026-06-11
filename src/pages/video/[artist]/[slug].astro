@@ -204,15 +204,7 @@ function videoCard(v: typeof videoData) {
     </div>
 
     <div class="container video-meta">
-      <h1 class="video-title">{videoData.title}</h1>
-
-      <p class="video-artist">
-        <a href={`/artists/${videoArtist?.slug}/`}>{videoArtist?.name}</a>
-      </p>
-
-      <div class="video-badges">
-        <SeriesBadge title={seriesData.title} slug={seriesData.slug} />
-      </div>
+      <h1 class="video-title">{videoArtist?.name} - {videoData.title}</h1>
 
       <p class="meta-line">{metaParts.join(" — ")}</p>
 
@@ -230,6 +222,10 @@ function videoCard(v: typeof videoData) {
           </ol>
         </div>
       )}
+
+      <div class="video-badges">
+        <SeriesBadge title={seriesData.title} slug={seriesData.slug} />
+      </div>
 
       {thisVideoTags.length > 0 && (
         <div class="video-tags">
@@ -311,19 +307,6 @@ function videoCard(v: typeof videoData) {
     font-family: var(--font-display);
     font-size: clamp(1.6rem, 4vw, 2.8rem);
     margin: 0 0 0.35rem;
-  }
-  .video-artist {
-    margin: 0 0 0.5rem;
-  }
-  .video-artist a {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--accent-text, var(--color-pink-deep));
-    text-decoration-color: var(--accent, var(--color-pink));
-  }
-  .video-artist a:hover {
-    text-decoration: underline;
   }
   .video-badges {
     margin-block: 0.5rem;
