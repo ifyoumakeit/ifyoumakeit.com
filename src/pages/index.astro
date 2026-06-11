@@ -32,6 +32,7 @@ const years = allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear());
 const minYear = Math.min(...years);
 const maxYear = Math.max(...years);
 const totalYears = maxYear - minYear + 1;
+const cap = 6
 
 const totalViews = allVideos.reduce((sum, v) => sum + v.views, 0);
 const formattedViews = new Intl.NumberFormat("en-US", {
@@ -39,10 +40,10 @@ const formattedViews = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 }).format(totalViews);
 
-// Most Watched: top 8 published videos by views desc
+// Most Watched: top 6 published videos by views desc
 const mostWatched = [...allVideos]
   .sort((a, b) => b.views - a.views)
-  .slice(0, 8)
+  .slice(0, cap)
   .filter((v) => (v.views) > 0);
 
 // Featured video: featured=1, most recent
@@ -156,7 +157,7 @@ function formatDate(d: Date) {
   )}
 
   {allSeries.map((s) => {
-    const seriesVideos = (videosBySeriesId.get(s.id) ?? []).slice(0, 8);
+    const seriesVideos = (videosBySeriesId.get(s.id) ?? []).slice(0, cap);
     if (seriesVideos.length === 0) return null;
     return (
       <section class="series-section container" data-series={s.slug}>

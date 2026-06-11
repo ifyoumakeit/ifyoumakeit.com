@@ -5,21 +5,66 @@ import "@fontsource/space-mono/400.css";
 import "@fontsource/space-mono/700.css";
 import "../styles/global.css";
 import { db, eq, asc, series } from "astro:db";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_SOCIAL_IMAGE,
+  SITE_NAME,
+  SITE_URL,
+} from "../lib/seo";
 
 interface Props {
   title: string;
   description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: "website" | "article" | "video.other";
+  noindex?: boolean;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
   title,
-  description = "If You Make It — a DIY punk video archive. Live recordings, sessions, and music videos.",
+  description = DEFAULT_DESCRIPTION,
+  image = DEFAULT_SOCIAL_IMAGE,
+  imageAlt = "If You Make It DIY punk video archive",
+  type = "website",
+  noindex = false,
+  structuredData,
 } = Astro.props;
 const documentTitle =
   title.startsWith("If You Make It —") || title.endsWith("— If You Make It")
   ? title
   : `${title} — If You Make It`;
 const currentPath = Astro.url.pathname;
+const canonicalUrl = new URL(currentPath, Astro.site ?? SITE_URL);
+const socialImageUrl = new URL(image, Astro.site ?? SITE_URL);
+const baseStructuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
+    name: SITE_NAME,
+    url: `${SITE_URL}/`,
+    logo: `${SITE_URL}/favicon.svg`,
+    sameAs: ["https://www.youtube.com/@ifyoumakeit"],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    name: SITE_NAME,
+    url: `${SITE_URL}/`,
+    description: DEFAULT_DESCRIPTION,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+  },
+];
+const pageStructuredData = structuredData
+  ? Array.isArray(structuredData)
+    ? structuredData
+    : [structuredData]
+  : [];
+const jsonLd = JSON.stringify([...baseStructuredData, ...pageStructuredData])
+  .replace(/</g, "\\u003c");
 
 function navState(href: string): {
   "aria-current"?: "page" | "location";
@@ -53,18 +98,28 @@ const staticNavLinks = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{documentTitle}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
     <meta name="theme-color" content="#FF4D8D" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="If You Make It" />
-    <meta property="og:title" content={title} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={documentTitle} />
     <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={documentTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    <script type="application/ld+json" set:html={jsonLd} is:inline />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

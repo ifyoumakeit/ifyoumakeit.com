@@ -7,6 +7,11 @@ import SeriesBadge from "../../../components/SeriesBadge.astro";
 import SectionHeading from "../../../components/SectionHeading.astro";
 import { getLocalThumb } from "../../../lib/thumbs";
 import { getVideoSongSlug, getVideoUrl } from "../../../lib/video-url";
+import {
+  DEFAULT_SOCIAL_IMAGE,
+  SITE_URL,
+  toPlainText,
+} from "../../../lib/seo";
 
 export async function getStaticPaths() {
   const allVideos = await db
@@ -53,6 +58,36 @@ const allSeries = await db
 const seriesById = new Map(allSeries.map((s) => [s.id, s]));
 
 const videoArtist = artistMap.get(videoData.artist_id)!;
+const videoUrl = getVideoUrl(videoData, videoArtist);
+const localThumbnail = getLocalThumb(videoData.slug);
+const socialImage =
+  localThumbnail ??
+  (videoData.provider === "youtube"
+    ? `https://i.ytimg.com/vi/${videoData.provider_id}/maxresdefault.jpg`
+    : DEFAULT_SOCIAL_IMAGE);
+const plainDescription = toPlainText(
+  videoData.description ??
+    `${videoArtist.name} performs ${videoData.title} for If You Make It.`,
+);
+const embedUrl =
+  videoData.provider === "youtube"
+    ? `https://www.youtube-nocookie.com/embed/${videoData.provider_id}`
+    : videoData.provider === "vimeo"
+      ? `https://player.vimeo.com/video/${videoData.provider_id}`
+      : videoData.provider === "dailymotion"
+        ? `https://www.dailymotion.com/embed/video/${videoData.provider_id}`
+        : undefined;
+const videoStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  name: `${videoArtist.name} — ${videoData.title}`,
+  description: plainDescription,
+  thumbnailUrl: [new URL(socialImage, SITE_URL).href],
+  dateCreated: new Date(videoData.recorded_at).toISOString(),
+  url: new URL(videoUrl, SITE_URL).href,
+  mainEntityOfPage: new URL(videoUrl, SITE_URL).href,
+  ...(embedUrl ? { embedUrl } : {}),
+};
 
 // Songs (setlist)
 const allSongs = await db
@@ -151,7 +186,11 @@ function videoCard(v: typeof videoData) {
 
 <Layout
   title={`${videoData.title} — ${videoArtist?.name ?? ""}`}
-  description={videoData.description ?? undefined}
+  description={plainDescription}
+  image={socialImage}
+  imageAlt={`${videoArtist.name} performing ${videoData.title}`}
+  type="video.other"
+  structuredData={videoStructuredData}
 >
   <article class="video-page" data-series={seriesData.slug}>
     <div class="container video-top">
@@ -159,7 +198,7 @@ function videoCard(v: typeof videoData) {
         provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
         providerId={videoData.provider_id}
         title={videoData.title}
-        thumbnail={getLocalThumb(videoData.slug)}
+        thumbnail={localThumbnail}
       />
     </div>
 
