@@ -116,7 +116,7 @@ const shownIds = new Set<number>();
 const moreFromArtist = otherVideos
   .filter((v) => v.artist_id === videoData.artist_id)
   .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
-  .slice(0, 4);
+  .slice(0, 3);
 moreFromArtist.forEach((v) => shownIds.add(v.id));
 
 // b. Recorded around the same time — sorted by absolute date distance, up to 4, excluding already shown
@@ -142,7 +142,7 @@ for (const vt of allVideoTags) {
 const similarVibes = otherVideos
   .filter((v) => !shownIds.has(v.id) && (tagShareCount.get(v.id) ?? 0) > 0)
   .sort((a, b) => (tagShareCount.get(b.id) ?? 0) - (tagShareCount.get(a.id) ?? 0))
-  .slice(0, 4);
+  .slice(0, 3);
 
 // ── PREV / NEXT within same series by recorded_at ──────────────
 const seriesVideos = allVideos
