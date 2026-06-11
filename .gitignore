@@ -4,3 +4,7 @@ coverage/
 .env
 *.js.map
 .astro/
+
+# YouTube uploader: OAuth secrets/tokens + transcode scratch (never commit)
+scripts/.yt-oauth/
+scripts/.yt-tmp/
