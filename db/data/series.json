@@ -22,13 +22,5 @@
   "color": "#FFD23F",
   "sort": 3,
   "description": "Multi-part features, documentaries, and ongoing video series from the DIY punk world."
- },
- {
-  "id": 4,
-  "title": "Music Videos",
-  "slug": "music-videos",
-  "color": "#D81E5B",
-  "sort": 4,
-  "description": "Hand-picked music videos from bands worth your time."
  }
 ]

@@ -119,7 +119,9 @@ function toHtml(body) {
 
 // ----------------------------------------------------------------- series
 
-// The four legacy categories that hold videos, with the new design accents.
+// The legacy categories that hold videos, with the new design accents.
+// The legacy "Music Videos" category (legacyId 7) is intentionally excluded —
+// it isn't IYMI-produced content; its posts are skipped at import (no series).
 const SERIES = [
   {
     legacyId: 1,
@@ -150,16 +152,6 @@ const SERIES = [
     sort: 3,
     description:
       "Multi-part features, documentaries, and ongoing video series from the DIY punk world.",
-  },
-  {
-    legacyId: 7,
-    id: 4,
-    title: "Music Videos",
-    slug: "music-videos",
-    color: "#D81E5B",
-    sort: 4,
-    description:
-      "Hand-picked music videos from bands worth your time.",
   },
 ];
 const seriesByLegacy = new Map(SERIES.map((s) => [s.legacyId, s]));

@@ -910,11 +910,6 @@
   "slug": "person-l"
  },
  {
-  "id": 183,
-  "name": "Stegosaur",
-  "slug": "stegosaur"
- },
- {
   "id": 184,
   "name": "Weatherbox",
   "slug": "weatherbox"
@@ -935,11 +930,6 @@
   "slug": "dinosaur-bones"
  },
  {
-  "id": 188,
-  "name": "Tera Melos",
-  "slug": "tera-melos"
- },
- {
   "id": 189,
   "name": "RVIVR",
   "slug": "rvivr"
@@ -948,11 +938,6 @@
   "id": 190,
   "name": "ARMS",
   "slug": "arms"
- },
- {
-  "id": 191,
-  "name": "Candy Hearts",
-  "slug": "candy-hearts"
  },
  {
   "id": 192,
@@ -983,11 +968,6 @@
   "id": 197,
   "name": "Greenland is Melting",
   "slug": "greenland-is-melting"
- },
- {
-  "id": 198,
-  "name": "Playing Dead",
-  "slug": "playing-dead"
  },
  {
   "id": 199,
@@ -1025,11 +1005,6 @@
   "slug": "summer-people"
  },
  {
-  "id": 206,
-  "name": "BAND NAME",
-  "slug": "band-name"
- },
- {
   "id": 207,
   "name": "The Two Funerals",
   "slug": "the-two-funerals"
@@ -1038,11 +1013,6 @@
   "id": 208,
   "name": "The Honey Do's",
   "slug": "the-honey-dos"
- },
- {
-  "id": 209,
-  "name": "The Front Bottoms",
-  "slug": "the-front-bottoms"
  },
  {
   "id": 210,
@@ -1090,11 +1060,6 @@
   "slug": "spraynard"
  },
  {
-  "id": 219,
-  "name": "By Surprise",
-  "slug": "by-surprise"
- },
- {
   "id": 220,
   "name": "The Boy Who Could Fly",
   "slug": "the-boy-who-could-fly"
@@ -1103,16 +1068,6 @@
   "id": 221,
   "name": "Bangers",
   "slug": "bangers"
- },
- {
-  "id": 222,
-  "name": "Sourpatch",
-  "slug": "sourpatch"
- },
- {
-  "id": 223,
-  "name": "Drag",
-  "slug": "drag"
  },
  {
   "id": 224,
@@ -1150,11 +1105,6 @@
   "slug": "the-ambulars"
  },
  {
-  "id": 231,
-  "name": "Reverse the Curse",
-  "slug": "reverse-the-curse"
- },
- {
   "id": 232,
   "name": "ZEBU!",
   "slug": "zebu"
@@ -1170,24 +1120,9 @@
   "slug": "you-blew-it"
  },
  {
-  "id": 235,
-  "name": "Spoonboy & Erica Freas",
-  "slug": "spoonboy-and-erica-freas"
- },
- {
-  "id": 236,
-  "name": "Mike Huguenor",
-  "slug": "mike-huguenor"
- },
- {
   "id": 237,
   "name": "Braid",
   "slug": "braid"
- },
- {
-  "id": 238,
-  "name": "Nude Beach",
-  "slug": "nude-beach"
  },
  {
   "id": 239,
@@ -1195,24 +1130,9 @@
   "slug": "owen"
  },
  {
-  "id": 240,
-  "name": "Purple 7",
-  "slug": "purple-7"
- },
- {
-  "id": 241,
-  "name": "Dangerous Ponies",
-  "slug": "dangerous-ponies"
- },
- {
   "id": 242,
   "name": "Kite Party",
   "slug": "kite-party"
- },
- {
-  "id": 243,
-  "name": "Slow Warm Death",
-  "slug": "slow-warm-death"
  },
  {
   "id": 244,
@@ -1223,25 +1143,5 @@
   "id": 245,
   "name": "Lee Corey Oswald",
   "slug": "lee-corey-oswald"
- },
- {
-  "id": 246,
-  "name": "Radiator Hospital",
-  "slug": "radiator-hospital"
- },
- {
-  "id": 247,
-  "name": "Swearin'",
-  "slug": "swearin"
- },
- {
-  "id": 248,
-  "name": "Cayetana",
-  "slug": "cayetana"
- },
- {
-  "id": 249,
-  "name": "Chumped",
-  "slug": "chumped"
  }
 ]

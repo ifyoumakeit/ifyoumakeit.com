@@ -49,11 +49,6 @@
   --accent-ink: var(--color-ink);
   --accent-text: var(--color-ink);
 }
-[data-series="music-videos"] {
-  --accent: var(--color-pink-deep);
-  --accent-ink: var(--color-paper);
-  --accent-text: var(--color-pink-deep);
-}
 
 /* ============================================================
    reset-ish
