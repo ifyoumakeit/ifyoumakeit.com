@@ -14,7 +14,7 @@ const { title, href, count } = Astro.props;
     {count != null && <span class="section-heading__count">{count}</span>}
   </h2>
   {
-    href && (
+    Boolean(href) && (
       <a class="section-heading__link" href={href}>
         See all <span aria-hidden="true">&rarr;</span>
       </a>

@@ -113,9 +113,10 @@ const otherVideos = allVideos.filter((v) => v.id !== videoData.id);
 const shownIds = new Set<number>();
 
 // a. More from {artist} — other published videos by same artist, newest first, up to 4
-const moreFromArtist = otherVideos
+const artistVideos = otherVideos
   .filter((v) => v.artist_id === videoData.artist_id)
-  .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
+  .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+const moreFromArtist = artistVideos
   .slice(0, 3);
 moreFromArtist.forEach((v) => shownIds.add(v.id));
 
@@ -241,7 +242,7 @@ function videoCard(v: typeof videoData) {
 
     {moreFromArtist.length > 0 && (
       <section class="related-section container">
-        <SectionHeading title={`More from ${videoArtist?.name}`} href={`/artists/${videoArtist?.slug}/`} />
+        <SectionHeading title={`More from ${videoArtist?.name}`} href={artistVideos.length > 3 ? `/artists/${videoArtist?.slug}/`: ""} />
         <div class="grid-videos">
           {moreFromArtist.map((v) => {
             const c = videoCard(v);

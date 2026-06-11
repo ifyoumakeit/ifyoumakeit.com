@@ -69,7 +69,7 @@ const seriesWithVideos = allSeries.filter((s) => bySeries.has(s.id));
       const videos = bySeries.get(s.id)!;
       return (
         <section class="series-group" data-series={s.slug}>
-          <SectionHeading title={s.title} href={`/${s.slug}/`} count={videos.length} />
+          <SectionHeading title={s.title} count={videos.length} />
           <div class="grid-videos">
             {videos.map((v) => (
               <VideoCard
