@@ -80,6 +80,16 @@ const activeTags = allTags
   .filter((t) => (tagPublishedCounts.get(t.id) ?? 0) > 0)
   .sort((a, b) => a.name.localeCompare(b.name));
 
+// Tape marquee copy — decorative, duplicated for the infinite loop.
+const tapePhrases = [
+  "Long live DIY",
+  "Bands on a pink couch since 2007",
+  `${totalVideos} videos`,
+  `${totalArtists} artists`,
+  "No ads · No algorithm",
+  `Est. ${minYear}–${maxYear}`,
+];
+
 function formatDate(d: Date) {
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -101,6 +111,21 @@ function formatDate(d: Date) {
       {totalViews > 0 && <li><strong>{formattedViews}</strong> views</li>}
     </ul>
   </section>
+
+  <div class="tape" aria-hidden="true">
+    <div class="tape__track">
+      {[0, 1].map(() => (
+        <span class="tape__run">
+          {tapePhrases.map((phrase) => (
+            <>
+              <span class="tape__phrase">{phrase}</span>
+              <span class="tape__star">★</span>
+            </>
+          ))}
+        </span>
+      ))}
+    </div>
+  </div>
 
   {featuredVideo && featuredArtist && featuredSeries && (
     <section class="featured container">
@@ -194,6 +219,62 @@ function formatDate(d: Date) {
     font-family: var(--font-display);
     font-size: 1.4rem;
   }
+  /* Stats slam down one by one like rubber stamps. */
+  .hero-stats li {
+    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .hero-stats li:nth-child(1) { animation-delay: 0.1s; }
+  .hero-stats li:nth-child(2) { animation-delay: 0.22s; }
+  .hero-stats li:nth-child(3) { animation-delay: 0.34s; }
+  .hero-stats li:nth-child(4) { animation-delay: 0.46s; }
+
+  /* ---------- tape marquee ---------- */
+  /* A strip of gaffer tape slapped across the page, scrolling forever.
+     Slightly oversized + rotated so the torn-off ends bleed offscreen. */
+  .tape {
+    width: 104%;
+    margin-inline-start: -2%;
+    transform: rotate(-1.1deg);
+    background: var(--color-ink);
+    border-block: var(--border-thin);
+    box-shadow: 0 3px 0 rgba(22, 18, 26, 0.25);
+    overflow: hidden;
+    user-select: none;
+  }
+  .tape__track {
+    display: flex;
+    width: max-content;
+    animation: tape-scroll 32s linear infinite;
+  }
+  .tape:hover .tape__track {
+    animation-play-state: paused;
+  }
+  .tape__run {
+    display: flex;
+    align-items: center;
+    flex: none;
+    padding-block: 0.55rem;
+  }
+  .tape__phrase {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--color-paper);
+    white-space: nowrap;
+  }
+  .tape__star {
+    color: var(--color-pink);
+    font-size: 0.8rem;
+    line-height: 1;
+    padding-inline: 0.9em;
+  }
+  @keyframes tape-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
 
   .featured-inner {
     display: grid;
@@ -207,6 +288,9 @@ function formatDate(d: Date) {
   }
   .featured {
     padding-block-end: 2rem;
+  }
+  .featured-inner {
+    animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.18s;
   }
   .featured-inner :global(.embed) {
     height: 100%;

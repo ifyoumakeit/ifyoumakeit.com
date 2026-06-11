@@ -260,6 +260,19 @@ const staticNavLinks = [
         height: auto;
         flex: none;
         filter: drop-shadow(2px 2px 0 var(--color-ink));
+        transform-origin: bottom center;
+      }
+      /* The couch squishes like someone just flopped onto it. */
+      .wordmark:hover .wordmark__mark {
+        animation: couch-squish 0.5s cubic-bezier(0.28, 1.6, 0.42, 1);
+      }
+      @keyframes couch-squish {
+        30% {
+          transform: translateY(1px) scaleY(0.8);
+        }
+        60% {
+          transform: translateY(-1px) scaleY(1.08);
+        }
       }
       .wordmark__text {
         font-family: var(--font-display);

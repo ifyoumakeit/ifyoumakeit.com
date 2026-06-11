@@ -64,6 +64,21 @@ const { title, href, count } = Astro.props;
     box-shadow: 2px 2px 0 var(--color-ink);
     transform: rotate(4deg) translateY(-0.35em);
   }
+  /* Sticker shake when the section catches your cursor. */
+  .section-heading:hover .section-heading__count {
+    animation: count-wiggle 0.45s ease;
+  }
+  @keyframes count-wiggle {
+    30% {
+      transform: rotate(13deg) translateY(-0.45em);
+    }
+    60% {
+      transform: rotate(-4deg) translateY(-0.3em);
+    }
+    100% {
+      transform: rotate(4deg) translateY(-0.35em);
+    }
+  }
 
   .section-heading__link {
     flex: none;
