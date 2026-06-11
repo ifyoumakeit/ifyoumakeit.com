@@ -137,7 +137,7 @@ function videoCard(v: typeof videoData) {
     seriesTitle: s.title,
     seriesSlug: s.slug,
     recordedAt: new Date(v.recorded_at),
-    provider: v.provider as "youtube" | "vimeo" | "flash",
+    provider: v.provider as "youtube" | "vimeo" | "dailymotion" | "flash",
     providerId: v.provider_id,
   };
 }
@@ -150,7 +150,7 @@ function videoCard(v: typeof videoData) {
   <article class="video-page" data-series={seriesData.slug}>
     <div class="container video-top">
       <VideoEmbed
-        provider={videoData.provider as "youtube" | "vimeo" | "flash"}
+        provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
         providerId={videoData.provider_id}
         title={videoData.title}
       />
@@ -170,7 +170,7 @@ function videoCard(v: typeof videoData) {
       <p class="meta-line">{metaParts.join(" — ")}</p>
 
       {videoData.description && (
-        <p class="video-description">{videoData.description}</p>
+        <div class="video-description" set:html={videoData.description} />
       )}
 
       {allSongs.length > 0 && (
@@ -285,6 +285,25 @@ function videoCard(v: typeof videoData) {
     margin-block: 1rem;
     max-width: 65ch;
     line-height: 1.6;
+  }
+  .video-description p {
+    margin: 0 0 0.75rem;
+  }
+  .video-description p:last-child {
+    margin-bottom: 0;
+  }
+  .video-description a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--accent, var(--color-pink));
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .video-description a:hover {
+    color: var(--accent, var(--color-pink-deep));
+  }
+  .video-description em {
+    font-style: italic;
   }
   .setlist {
     margin-block: 1.25rem;

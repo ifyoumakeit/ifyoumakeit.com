@@ -36,6 +36,7 @@ const video = defineTable({
     provider_id: column.text(),
     featured: column.number({ default: 0 }),
     publish: column.number({ default: 1 }),
+    views: column.number({ default: 0 }),
   },
 });
 

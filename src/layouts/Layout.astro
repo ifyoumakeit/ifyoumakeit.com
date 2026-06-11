@@ -4,6 +4,7 @@ import "@fontsource-variable/archivo";
 import "@fontsource/space-mono/400.css";
 import "@fontsource/space-mono/700.css";
 import "../styles/global.css";
+import { db, eq, asc, series } from "astro:db";
 
 interface Props {
   title: string;
@@ -12,13 +13,16 @@ interface Props {
 
 const {
   title,
-  description = "If You Make It — a DIY punk video archive. Pink Couch Sessions, live recordings, and shows.",
+  description = "If You Make It — a DIY punk video archive. Live recordings, sessions, and music videos.",
 } = Astro.props;
 
-const nav = [
-  { label: "Pink Couch Sessions", href: "/pink-couch-sessions/" },
-  { label: "Live and Direct", href: "/live-and-direct/" },
-  { label: "Shows", href: "/shows/" },
+const publishedSeries = await db
+  .select()
+  .from(series)
+  .where(eq(series.publish, 1))
+  .orderBy(asc(series.sort));
+
+const staticNavLinks = [
   { label: "Artists", href: "/artists/" },
   { label: "Years", href: "/years/" },
 ];
@@ -76,7 +80,14 @@ const nav = [
 
         <nav class="site-nav" aria-label="Primary">
           {
-            nav.map((item) => (
+            publishedSeries.map((s) => (
+              <a class="site-nav__link" href={`/${s.slug}/`}>
+                {s.title}
+              </a>
+            ))
+          }
+          {
+            staticNavLinks.map((item) => (
               <a class="site-nav__link" href={item.href}>
                 {item.label}
               </a>
@@ -96,7 +107,8 @@ const nav = [
           If You Make It — bands on a pink couch since 2007. Long live DIY.
         </p>
         <nav class="site-footer__nav" aria-label="Footer">
-          {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+          {publishedSeries.map((s) => <a href={`/${s.slug}/`}>{s.title}</a>)}
+          {staticNavLinks.map((item) => <a href={item.href}>{item.label}</a>)}
         </nav>
       </div>
     </footer>

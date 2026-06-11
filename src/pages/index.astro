@@ -31,6 +31,18 @@ const minYear = Math.min(...years);
 const maxYear = Math.max(...years);
 const totalYears = maxYear - minYear + 1;
 
+const totalViews = allVideos.reduce((sum, v) => sum + v.views, 0);
+const formattedViews = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+}).format(totalViews);
+
+// Most Watched: top 8 published videos by views desc
+const mostWatched = [...allVideos]
+  .sort((a, b) => b.views - a.views)
+  .slice(0, 8)
+  .filter((v) => (v.views) > 0);
+
 // Featured video: featured=1, most recent
 const featuredVideos = allVideos
   .filter((v) => v.featured === 1)
@@ -81,14 +93,15 @@ function formatDate(d: Date) {
 }
 ---
 
-<Layout title="If You Make It — DIY Punk Video Archive" description="Bands. One pink couch. A DIY video archive since 2007.">
+<Layout title="If You Make It — DIY Punk Video Archive" description={`Bands in living rooms, basements, and bars. A DIY punk video archive, ${minYear}–${maxYear}.`}>
 
   <section class="hero container">
-    <p class="hero-tagline">Bands. One pink couch. A DIY video archive since 2007.</p>
+    <p class="hero-tagline">Bands in living rooms, basements, and bars. A DIY punk video archive, {minYear}–{maxYear}.</p>
     <ul class="hero-stats">
       <li><strong>{totalVideos}</strong> videos</li>
       <li><strong>{totalArtists}</strong> artists</li>
       <li><strong>{totalYears}</strong> years</li>
+      {totalViews > 0 && <li><strong>{formattedViews}</strong> views</li>}
     </ul>
   </section>
 
@@ -96,7 +109,7 @@ function formatDate(d: Date) {
     <section class="featured container">
       <SectionHeading title="Featured" />
       <div class="featured-inner" data-series={featuredSeries.slug}>
-        <VideoEmbed provider={featuredVideo.provider as "youtube" | "vimeo" | "flash"} providerId={featuredVideo.provider_id} title={featuredVideo.title} />
+        <VideoEmbed provider={featuredVideo.provider as "youtube" | "vimeo" | "dailymotion" | "flash"} providerId={featuredVideo.provider_id} title={featuredVideo.title} />
         <div class="featured-meta">
           <h2 class="featured-title">
             <a href={`/${featuredSeries.slug}/${featuredVideo.slug}/`}>{featuredVideo.title}</a>
@@ -106,6 +119,31 @@ function formatDate(d: Date) {
           </p>
           <p class="meta-line">{featuredSeries.title} &mdash; {formatDate(new Date(featuredVideo.recorded_at))}</p>
         </div>
+      </div>
+    </section>
+  )}
+
+  {mostWatched.length > 0 && (
+    <section class="series-section container">
+      <SectionHeading title="Most Watched" />
+      <div class="grid-videos">
+        {mostWatched.map((v) => {
+          const a = artistMap.get(v.artist_id);
+          const s = seriesMap.get(v.series_id);
+          if (!s) return null;
+          return (
+            <VideoCard
+              title={v.title}
+              href={`/${s.slug}/${v.slug}/`}
+              artistName={a?.name ?? ""}
+              seriesTitle={s.title}
+              seriesSlug={s.slug}
+              recordedAt={new Date(v.recorded_at)}
+              provider={v.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
+              providerId={v.provider_id}
+            />
+          );
+        })}
       </div>
     </section>
   )}
@@ -127,7 +165,7 @@ function formatDate(d: Date) {
                 seriesTitle={s.title}
                 seriesSlug={s.slug}
                 recordedAt={new Date(v.recorded_at)}
-                provider={v.provider as "youtube" | "vimeo" | "flash"}
+                provider={v.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
                 providerId={v.provider_id}
               />
             );

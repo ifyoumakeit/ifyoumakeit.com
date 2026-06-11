@@ -8,7 +8,7 @@ interface Props {
   seriesTitle: string;
   seriesSlug: string;
   recordedAt: Date;
-  provider: string;
+  provider: "youtube" | "vimeo" | "dailymotion" | "flash" | string;
   providerId: string;
 }
 
@@ -24,10 +24,14 @@ const {
 } = Astro.props;
 
 const year = new Date(recordedAt).getUTCFullYear();
-const isYouTube = provider === "youtube";
-const thumb = isYouTube
-  ? `https://i.ytimg.com/vi/${providerId}/hqdefault.jpg`
-  : null;
+// YouTube and Vimeo have predictable thumbnail URLs (vumbnail.com proxies
+// Vimeo's thumbnail API); dailymotion/flash show the styled placeholder.
+const thumb =
+  provider === "youtube"
+    ? `https://i.ytimg.com/vi/${providerId}/hqdefault.jpg`
+    : provider === "vimeo"
+      ? `https://vumbnail.com/${providerId}.jpg`
+      : null;
 ---
 
 <a class="card" href={href} data-series={seriesSlug}>

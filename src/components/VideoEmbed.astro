@@ -9,7 +9,8 @@ const { provider, providerId, title } = Astro.props;
 
 const isYouTube = provider === "youtube";
 const isVimeo = provider === "vimeo";
-const isArchival = !isYouTube && !isVimeo;
+const isDailymotion = provider === "dailymotion";
+const isArchival = provider === "flash";
 ---
 
 <div class="embed">
@@ -49,6 +50,19 @@ const isArchival = !isYouTube && !isVimeo;
       <iframe
         class="embed__iframe"
         src={`https://player.vimeo.com/video/${providerId}`}
+        title={title}
+        loading="lazy"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+      />
+    )
+  }
+
+  {
+    isDailymotion && (
+      <iframe
+        class="embed__iframe"
+        src={`https://www.dailymotion.com/embed/video/${providerId}`}
         title={title}
         loading="lazy"
         allow="autoplay; fullscreen; picture-in-picture"

@@ -33,17 +33,21 @@
 
 /* Series accent theming via data attribute.
    Default accent is hot pink. */
-[data-series="pink-couch-sessions"] {
-  --accent: var(--color-pink);
-  --accent-ink: var(--color-ink);
-}
-[data-series="live-and-direct"] {
+[data-series="live"] {
   --accent: var(--color-blue);
   --accent-ink: var(--color-paper);
 }
-[data-series="shows"] {
+[data-series="sessions"] {
+  --accent: var(--color-pink);
+  --accent-ink: var(--color-ink);
+}
+[data-series="series"] {
   --accent: var(--color-yellow);
   --accent-ink: var(--color-ink);
+}
+[data-series="music-videos"] {
+  --accent: var(--color-pink-deep);
+  --accent-ink: var(--color-paper);
 }
 
 /* ============================================================

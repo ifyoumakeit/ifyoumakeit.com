@@ -1,0 +1,1247 @@
+[
+ {
+  "id": 1,
+  "name": "Greg Farley",
+  "slug": "greg-farley"
+ },
+ {
+  "id": 2,
+  "name": "Hop Along",
+  "slug": "hop-along"
+ },
+ {
+  "id": 3,
+  "name": "Down in the Dumps",
+  "slug": "down-in-the-dumps"
+ },
+ {
+  "id": 4,
+  "name": "Bridge And Tunnel",
+  "slug": "bridge-and-tunnel"
+ },
+ {
+  "id": 5,
+  "name": "Clara Clara",
+  "slug": "clara-clara"
+ },
+ {
+  "id": 6,
+  "name": "Kickball",
+  "slug": "kickball"
+ },
+ {
+  "id": 7,
+  "name": "Red And Blue",
+  "slug": "red-and-blue"
+ },
+ {
+  "id": 8,
+  "name": "Lemuria",
+  "slug": "lemuria"
+ },
+ {
+  "id": 9,
+  "name": "Slingshot Dakota",
+  "slug": "slingshot-dakota"
+ },
+ {
+  "id": 10,
+  "name": "Letters to the Moon",
+  "slug": "letters-to-the-moon"
+ },
+ {
+  "id": 11,
+  "name": "Ghost Town Trio",
+  "slug": "ghost-town-trio"
+ },
+ {
+  "id": 12,
+  "name": "Christophers Liver",
+  "slug": "christophers-liver"
+ },
+ {
+  "id": 13,
+  "name": "Halo Fauna",
+  "slug": "halo-fauna"
+ },
+ {
+  "id": 14,
+  "name": "Yo Man, Go!",
+  "slug": "yo-man-go"
+ },
+ {
+  "id": 15,
+  "name": "Matty Pop Chart",
+  "slug": "matty-pop-chart"
+ },
+ {
+  "id": 16,
+  "name": "Tin Armor",
+  "slug": "tin-armor"
+ },
+ {
+  "id": 17,
+  "name": "Delay",
+  "slug": "delay"
+ },
+ {
+  "id": 18,
+  "name": "Each Other's Mothers",
+  "slug": "each-others-mothers"
+ },
+ {
+  "id": 19,
+  "name": "Dante Cimadamore",
+  "slug": "dante-cimadamore"
+ },
+ {
+  "id": 20,
+  "name": "Small Arms Dealer",
+  "slug": "small-arms-dealer"
+ },
+ {
+  "id": 21,
+  "name": "Francois Virot",
+  "slug": "francois-virot"
+ },
+ {
+  "id": 22,
+  "name": "Mina Tindle",
+  "slug": "mina-tindle"
+ },
+ {
+  "id": 23,
+  "name": "Potboiler",
+  "slug": "potboiler"
+ },
+ {
+  "id": 24,
+  "name": "Paul Baribeau",
+  "slug": "paul-baribeau"
+ },
+ {
+  "id": 25,
+  "name": "Ghost Mice",
+  "slug": "ghost-mice"
+ },
+ {
+  "id": 26,
+  "name": "Super Bobby",
+  "slug": "super-bobby"
+ },
+ {
+  "id": 27,
+  "name": "Get to the Point",
+  "slug": "get-to-the-point"
+ },
+ {
+  "id": 28,
+  "name": "Sex And Hosses",
+  "slug": "sex-and-hosses"
+ },
+ {
+  "id": 29,
+  "name": "Eric Ayotte",
+  "slug": "eric-ayotte"
+ },
+ {
+  "id": 30,
+  "name": "N.E.D.",
+  "slug": "n-e-d"
+ },
+ {
+  "id": 31,
+  "name": "Jordaan Mason",
+  "slug": "jordaan-mason"
+ },
+ {
+  "id": 32,
+  "name": "Lhiver",
+  "slug": "lhiver"
+ },
+ {
+  "id": 33,
+  "name": "Laura Stevenson & the Cans",
+  "slug": "laura-stevenson-and-the-cans"
+ },
+ {
+  "id": 34,
+  "name": "Shadowmaps",
+  "slug": "shadowmaps"
+ },
+ {
+  "id": 35,
+  "name": "Vietnam Werewolf",
+  "slug": "vietnam-werewolf"
+ },
+ {
+  "id": 36,
+  "name": "The Steal",
+  "slug": "the-steal"
+ },
+ {
+  "id": 37,
+  "name": "Dynamite Arrows",
+  "slug": "dynamite-arrows"
+ },
+ {
+  "id": 38,
+  "name": "The Marcia Kay",
+  "slug": "the-marcia-kay"
+ },
+ {
+  "id": 39,
+  "name": "Defiance, Ohio",
+  "slug": "defiance-ohio"
+ },
+ {
+  "id": 40,
+  "name": "Grandfather Clock",
+  "slug": "grandfather-clock"
+ },
+ {
+  "id": 41,
+  "name": "Off With Their Heads",
+  "slug": "off-with-their-heads"
+ },
+ {
+  "id": 42,
+  "name": "Fake Problems",
+  "slug": "fake-problems"
+ },
+ {
+  "id": 43,
+  "name": "Andy Cook",
+  "slug": "andy-cook"
+ },
+ {
+  "id": 44,
+  "name": "Dave End",
+  "slug": "dave-end"
+ },
+ {
+  "id": 45,
+  "name": "Cheeky",
+  "slug": "cheeky"
+ },
+ {
+  "id": 46,
+  "name": "Rejouissance",
+  "slug": "rejouissance"
+ },
+ {
+  "id": 47,
+  "name": "Good Luck",
+  "slug": "good-luck"
+ },
+ {
+  "id": 48,
+  "name": "Bomb the Music Industry!",
+  "slug": "bomb-the-music-industry"
+ },
+ {
+  "id": 49,
+  "name": "White York",
+  "slug": "white-york"
+ },
+ {
+  "id": 50,
+  "name": "Nakatomi Plaza",
+  "slug": "nakatomi-plaza"
+ },
+ {
+  "id": 51,
+  "name": "Failures' Union",
+  "slug": "failures-union"
+ },
+ {
+  "id": 52,
+  "name": "Fellow Project",
+  "slug": "fellow-project"
+ },
+ {
+  "id": 53,
+  "name": "Ultra Dolphins",
+  "slug": "ultra-dolphins"
+ },
+ {
+  "id": 54,
+  "name": "The Golden Age of Radio",
+  "slug": "the-golden-age-of-radio"
+ },
+ {
+  "id": 55,
+  "name": "Rocky Sullivans",
+  "slug": "rocky-sullivans"
+ },
+ {
+  "id": 56,
+  "name": "Laura Stevenson & Dave Davison",
+  "slug": "laura-stevenson-and-dave-davison"
+ },
+ {
+  "id": 57,
+  "name": "This is Smoke, This is Signals",
+  "slug": "this-is-smoke-this-is-signals"
+ },
+ {
+  "id": 58,
+  "name": "Jammy Dodgers",
+  "slug": "jammy-dodgers"
+ },
+ {
+  "id": 59,
+  "name": "Jettison Sister",
+  "slug": "jettison-sister"
+ },
+ {
+  "id": 60,
+  "name": "Paper and Sand",
+  "slug": "paper-and-sand"
+ },
+ {
+  "id": 61,
+  "name": "ADD/C",
+  "slug": "add-c"
+ },
+ {
+  "id": 62,
+  "name": "Maps and Atlases",
+  "slug": "maps-and-atlases"
+ },
+ {
+  "id": 63,
+  "name": "Beyond Things",
+  "slug": "beyond-things"
+ },
+ {
+  "id": 64,
+  "name": "31 Movies",
+  "slug": "31-movies"
+ },
+ {
+  "id": 65,
+  "name": "Austin Lucas",
+  "slug": "austin-lucas"
+ },
+ {
+  "id": 66,
+  "name": "Encrypt Manuscript",
+  "slug": "encrypt-manuscript"
+ },
+ {
+  "id": 67,
+  "name": "Fierce Brosnan",
+  "slug": "fierce-brosnan"
+ },
+ {
+  "id": 68,
+  "name": "Annabel",
+  "slug": "annabel"
+ },
+ {
+  "id": 69,
+  "name": "Villa Vina",
+  "slug": "villa-vina"
+ },
+ {
+  "id": 70,
+  "name": "Used Kids",
+  "slug": "used-kids"
+ },
+ {
+  "id": 71,
+  "name": "Limbs",
+  "slug": "limbs"
+ },
+ {
+  "id": 72,
+  "name": "Pink Razors",
+  "slug": "pink-razors"
+ },
+ {
+  "id": 73,
+  "name": "Vivian Girls",
+  "slug": "the-vivian-girls"
+ },
+ {
+  "id": 74,
+  "name": "Brainworms",
+  "slug": "brainworms"
+ },
+ {
+  "id": 75,
+  "name": "The Exit Strategy",
+  "slug": "the-exit-strategy"
+ },
+ {
+  "id": 76,
+  "name": "The Rabbits",
+  "slug": "the-rabbits"
+ },
+ {
+  "id": 77,
+  "name": "Toby Tuesdays",
+  "slug": "toby-tuesdays"
+ },
+ {
+  "id": 78,
+  "name": "Witches",
+  "slug": "witches"
+ },
+ {
+  "id": 79,
+  "name": "Nana Grizol",
+  "slug": "nana-grizol"
+ },
+ {
+  "id": 80,
+  "name": "Red Tag Rummage Sale",
+  "slug": "red-tag-rummage-sale"
+ },
+ {
+  "id": 81,
+  "name": "Algernon Cadwallader",
+  "slug": "algernon-cadwallader"
+ },
+ {
+  "id": 82,
+  "name": "Wildebeest",
+  "slug": "wildebeest"
+ },
+ {
+  "id": 83,
+  "name": "Street Smart Cyclist",
+  "slug": "street-smart-cyclist"
+ },
+ {
+  "id": 84,
+  "name": "Andrew Jackson Jihad",
+  "slug": "andrew-jackson-jihad"
+ },
+ {
+  "id": 85,
+  "name": "Young Hearts",
+  "slug": "young-hearts"
+ },
+ {
+  "id": 86,
+  "name": "Iron Chic",
+  "slug": "iron-chic"
+ },
+ {
+  "id": 87,
+  "name": "The Ergs",
+  "slug": "the-ergs"
+ },
+ {
+  "id": 88,
+  "name": "Traffic and Weather",
+  "slug": "traffic-and-weather"
+ },
+ {
+  "id": 89,
+  "name": "Spoonboy",
+  "slug": "spoonboy"
+ },
+ {
+  "id": 90,
+  "name": "Heathers",
+  "slug": "heathers"
+ },
+ {
+  "id": 91,
+  "name": "Air Raid Barcelona",
+  "slug": "air-raid-barcelona"
+ },
+ {
+  "id": 92,
+  "name": "Michael Truckpile",
+  "slug": "michael-truckpile"
+ },
+ {
+  "id": 93,
+  "name": "Best Friends Forever",
+  "slug": "best-friends-forever"
+ },
+ {
+  "id": 94,
+  "name": "The State Lottery",
+  "slug": "the-state-lottery"
+ },
+ {
+  "id": 95,
+  "name": "Mountain Asleep",
+  "slug": "mountain-asleep"
+ },
+ {
+  "id": 96,
+  "name": "Dragonzord",
+  "slug": "dragonzord"
+ },
+ {
+  "id": 97,
+  "name": "The Riot Before",
+  "slug": "the-riot-before"
+ },
+ {
+  "id": 98,
+  "name": "Get Bent",
+  "slug": "get-bent"
+ },
+ {
+  "id": 99,
+  "name": "Cheap Girls",
+  "slug": "cheap-girls"
+ },
+ {
+  "id": 100,
+  "name": "Toby Foster",
+  "slug": "toby-foster"
+ },
+ {
+  "id": 101,
+  "name": "Redbear",
+  "slug": "redbear"
+ },
+ {
+  "id": 102,
+  "name": "Virgins",
+  "slug": "virgins"
+ },
+ {
+  "id": 103,
+  "name": "Sara Lankutis",
+  "slug": "sara-lankutis"
+ },
+ {
+  "id": 104,
+  "name": "Victor V-B",
+  "slug": "victor-v-b"
+ },
+ {
+  "id": 105,
+  "name": "Attica! Attica!",
+  "slug": "attica-attica"
+ },
+ {
+  "id": 106,
+  "name": "Good Old War",
+  "slug": "good-old-war"
+ },
+ {
+  "id": 107,
+  "name": "The Bouncing Souls",
+  "slug": "the-bouncing-souls"
+ },
+ {
+  "id": 108,
+  "name": "Look Mexico",
+  "slug": "look-mexico"
+ },
+ {
+  "id": 109,
+  "name": "American War",
+  "slug": "american-war"
+ },
+ {
+  "id": 110,
+  "name": "Blacklist Royals",
+  "slug": "blacklist-royals"
+ },
+ {
+  "id": 111,
+  "name": "P.S. Eliot",
+  "slug": "ps-eliot"
+ },
+ {
+  "id": 112,
+  "name": "Watercolor Paintings",
+  "slug": "watercolor-paintings"
+ },
+ {
+  "id": 113,
+  "name": "Let Me Run",
+  "slug": "let-me-run"
+ },
+ {
+  "id": 114,
+  "name": "Madeline",
+  "slug": "madeline"
+ },
+ {
+  "id": 115,
+  "name": "Foundation",
+  "slug": "foundation"
+ },
+ {
+  "id": 116,
+  "name": "Noun",
+  "slug": "noun"
+ },
+ {
+  "id": 117,
+  "name": "Paper the Operator",
+  "slug": "paper-the-operator"
+ },
+ {
+  "id": 118,
+  "name": "The Brass",
+  "slug": "the-brass"
+ },
+ {
+  "id": 119,
+  "name": "Propagandhi",
+  "slug": "propagandhi"
+ },
+ {
+  "id": 120,
+  "name": "Coffee Project",
+  "slug": "coffee-project"
+ },
+ {
+  "id": 121,
+  "name": "Paul Baribeau and Ginger Alford",
+  "slug": "paul-baribeau-and-ginger-alford"
+ },
+ {
+  "id": 122,
+  "name": "Hot New Mexicans",
+  "slug": "hot-new-mexicans"
+ },
+ {
+  "id": 123,
+  "name": "Shinobu",
+  "slug": "shinobu"
+ },
+ {
+  "id": 124,
+  "name": "Gadabout Film Fest",
+  "slug": "gadabout-film-fest"
+ },
+ {
+  "id": 125,
+  "name": "Thousandaires",
+  "slug": "thousandaires"
+ },
+ {
+  "id": 126,
+  "name": "Gordon Gano's Army",
+  "slug": "gordon-ganos-army"
+ },
+ {
+  "id": 127,
+  "name": "Yoni Gordon",
+  "slug": "yoni-gordon"
+ },
+ {
+  "id": 128,
+  "name": "Totally Michael",
+  "slug": "totally-michael"
+ },
+ {
+  "id": 129,
+  "name": "Pattern is Movement",
+  "slug": "pattern-is-movement"
+ },
+ {
+  "id": 130,
+  "name": "Mike Hale",
+  "slug": "mike-hale"
+ },
+ {
+  "id": 131,
+  "name": "Ninja Gun",
+  "slug": "ninja-gun"
+ },
+ {
+  "id": 132,
+  "name": "God's Gift to Women",
+  "slug": "gods-gift-to-women"
+ },
+ {
+  "id": 133,
+  "name": "O Pioneers!!!",
+  "slug": "o-pioneers"
+ },
+ {
+  "id": 134,
+  "name": "Busman's Holiday",
+  "slug": "busmans-holiday"
+ },
+ {
+  "id": 135,
+  "name": "Arkansas?",
+  "slug": "arkansas"
+ },
+ {
+  "id": 136,
+  "name": "Saintseneca",
+  "slug": "saintseneca"
+ },
+ {
+  "id": 137,
+  "name": "Canadian Rifle",
+  "slug": "canadian-rifle"
+ },
+ {
+  "id": 138,
+  "name": "Kudrow",
+  "slug": "kudrow"
+ },
+ {
+  "id": 139,
+  "name": "Wild Moccasins",
+  "slug": "wild-moccasins"
+ },
+ {
+  "id": 140,
+  "name": "The Sidekicks",
+  "slug": "the-sidekicks"
+ },
+ {
+  "id": 141,
+  "name": "How Do We Jump This High?",
+  "slug": "how-do-we-jump-this-high"
+ },
+ {
+  "id": 142,
+  "name": "Cob Job",
+  "slug": "cob-job"
+ },
+ {
+  "id": 143,
+  "name": "Brian Bond",
+  "slug": "brian-bond"
+ },
+ {
+  "id": 144,
+  "name": "Walklor Productions",
+  "slug": "walklor-productions"
+ },
+ {
+  "id": 145,
+  "name": "Latterman",
+  "slug": "latterman"
+ },
+ {
+  "id": 146,
+  "name": "Jamtron",
+  "slug": "jamtron"
+ },
+ {
+  "id": 147,
+  "name": "The Menzingers",
+  "slug": "the-menzingers"
+ },
+ {
+  "id": 148,
+  "name": "Two Hand Fools",
+  "slug": "two-hand-fools"
+ },
+ {
+  "id": 149,
+  "name": "Hunters and Anglers",
+  "slug": "hunters-and-anglers"
+ },
+ {
+  "id": 150,
+  "name": "Monikers",
+  "slug": "monikers"
+ },
+ {
+  "id": 151,
+  "name": "Selfish Whales",
+  "slug": "selfish-whales"
+ },
+ {
+  "id": 152,
+  "name": "Pheramones",
+  "slug": "pheramones"
+ },
+ {
+  "id": 153,
+  "name": "Dark Dark Dark",
+  "slug": "dark-dark-dark"
+ },
+ {
+  "id": 154,
+  "name": "Kevin Devine",
+  "slug": "kevin-devine"
+ },
+ {
+  "id": 155,
+  "name": "The Max Levine Ensemble",
+  "slug": "max-levine-ensemble"
+ },
+ {
+  "id": 156,
+  "name": "Dave House",
+  "slug": "dave-house"
+ },
+ {
+  "id": 157,
+  "name": "Cymbals Eat Guitars",
+  "slug": "cymbals-eat-guitars"
+ },
+ {
+  "id": 158,
+  "name": "The Measure (SA)",
+  "slug": "the-measure-sa"
+ },
+ {
+  "id": 159,
+  "name": "Ringers",
+  "slug": "ringers"
+ },
+ {
+  "id": 160,
+  "name": "Restorations",
+  "slug": "restorations"
+ },
+ {
+  "id": 161,
+  "name": "Hard Girls",
+  "slug": "hard-girls"
+ },
+ {
+  "id": 162,
+  "name": "The Answering Machine",
+  "slug": "the-answering-machine"
+ },
+ {
+  "id": 163,
+  "name": "Jason Anderson",
+  "slug": "jason-anderson"
+ },
+ {
+  "id": 164,
+  "name": "Little Lungs",
+  "slug": "little-lungs"
+ },
+ {
+  "id": 165,
+  "name": "Screaming Females",
+  "slug": "screaming-females"
+ },
+ {
+  "id": 166,
+  "name": "Holiday Shores",
+  "slug": "holiday-shores"
+ },
+ {
+  "id": 167,
+  "name": "Franz Nicolay",
+  "slug": "franz-nicolay"
+ },
+ {
+  "id": 168,
+  "name": "Paul's Grandfather",
+  "slug": "paul-s-grandfather"
+ },
+ {
+  "id": 169,
+  "name": "Cast Spells",
+  "slug": "cast-spells"
+ },
+ {
+  "id": 170,
+  "name": "Gadabout",
+  "slug": "gadabout"
+ },
+ {
+  "id": 171,
+  "name": "Klessa",
+  "slug": "klessa"
+ },
+ {
+  "id": 172,
+  "name": "For Serious This Time",
+  "slug": "for-serious-this-time"
+ },
+ {
+  "id": 173,
+  "name": "Dave Hause",
+  "slug": "dave-hause"
+ },
+ {
+  "id": 174,
+  "name": "Ava Luna",
+  "slug": "ava-luna"
+ },
+ {
+  "id": 175,
+  "name": "Football, Etc",
+  "slug": "football-etc"
+ },
+ {
+  "id": 176,
+  "name": "Walter Schreifels",
+  "slug": "walter-schreifels"
+ },
+ {
+  "id": 177,
+  "name": "Vio/Mir&eacute;",
+  "slug": "vio-mire"
+ },
+ {
+  "id": 178,
+  "name": "PJ Bond",
+  "slug": "pj-bond"
+ },
+ {
+  "id": 179,
+  "name": "Billy Wallace",
+  "slug": "billy-wallace"
+ },
+ {
+  "id": 180,
+  "name": "Liz Isenberg",
+  "slug": "liz-isenberg"
+ },
+ {
+  "id": 181,
+  "name": "It's A King Thing",
+  "slug": "its-a-king-thing"
+ },
+ {
+  "id": 182,
+  "name": "Person L",
+  "slug": "person-l"
+ },
+ {
+  "id": 183,
+  "name": "Stegosaur",
+  "slug": "stegosaur"
+ },
+ {
+  "id": 184,
+  "name": "Weatherbox",
+  "slug": "weatherbox"
+ },
+ {
+  "id": 185,
+  "name": "Leatherface",
+  "slug": "leatherface"
+ },
+ {
+  "id": 186,
+  "name": "Matt Pryor",
+  "slug": "matt-pryor"
+ },
+ {
+  "id": 187,
+  "name": "Dinosaur Bones",
+  "slug": "dinosaur-bones"
+ },
+ {
+  "id": 188,
+  "name": "Tera Melos",
+  "slug": "tera-melos"
+ },
+ {
+  "id": 189,
+  "name": "RVIVR",
+  "slug": "rvivr"
+ },
+ {
+  "id": 190,
+  "name": "ARMS",
+  "slug": "arms"
+ },
+ {
+  "id": 191,
+  "name": "Candy Hearts",
+  "slug": "candy-hearts"
+ },
+ {
+  "id": 192,
+  "name": "Archipelago",
+  "slug": "archipelago"
+ },
+ {
+  "id": 193,
+  "name": "Big Eyes",
+  "slug": "big-eyes"
+ },
+ {
+  "id": 194,
+  "name": "Mikey Erg",
+  "slug": "mikey-erg"
+ },
+ {
+  "id": 195,
+  "name": "The Fucking Cops",
+  "slug": "the-fucking-cops"
+ },
+ {
+  "id": 196,
+  "name": "Des Ark",
+  "slug": "des-ark"
+ },
+ {
+  "id": 197,
+  "name": "Greenland is Melting",
+  "slug": "greenland-is-melting"
+ },
+ {
+  "id": 198,
+  "name": "Playing Dead",
+  "slug": "playing-dead"
+ },
+ {
+  "id": 199,
+  "name": "Junior Battles",
+  "slug": "junior-battles"
+ },
+ {
+  "id": 200,
+  "name": "Into It. Over It.",
+  "slug": "into-it-over-it"
+ },
+ {
+  "id": 201,
+  "name": "Cynics",
+  "slug": "cynics"
+ },
+ {
+  "id": 202,
+  "name": "The Wild",
+  "slug": "the-wild"
+ },
+ {
+  "id": 203,
+  "name": "Blunt Mechanic",
+  "slug": "blunt-mechanic"
+ },
+ {
+  "id": 204,
+  "name": "KOJI",
+  "slug": "koji"
+ },
+ {
+  "id": 205,
+  "name": "Summer People",
+  "slug": "summer-people"
+ },
+ {
+  "id": 206,
+  "name": "BAND NAME",
+  "slug": "band-name"
+ },
+ {
+  "id": 207,
+  "name": "The Two Funerals",
+  "slug": "the-two-funerals"
+ },
+ {
+  "id": 208,
+  "name": "The Honey Do's",
+  "slug": "the-honey-dos"
+ },
+ {
+  "id": 209,
+  "name": "The Front Bottoms",
+  "slug": "the-front-bottoms"
+ },
+ {
+  "id": 210,
+  "name": "Grabass Charlestons",
+  "slug": "grabass-charlestons"
+ },
+ {
+  "id": 211,
+  "name": "Calvinball",
+  "slug": "calvinball"
+ },
+ {
+  "id": 212,
+  "name": "Nightmares for A Week",
+  "slug": "nightmares-for-a-week"
+ },
+ {
+  "id": 213,
+  "name": "Teenage Cool Kids",
+  "slug": "teenage-cool-kids"
+ },
+ {
+  "id": 214,
+  "name": "Aye Nako",
+  "slug": "aye-nako"
+ },
+ {
+  "id": 215,
+  "name": "Sundials",
+  "slug": "sundials"
+ },
+ {
+  "id": 216,
+  "name": "Chewing on Tinfoil",
+  "slug": "chewing-on-tinfoil"
+ },
+ {
+  "id": 217,
+  "name": "Field Mouse",
+  "slug": "field-mouse"
+ },
+ {
+  "id": 218,
+  "name": "Spraynard",
+  "slug": "spraynard"
+ },
+ {
+  "id": 219,
+  "name": "By Surprise",
+  "slug": "by-surprise"
+ },
+ {
+  "id": 220,
+  "name": "The Boy Who Could Fly",
+  "slug": "the-boy-who-could-fly"
+ },
+ {
+  "id": 221,
+  "name": "Bangers",
+  "slug": "bangers"
+ },
+ {
+  "id": 222,
+  "name": "Sourpatch",
+  "slug": "sourpatch"
+ },
+ {
+  "id": 223,
+  "name": "Drag",
+  "slug": "drag"
+ },
+ {
+  "id": 224,
+  "name": "Audioheart",
+  "slug": "audioheart"
+ },
+ {
+  "id": 225,
+  "name": "Waxahatchee",
+  "slug": "waxahatchee"
+ },
+ {
+  "id": 226,
+  "name": "Allison Weiss",
+  "slug": "allison-weiss"
+ },
+ {
+  "id": 227,
+  "name": "Tigers Jaw",
+  "slug": "tigers-jaw"
+ },
+ {
+  "id": 228,
+  "name": "Direct Hit!",
+  "slug": "direct-hit"
+ },
+ {
+  "id": 229,
+  "name": "Mixtapes",
+  "slug": "mixtapes"
+ },
+ {
+  "id": 230,
+  "name": "The Ambulars",
+  "slug": "the-ambulars"
+ },
+ {
+  "id": 231,
+  "name": "Reverse the Curse",
+  "slug": "reverse-the-curse"
+ },
+ {
+  "id": 232,
+  "name": "ZEBU!",
+  "slug": "zebu"
+ },
+ {
+  "id": 233,
+  "name": "Fat Shadow",
+  "slug": "fat-shadow"
+ },
+ {
+  "id": 234,
+  "name": "You Blew It!",
+  "slug": "you-blew-it"
+ },
+ {
+  "id": 235,
+  "name": "Spoonboy & Erica Freas",
+  "slug": "spoonboy-and-erica-freas"
+ },
+ {
+  "id": 236,
+  "name": "Mike Huguenor",
+  "slug": "mike-huguenor"
+ },
+ {
+  "id": 237,
+  "name": "Braid",
+  "slug": "braid"
+ },
+ {
+  "id": 238,
+  "name": "Nude Beach",
+  "slug": "nude-beach"
+ },
+ {
+  "id": 239,
+  "name": "Owen",
+  "slug": "owen"
+ },
+ {
+  "id": 240,
+  "name": "Purple 7",
+  "slug": "purple-7"
+ },
+ {
+  "id": 241,
+  "name": "Dangerous Ponies",
+  "slug": "dangerous-ponies"
+ },
+ {
+  "id": 242,
+  "name": "Kite Party",
+  "slug": "kite-party"
+ },
+ {
+  "id": 243,
+  "name": "Slow Warm Death",
+  "slug": "slow-warm-death"
+ },
+ {
+  "id": 244,
+  "name": "Meridian",
+  "slug": "meridian"
+ },
+ {
+  "id": 245,
+  "name": "Lee Corey Oswald",
+  "slug": "lee-corey-oswald"
+ },
+ {
+  "id": 246,
+  "name": "Radiator Hospital",
+  "slug": "radiator-hospital"
+ },
+ {
+  "id": 247,
+  "name": "Swearin'",
+  "slug": "swearin"
+ },
+ {
+  "id": 248,
+  "name": "Cayetana",
+  "slug": "cayetana"
+ },
+ {
+  "id": 249,
+  "name": "Chumped",
+  "slug": "chumped"
+ }
+]

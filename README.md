@@ -21,23 +21,24 @@ shim for the video embeds (no YouTube iframe loads until you hit play).
 
 Defined in `db/config.ts`:
 
-- **series** — Pink Couch Sessions, Live and Direct, Shows. Each has an accent
-  color that themes its pages and cards.
+- **series** — Sessions, Live, Series, Music Videos. Each has an accent color
+  that themes its pages and cards.
 - **artist** — bands/performers, with hometown and website.
 - **video** — the core table. Links an artist + series, holds the recorded
-  date, location, and the embed source (`provider`: `youtube` | `vimeo` |
-  `flash`, plus `provider_id`).
-- **song** — setlist entries per video.
-- **tag** / **videoTag** — content/vibe tags ("acoustic", "the-fest",
-  "basement"…) used for the "Similar vibes" related-video sections.
+  date, location, lifetime view count, and the embed source (`provider`:
+  `youtube` | `vimeo` | `dailymotion` | `flash`, plus `provider_id`).
+- **song** — setlist entries per video (empty for imported data: the video
+  title is the song title).
+- **tag** / **videoTag** — content/vibe tags for the "Similar vibes"
+  related-video sections (empty for imported data; sections hide themselves).
 
-### Seed vs. production data
+### The data
 
-`db/seed.ts` is a **development seed** — realistic data (including a number of
-real Pink Couch Sessions YouTube IDs) so the site looks right in dev, but not
-the real archive. Production data is imported from the legacy database; the
-mapping is roughly `category` → `series`, `post` → `video`, `postmeta` →
-provider/embed IDs.
+`db/data/*.json` is the **real archive** — 441 videos by 249 artists
+(2007–2014), imported from the legacy production database with
+`node scripts/import-legacy.mjs path/to/iymi_db.sql`. `db/seed.ts` just loads
+those files. The raw SQL dump is not committed (it contains user emails in
+unrelated tables); re-run the importer against the dump to regenerate.
 
 ## How videos are cross-linked
 
