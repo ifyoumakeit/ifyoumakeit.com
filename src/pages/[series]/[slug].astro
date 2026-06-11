@@ -201,7 +201,7 @@ function videoCard(v: typeof videoData) {
         <div class="grid-videos">
           {moreFromArtist.map((v) => {
             const c = videoCard(v);
-            return c && <VideoCard {...c} />;
+            return c && <VideoCard {...c} showBadge />;
           })}
         </div>
       </section>
@@ -213,7 +213,7 @@ function videoCard(v: typeof videoData) {
         <div class="grid-videos">
           {aroundSameTime.map((v) => {
             const c = videoCard(v);
-            return c && <VideoCard {...c} />;
+            return c && <VideoCard {...c} showBadge />;
           })}
         </div>
       </section>
@@ -225,7 +225,7 @@ function videoCard(v: typeof videoData) {
         <div class="grid-videos">
           {similarVibes.map((v) => {
             const c = videoCard(v);
-            return c && <VideoCard {...c} />;
+            return c && <VideoCard {...c} showBadge />;
           })}
         </div>
       </section>

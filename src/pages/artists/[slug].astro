@@ -79,6 +79,7 @@ const seriesWithVideos = allSeries.filter((s) => bySeries.has(s.id));
                 recordedAt={new Date(v.recorded_at)}
                 provider={v.provider as "youtube" | "vimeo" | "flash"}
                 providerId={v.provider_id}
+                showBadge
               />
             ))}
           </div>

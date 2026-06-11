@@ -11,6 +11,9 @@ interface Props {
   recordedAt: Date;
   provider: "youtube" | "vimeo" | "dailymotion" | "flash" | string;
   providerId: string;
+  /** Show the series badge — only useful in mixed-series contexts
+      (video page related sections, artist pages). */
+  showBadge?: boolean;
 }
 
 const {
@@ -22,6 +25,7 @@ const {
   recordedAt,
   provider,
   providerId,
+  showBadge = false,
 } = Astro.props;
 
 const year = new Date(recordedAt).getUTCFullYear();
@@ -73,9 +77,11 @@ const thumb =
         </div>
       )
     }
-    <span class="card__badge">
-      <SeriesBadge title={seriesTitle} slug={seriesSlug} as="span" />
-    </span>
+    {showBadge && (
+      <span class="card__badge">
+        <SeriesBadge title={seriesTitle} slug={seriesSlug} as="span" />
+      </span>
+    )}
   </div>
 
   <div class="card__body">
