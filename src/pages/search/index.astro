@@ -1,0 +1,325 @@
+---
+import { db, eq, video, artist, series } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+import { getVideoUrl } from "../../lib/video-url";
+
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const allArtists = await db.select().from(artist);
+const allSeries = await db.select().from(series).where(eq(series.publish, 1));
+const artistById = new Map(allArtists.map((a) => [a.id, a]));
+const seriesById = new Map(allSeries.map((s) => [s.id, s]));
+
+// Compact, build-time search index inlined into the page — no fetch, no
+// loading state. Short keys keep the payload small (~one line per video).
+const index = allVideos
+  .map((v) => {
+    const a = artistById.get(v.artist_id);
+    const s = seriesById.get(v.series_id);
+    return {
+      t: v.title,
+      a: a?.name ?? "",
+      s: s?.title ?? "",
+      k: s?.slug ?? "",
+      y: new Date(v.recorded_at).getUTCFullYear(),
+      u: a ? getVideoUrl(v, a) : `/video/${v.slug}/`,
+    };
+  })
+  .sort((x, y) => y.y - x.y || x.a.localeCompare(y.a));
+
+const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
+---
+
+<Layout
+  title="Search — If You Make It"
+  description="Search the If You Make It archive by band, song, series, or year."
+  noindex={true}
+>
+  <div class="container search-page">
+    <header class="search-header">
+      <h1 class="search-title">Search</h1>
+      <form class="search-form" role="search" action="/search/" method="get">
+        <input
+          class="search-input"
+          type="search"
+          name="q"
+          id="q"
+          placeholder="band, song, year…"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-label="Search the archive"
+          enterkeyhint="search"
+        />
+      </form>
+      <p class="search-status meta-line" id="status" aria-live="polite">
+        {index.length} videos in the archive
+      </p>
+    </header>
+
+    <ul class="results" id="results"></ul>
+
+    <noscript>
+      <p class="search-noscript">
+        Search needs JavaScript. Browse by
+        <a href="/artists/">artist</a> or <a href="/years/">year</a> instead.
+      </p>
+    </noscript>
+  </div>
+
+  <script type="application/json" id="search-index" set:html={indexJson} is:inline></script>
+
+  <script is:inline>
+    (function () {
+      var data = JSON.parse(
+        document.getElementById("search-index").textContent
+      );
+      // Precompute a lowercase haystack per record once.
+      for (var i = 0; i < data.length; i++) {
+        var d = data[i];
+        d.h = (d.t + " " + d.a + " " + d.s + " " + d.y).toLowerCase();
+      }
+
+      var input = document.getElementById("q");
+      var results = document.getElementById("results");
+      var status = document.getElementById("status");
+      var total = data.length;
+
+      function esc(s) {
+        return s.replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+
+      function render(q) {
+        var query = q.trim().toLowerCase();
+        if (!query) {
+          results.innerHTML = "";
+          status.textContent = total + " videos in the archive";
+          return;
+        }
+        var terms = query.split(/\s+/);
+        var out = [];
+        for (var i = 0; i < data.length && out.length < 120; i++) {
+          var d = data[i];
+          var ok = true;
+          for (var t = 0; t < terms.length; t++) {
+            if (d.h.indexOf(terms[t]) === -1) {
+              ok = false;
+              break;
+            }
+          }
+          if (ok) out.push(d);
+        }
+
+        if (!out.length) {
+          results.innerHTML =
+            '<li class="results__empty">No videos match “' +
+            esc(q.trim()) +
+            "”. Try a band or song name.</li>";
+          status.textContent = "No matches";
+          return;
+        }
+
+        var html = "";
+        for (var j = 0; j < out.length; j++) {
+          var r = out[j];
+          html +=
+            '<li><a class="result" href="' +
+            r.u +
+            '" data-series="' +
+            esc(r.k) +
+            '">' +
+            '<span class="result__dot" aria-hidden="true"></span>' +
+            '<span class="result__text">' +
+            '<span class="result__artist">' +
+            esc(r.a) +
+            "</span>" +
+            '<span class="result__title">' +
+            esc(r.t) +
+            "</span>" +
+            "</span>" +
+            '<span class="result__meta meta-line">' +
+            esc(r.s) +
+            " · " +
+            r.y +
+            "</span>" +
+            "</a></li>";
+        }
+        results.innerHTML = html;
+        status.textContent =
+          out.length + (out.length === 1 ? " result" : " results");
+      }
+
+      // Deep-link support: ?q= prefills and the URL updates as you type.
+      var params = new URLSearchParams(location.search);
+      var initial = params.get("q") || "";
+      input.value = initial;
+
+      var raf;
+      function update() {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function () {
+          render(input.value);
+          var u = input.value
+            ? "?q=" + encodeURIComponent(input.value)
+            : location.pathname;
+          history.replaceState(null, "", u);
+        });
+      }
+      input.addEventListener("input", update);
+      // Don't reload the page on Enter — it's already live.
+      document
+        .querySelector(".search-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          input.blur();
+        });
+
+      if (initial) render(initial);
+      input.focus();
+    })();
+  </script>
+</Layout>
+
+<style>
+  .search-page {
+    padding-block: 2rem;
+    min-height: 60vh;
+  }
+  .search-header {
+    padding-block-end: 1.25rem;
+    border-bottom: var(--border);
+    margin-block-end: 1.25rem;
+  }
+  .search-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin: 0 0 0.85rem;
+    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    transform-origin: left bottom;
+  }
+  .search-form {
+    margin: 0;
+  }
+  .search-input {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard-sm);
+    padding: 0.7em 0.85em;
+    transition:
+      box-shadow 0.12s ease,
+      transform 0.12s ease;
+  }
+  .search-input::placeholder {
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.85em;
+  }
+  .search-input:focus {
+    outline: none;
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+  }
+  /* hide the native clear button so the zine look stays clean */
+  .search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+  .search-status {
+    margin: 0.85rem 0 0;
+  }
+
+  .results {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  /* Result rows are injected via innerHTML, so they never receive Astro's
+     scope attribute — these selectors must be global. Anchoring each under
+     #results (which IS in the template) keeps them from leaking site-wide. */
+  #results :global(.result) {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: var(--border-thin);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  #results :global(.result:hover) {
+    text-decoration: none;
+    transform: translate(-2px, -2px) rotate(-0.3deg);
+    box-shadow: var(--shadow-hard-sm);
+  }
+  #results :global(.result:focus-visible) {
+    outline: 3px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+  #results :global(.result__dot) {
+    flex: none;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 999px;
+    border: 3px solid var(--color-ink);
+    background: var(--accent, var(--color-pink));
+  }
+  #results :global(.result__text) {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  #results :global(.result__artist) {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1.15rem;
+    line-height: 1.05;
+  }
+  #results :global(.result:hover .result__artist) {
+    color: var(--accent-text, var(--color-pink-deep));
+  }
+  #results :global(.result__title) {
+    font-size: 0.95rem;
+    color: var(--color-muted);
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #results :global(.result__meta) {
+    margin-left: auto;
+    padding-left: 0.85rem;
+    flex: none;
+    white-space: nowrap;
+  }
+  #results :global(.results__empty) {
+    font-family: var(--font-body);
+    color: var(--color-muted);
+    padding-block: 1.5rem;
+  }
+  .search-noscript {
+    color: var(--color-muted);
+    padding-block: 1rem;
+  }
+
+  @media (max-width: 560px) {
+    #results :global(.result__meta) {
+      display: none;
+    }
+  }
+</style>
