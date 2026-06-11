@@ -1,0 +1,206 @@
+---
+import SeriesBadge from "./SeriesBadge.astro";
+import { getLocalThumb } from "../lib/thumbs";
+
+interface Props {
+  title: string;
+  href: string;
+  artistName: string;
+  seriesTitle: string;
+  seriesSlug: string;
+  recordedAt: Date;
+  provider: "youtube" | "vimeo" | "dailymotion" | "flash" | string;
+  providerId: string;
+  /** Show the series badge — only useful in mixed-series contexts
+      (video page related sections, artist pages). */
+  showBadge?: boolean;
+}
+
+const {
+  title,
+  href,
+  artistName,
+  seriesTitle,
+  seriesSlug,
+  recordedAt,
+  provider,
+  providerId,
+  showBadge = false,
+} = Astro.props;
+
+const year = new Date(recordedAt).getUTCFullYear();
+// Thumbnail priority: local archive image (public/thumbs/video/{slug}.jpg,
+// keyed by the video slug — the last segment of href) → YouTube's CDN →
+// styled placeholder for everything else.
+const slug = href.split("/").filter(Boolean).pop() ?? "";
+const thumb =
+  getLocalThumb(slug) ??
+  (provider === "youtube"
+    ? `https://i.ytimg.com/vi/${providerId}/hqdefault.jpg`
+    : null);
+---
+
+<a class="card" href={href} data-series={seriesSlug}>
+  <div class="card__thumb">
+    {
+      thumb ? (
+        <img
+          class="card__img"
+          src={thumb}
+          alt={`${artistName} — ${title}`}
+          loading="lazy"
+          decoding="async"
+          width="640"
+          height="360"
+        />
+      ) : (
+        <div class="card__placeholder" aria-hidden="true">
+          <svg
+            class="card__placeholder-mark"
+            viewBox="0 0 64 40"
+            focusable="false"
+          >
+            <g
+              stroke="var(--color-ink)"
+              stroke-width="3"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            >
+              <rect x="10" y="6" width="44" height="14" rx="6" fill="var(--color-paper)" />
+              <rect x="8" y="17" width="48" height="13" rx="5" fill="var(--color-paper)" />
+              <line x1="32" y1="19" x2="32" y2="28" />
+              <rect x="6" y="13" width="10" height="17" rx="4" fill="var(--color-paper)" />
+              <rect x="48" y="13" width="10" height="17" rx="4" fill="var(--color-paper)" />
+            </g>
+          </svg>
+          <span class="card__placeholder-label">{provider}</span>
+        </div>
+      )
+    }
+    {showBadge && (
+      <span class="card__badge">
+        <SeriesBadge title={seriesTitle} slug={seriesSlug} as="span" />
+      </span>
+    )}
+  </div>
+
+  <div class="card__body">
+    <p class="card__artist">{artistName}</p>
+    <p class="card__title">{title}</p>
+    <p class="meta-line card__year">{year}</p>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-paper);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard);
+    text-decoration: none;
+    color: var(--color-ink);
+    overflow: hidden;
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .card:hover {
+    text-decoration: none;
+    transform: translate(-3px, -3px) rotate(-0.6deg);
+    box-shadow: 9px 9px 0 var(--color-ink);
+  }
+  .card:focus-visible {
+    outline: 3px solid var(--color-blue);
+    outline-offset: 3px;
+  }
+
+  .card__thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--accent, var(--color-pink));
+    border-bottom: var(--border);
+    overflow: hidden;
+  }
+  .card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card__placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: var(--accent, var(--color-pink));
+    background-image:
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0,
+        transparent 10px,
+        rgba(22, 18, 26, 0.06) 10px,
+        rgba(22, 18, 26, 0.06) 20px
+      );
+  }
+  .card__placeholder-mark {
+    width: 38%;
+    max-width: 5rem;
+    height: auto;
+    filter: drop-shadow(2px 2px 0 var(--color-ink));
+  }
+  .card__placeholder-label {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: var(--border-thin);
+    border-radius: 999px;
+    padding: 0.3em 0.7em;
+  }
+
+  .card__badge {
+    position: absolute;
+    left: 0.7rem;
+    bottom: 0.7rem;
+    z-index: 2;
+  }
+
+  .card__body {
+    padding: 0.9rem 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .card__artist {
+    margin: 0;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1.15rem;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .card:hover .card__artist {
+    color: var(--color-pink-deep);
+  }
+  .card__title {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    color: var(--color-muted);
+  }
+  .card__year {
+    margin: 0.35rem 0 0;
+  }
+</style>

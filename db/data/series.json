@@ -1,0 +1,34 @@
+[
+ {
+  "id": 1,
+  "title": "Live",
+  "slug": "live",
+  "color": "#2D7DFF",
+  "sort": 2,
+  "description": "Live and direct: bands captured on stage and on floors — basements, bars, fests, and living rooms, mostly around New York and beyond."
+ },
+ {
+  "id": 2,
+  "title": "Sessions",
+  "slug": "sessions",
+  "color": "#FF4D8D",
+  "sort": 1,
+  "description": "One band, one song, one take. Acoustic sessions filmed wherever the couch was — including the famous Pink Couch Sessions."
+ },
+ {
+  "id": 3,
+  "title": "Series",
+  "slug": "series",
+  "color": "#FFD23F",
+  "sort": 3,
+  "description": "Multi-part features, documentaries, and ongoing video series from the DIY punk world."
+ },
+ {
+  "id": 4,
+  "title": "Music Videos",
+  "slug": "music-videos",
+  "color": "#D81E5B",
+  "sort": 4,
+  "description": "Hand-picked music videos from bands worth your time."
+ }
+]

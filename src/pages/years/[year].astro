@@ -1,0 +1,118 @@
+---
+import { db, eq, video, artist, series } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+import VideoCard from "../../components/VideoCard.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+
+export async function getStaticPaths() {
+  const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+
+  // Collect distinct UTC years
+  const years = [...new Set(allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear()))];
+
+  return years.map((year) => ({
+    params: { year: String(year) },
+    props: { year },
+  }));
+}
+
+const { year } = Astro.props;
+const yearNum = Number(year);
+
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const allArtists = await db.select().from(artist);
+const allSeries = await db.select().from(series).where(eq(series.publish, 1));
+
+const artistById = new Map(allArtists.map((a) => [a.id, a]));
+const seriesById = new Map(allSeries.map((s) => [s.id, s]));
+
+// Filter to this year, sort chronologically
+const yearVideos = allVideos
+  .filter((v) => new Date(v.recorded_at).getUTCFullYear() === yearNum)
+  .sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime());
+
+// Group by month (UTC), chronologically
+const byMonth = new Map<number, typeof yearVideos>();
+for (const v of yearVideos) {
+  const m = new Date(v.recorded_at).getUTCMonth(); // 0-indexed
+  if (!byMonth.has(m)) byMonth.set(m, []);
+  byMonth.get(m)!.push(v);
+}
+const sortedMonths = [...byMonth.keys()].sort((a, b) => a - b);
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+---
+
+<Layout
+  title={`${year} — If You Make It`}
+  description={`All recordings from ${year} in the If You Make It DIY punk video archive.`}
+>
+  <div class="container year-page">
+    <header class="page-header">
+      <h1 class="page-title">{year}</h1>
+      <p class="meta-line">{yearVideos.length} video{yearVideos.length !== 1 ? "s" : ""}</p>
+    </header>
+
+    {sortedMonths.map((monthIdx) => {
+      const monthVideos = byMonth.get(monthIdx)!;
+      const monthName = MONTH_NAMES[monthIdx];
+      return (
+        <section class="month-group">
+          <SectionHeading title={monthName} count={monthVideos.length} />
+          <div class="grid-videos">
+            {monthVideos.map((v) => {
+              const a = artistById.get(v.artist_id);
+              const s = seriesById.get(v.series_id);
+              if (!s) return null;
+              return (
+                <VideoCard
+                  title={v.title}
+                  href={`/${s.slug}/${v.slug}/`}
+                  artistName={a?.name ?? ""}
+                  seriesTitle={s.title}
+                  seriesSlug={s.slug}
+                  recordedAt={new Date(v.recorded_at)}
+                  provider={v.provider as "youtube" | "vimeo" | "flash"}
+                  providerId={v.provider_id}
+                />
+              );
+            })}
+          </div>
+        </section>
+      );
+    })}
+
+    {yearVideos.length === 0 && (
+      <p class="empty">No recordings found for {year}.</p>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .year-page {
+    padding-block: 2rem;
+  }
+  .page-header {
+    padding-block-end: 1.5rem;
+    border-bottom: var(--border);
+    margin-block-end: 1.5rem;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: 900;
+    margin: 0 0 0.25rem;
+    line-height: 1;
+  }
+  .month-group {
+    padding-block: 2rem;
+    border-top: var(--border);
+  }
+  .empty {
+    color: var(--color-muted);
+    font-style: italic;
+  }
+</style>

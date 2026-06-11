@@ -1,0 +1,103 @@
+---
+interface Props {
+  title: string;
+  href?: string;
+  count?: number;
+}
+
+const { title, href, count } = Astro.props;
+---
+
+<div class="section-heading">
+  <h2 class="section-heading__title">
+    {title}
+    {count != null && <span class="section-heading__count">{count}</span>}
+  </h2>
+  {
+    href && (
+      <a class="section-heading__link" href={href}>
+        See all <span aria-hidden="true">&rarr;</span>
+      </a>
+    )
+  }
+</div>
+
+<style>
+  .section-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-block-end: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .section-heading__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    line-height: 0.92;
+  }
+
+  /* accent underline bar, drawn under the title */
+  .section-heading__title::after {
+    content: "";
+    display: none;
+  }
+
+  .section-heading__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6em;
+    height: 1.6em;
+    padding: 0 0.4em;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.5em;
+    line-height: 1;
+    color: var(--color-ink);
+    background: var(--accent, var(--color-pink));
+    border: var(--border-thin);
+    border-radius: 999px;
+    box-shadow: 2px 2px 0 var(--color-ink);
+    transform: rotate(4deg) translateY(-0.35em);
+  }
+
+  .section-heading__link {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard-sm);
+    padding: 0.6em 1em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      transform 0.1s ease,
+      box-shadow 0.1s ease,
+      background 0.1s ease,
+      color 0.1s ease;
+  }
+  .section-heading__link:hover {
+    background: var(--accent, var(--color-pink));
+    color: var(--accent-ink, var(--color-ink));
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--color-ink);
+    text-decoration: none;
+  }
+  .section-heading__link:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+</style>
