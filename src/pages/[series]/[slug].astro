@@ -1,0 +1,351 @@
+---
+import { db, eq, video, artist, series, song, tag, videoTag } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+import VideoEmbed from "../../components/VideoEmbed.astro";
+import VideoCard from "../../components/VideoCard.astro";
+import SeriesBadge from "../../components/SeriesBadge.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+
+export async function getStaticPaths() {
+  const allVideos = await db
+    .select()
+    .from(video)
+    .where(eq(video.publish, 1));
+
+  const allSeries = await db
+    .select()
+    .from(series)
+    .where(eq(series.publish, 1));
+
+  const seriesMap = new Map(allSeries.map((s) => [s.id, s]));
+
+  return allVideos
+    .filter((v) => seriesMap.has(v.series_id))
+    .map((v) => {
+      const s = seriesMap.get(v.series_id)!;
+      return {
+        params: { series: s.slug, slug: v.slug },
+        props: { videoData: v, seriesData: s },
+      };
+    });
+}
+
+const { videoData, seriesData } = Astro.props;
+
+// Fetch supporting data
+const allVideos = await db
+  .select()
+  .from(video)
+  .where(eq(video.publish, 1));
+
+const allArtists = await db.select().from(artist);
+const artistMap = new Map(allArtists.map((a) => [a.id, a]));
+
+const allSeries = await db
+  .select()
+  .from(series)
+  .where(eq(series.publish, 1));
+const seriesById = new Map(allSeries.map((s) => [s.id, s]));
+
+const videoArtist = artistMap.get(videoData.artist_id)!;
+
+// Songs (setlist)
+const allSongs = await db
+  .select()
+  .from(song)
+  .where(eq(song.video_id, videoData.id));
+allSongs.sort((a, b) => a.position - b.position);
+
+// Tags for this video
+const allVideoTags = await db.select().from(videoTag);
+const allTags = await db.select().from(tag);
+const tagById = new Map(allTags.map((t) => [t.id, t]));
+
+const thisVideoTagIds = allVideoTags
+  .filter((vt) => vt.video_id === videoData.id)
+  .map((vt) => vt.tag_id);
+const thisVideoTags = thisVideoTagIds
+  .map((tid) => tagById.get(tid))
+  .filter(Boolean) as typeof allTags;
+
+// ── RELATED VIDEOS ──────────────────────────────────────────────
+const otherVideos = allVideos.filter((v) => v.id !== videoData.id);
+const shownIds = new Set<number>();
+
+// a. More from {artist} — other published videos by same artist, newest first, up to 4
+const moreFromArtist = otherVideos
+  .filter((v) => v.artist_id === videoData.artist_id)
+  .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
+  .slice(0, 4);
+moreFromArtist.forEach((v) => shownIds.add(v.id));
+
+// b. Recorded around the same time — sorted by absolute date distance, up to 4, excluding already shown
+const thisTime = new Date(videoData.recorded_at).getTime();
+const aroundSameTime = otherVideos
+  .filter((v) => !shownIds.has(v.id))
+  .sort((a, b) => {
+    const distA = Math.abs(new Date(a.recorded_at).getTime() - thisTime);
+    const distB = Math.abs(new Date(b.recorded_at).getTime() - thisTime);
+    return distA - distB;
+  })
+  .slice(0, 4);
+aroundSameTime.forEach((v) => shownIds.add(v.id));
+
+// c. Similar vibes — videos sharing tags, ranked by shared-tag count, up to 4
+const thisTagIdSet = new Set(thisVideoTagIds);
+const tagShareCount = new Map<number, number>();
+for (const vt of allVideoTags) {
+  if (vt.video_id !== videoData.id && thisTagIdSet.has(vt.tag_id)) {
+    tagShareCount.set(vt.video_id, (tagShareCount.get(vt.video_id) ?? 0) + 1);
+  }
+}
+const similarVibes = otherVideos
+  .filter((v) => !shownIds.has(v.id) && (tagShareCount.get(v.id) ?? 0) > 0)
+  .sort((a, b) => (tagShareCount.get(b.id) ?? 0) - (tagShareCount.get(a.id) ?? 0))
+  .slice(0, 4);
+
+// ── PREV / NEXT within same series by recorded_at ──────────────
+const seriesVideos = allVideos
+  .filter((v) => v.series_id === videoData.series_id)
+  .sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime());
+const currentIdx = seriesVideos.findIndex((v) => v.id === videoData.id);
+const prevVideo = currentIdx > 0 ? seriesVideos[currentIdx - 1] : null;
+const nextVideo = currentIdx < seriesVideos.length - 1 ? seriesVideos[currentIdx + 1] : null;
+
+// ── FORMAT HELPERS ───────────────────────────────────────────────
+function formatDate(d: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(d);
+}
+
+const recordedDate = new Date(videoData.recorded_at);
+const metaParts = [formatDate(recordedDate)];
+if (videoData.location) metaParts.push(videoData.location);
+
+function videoCard(v: typeof videoData) {
+  const a = artistMap.get(v.artist_id);
+  const s = seriesById.get(v.series_id);
+  if (!s) return null;
+  return {
+    title: v.title,
+    href: `/${s.slug}/${v.slug}/`,
+    artistName: a?.name ?? "",
+    seriesTitle: s.title,
+    seriesSlug: s.slug,
+    recordedAt: new Date(v.recorded_at),
+    provider: v.provider as "youtube" | "vimeo" | "flash",
+    providerId: v.provider_id,
+  };
+}
+---
+
+<Layout
+  title={`${videoData.title} — ${videoArtist?.name ?? ""}`}
+  description={videoData.description ?? undefined}
+>
+  <article class="video-page" data-series={seriesData.slug}>
+    <div class="container video-top">
+      <VideoEmbed
+        provider={videoData.provider as "youtube" | "vimeo" | "flash"}
+        providerId={videoData.provider_id}
+        title={videoData.title}
+      />
+    </div>
+
+    <div class="container video-meta">
+      <h1 class="video-title">{videoData.title}</h1>
+
+      <p class="video-artist">
+        <a href={`/artists/${videoArtist?.slug}/`}>{videoArtist?.name}</a>
+      </p>
+
+      <div class="video-badges">
+        <SeriesBadge title={seriesData.title} slug={seriesData.slug} />
+      </div>
+
+      <p class="meta-line">{metaParts.join(" — ")}</p>
+
+      {videoData.description && (
+        <p class="video-description">{videoData.description}</p>
+      )}
+
+      {allSongs.length > 0 && (
+        <div class="setlist">
+          <h2 class="setlist-heading">Setlist</h2>
+          <ol class="setlist-list">
+            {allSongs.map((s) => (
+              <li>{s.title}</li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {thisVideoTags.length > 0 && (
+        <div class="video-tags">
+          {thisVideoTags.map((t) => (
+            <a class="tag-chip" href={`/tags/${t.slug}/`}>{t.name}</a>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {moreFromArtist.length > 0 && (
+      <section class="related-section container">
+        <SectionHeading title={`More from ${videoArtist?.name}`} href={`/artists/${videoArtist?.slug}/`} />
+        <div class="grid-videos">
+          {moreFromArtist.map((v) => {
+            const c = videoCard(v);
+            return c && <VideoCard {...c} />;
+          })}
+        </div>
+      </section>
+    )}
+
+    {aroundSameTime.length > 0 && (
+      <section class="related-section container">
+        <SectionHeading title="Recorded around the same time" />
+        <div class="grid-videos">
+          {aroundSameTime.map((v) => {
+            const c = videoCard(v);
+            return c && <VideoCard {...c} />;
+          })}
+        </div>
+      </section>
+    )}
+
+    {similarVibes.length > 0 && (
+      <section class="related-section container">
+        <SectionHeading title="Similar vibes" />
+        <div class="grid-videos">
+          {similarVibes.map((v) => {
+            const c = videoCard(v);
+            return c && <VideoCard {...c} />;
+          })}
+        </div>
+      </section>
+    )}
+
+    <nav class="prev-next container" aria-label="Series navigation">
+      <div class="prev-next-inner">
+        {prevVideo ? (
+          <a class="prev-next-link prev-link" href={`/${seriesData.slug}/${prevVideo.slug}/`}>
+            <span class="prev-next-label">← Older</span>
+            <span class="prev-next-title">{prevVideo.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {nextVideo ? (
+          <a class="prev-next-link next-link" href={`/${seriesData.slug}/${nextVideo.slug}/`}>
+            <span class="prev-next-label">Newer →</span>
+            <span class="prev-next-title">{nextVideo.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+      </div>
+    </nav>
+  </article>
+</Layout>
+
+<style>
+  .video-top {
+    padding-block: 1.5rem 0;
+  }
+  .video-meta {
+    padding-block: 1.25rem 2rem;
+    border-bottom: var(--border);
+  }
+  .video-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    margin: 0 0 0.35rem;
+  }
+  .video-artist {
+    margin: 0 0 0.5rem;
+  }
+  .video-artist a {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent, var(--color-pink));
+    text-decoration: none;
+  }
+  .video-artist a:hover {
+    text-decoration: underline;
+  }
+  .video-badges {
+    margin-block: 0.5rem;
+  }
+  .video-description {
+    margin-block: 1rem;
+    max-width: 65ch;
+    line-height: 1.6;
+  }
+  .setlist {
+    margin-block: 1.25rem;
+  }
+  .setlist-heading {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5rem;
+    color: var(--color-muted);
+  }
+  .setlist-list {
+    margin: 0;
+    padding-inline-start: 1.5rem;
+    line-height: 1.8;
+  }
+  .video-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-block-start: 1rem;
+  }
+
+  .related-section {
+    padding-block: 2rem;
+    border-top: var(--border);
+  }
+
+  .prev-next {
+    padding-block: 2rem;
+    border-top: var(--border);
+  }
+  .prev-next-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .prev-next-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-decoration: none;
+    max-width: 45%;
+  }
+  .next-link {
+    text-align: right;
+    margin-inline-start: auto;
+  }
+  .prev-next-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+  }
+  .prev-next-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+  .prev-next-link:hover .prev-next-title {
+    color: var(--accent, var(--color-pink));
+  }
+</style>

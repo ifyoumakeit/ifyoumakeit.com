@@ -1,0 +1,46 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="404 — If You Make It" description="Page not found.">
+  <div class="container not-found">
+    <div class="not-found-inner">
+      <p class="not-found-number">404</p>
+      <h1 class="not-found-heading">This one got lost in the pit.</h1>
+      <p class="not-found-body">
+        We couldn't find that page — maybe it crowd-surfed away, or it was never here to begin with.
+      </p>
+      <a class="btn" href="/">← Back to the archive</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .not-found {
+    padding-block: 4rem;
+    display: flex;
+    justify-content: center;
+  }
+  .not-found-inner {
+    text-align: center;
+    max-width: 40ch;
+  }
+  .not-found-number {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 20vw, 10rem);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--color-pink);
+    margin: 0 0 0.25rem;
+  }
+  .not-found-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    margin: 0 0 1rem;
+  }
+  .not-found-body {
+    color: var(--color-muted);
+    line-height: 1.6;
+    margin: 0 0 1.75rem;
+  }
+</style>

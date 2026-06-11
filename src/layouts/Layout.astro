@@ -1,9 +1,27 @@
 ---
+import "@fontsource/archivo-black";
+import "@fontsource-variable/archivo";
+import "@fontsource/space-mono/400.css";
+import "@fontsource/space-mono/700.css";
+import "../styles/global.css";
+
 interface Props {
   title: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description = "If You Make It — a DIY punk video archive. Pink Couch Sessions, live recordings, and shows.",
+} = Astro.props;
+
+const nav = [
+  { label: "Pink Couch Sessions", href: "/pink-couch-sessions/" },
+  { label: "Live and Direct", href: "/live-and-direct/" },
+  { label: "Shows", href: "/shows/" },
+  { label: "Artists", href: "/artists/" },
+  { label: "Years", href: "/years/" },
+];
 ---
 
 <!doctype html>
@@ -11,9 +29,228 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} — if you make it</title>
+    <title>{title} — If You Make It</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#FF4D8D" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="If You Make It" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
   </head>
   <body>
-    <slot />
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="wordmark" href="/" aria-label="If You Make It — home">
+          <svg
+            class="wordmark__mark"
+            viewBox="0 0 64 40"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <g
+              stroke="#16121A"
+              stroke-width="3"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            >
+              <rect x="10" y="6" width="44" height="14" rx="6" fill="#FF4D8D"></rect>
+              <rect x="8" y="17" width="48" height="13" rx="5" fill="#FF4D8D"></rect>
+              <line x1="32" y1="19" x2="32" y2="28"></line>
+              <rect x="6" y="13" width="10" height="17" rx="4" fill="#D81E5B"></rect>
+              <rect x="48" y="13" width="10" height="17" rx="4" fill="#D81E5B"></rect>
+              <line x1="14" y1="30" x2="14" y2="36"></line>
+              <line x1="50" y1="30" x2="50" y2="36"></line>
+            </g>
+          </svg>
+          <span class="wordmark__text">If You Make It</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Primary">
+          {
+            nav.map((item) => (
+              <a class="site-nav__link" href={item.href}>
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p class="site-footer__tagline">
+          If You Make It — bands on a pink couch since 2007. Long live DIY.
+        </p>
+        <nav class="site-footer__nav" aria-label="Footer">
+          {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+      </div>
+    </footer>
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: 0.5rem;
+        top: -3rem;
+        z-index: 100;
+        background: var(--color-yellow);
+        color: var(--color-ink);
+        border: var(--border);
+        border-radius: var(--radius);
+        padding: 0.5rem 0.9rem;
+        font-family: var(--font-display);
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: top 0.15s ease;
+      }
+      .skip-link:focus {
+        top: 0.5rem;
+      }
+
+      /* ---------- header ---------- */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--color-paper);
+        border-bottom: var(--border);
+        box-shadow: 0 4px 0 rgba(22, 18, 26, 0.08);
+      }
+      .site-header__inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem 1.25rem;
+        padding-block: 0.7rem;
+      }
+
+      .wordmark {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
+        color: var(--color-ink);
+        transition: transform 0.12s ease;
+      }
+      .wordmark:hover {
+        text-decoration: none;
+        transform: rotate(-1deg);
+      }
+      .wordmark__mark {
+        width: 2.6rem;
+        height: auto;
+        flex: none;
+        filter: drop-shadow(2px 2px 0 var(--color-ink));
+      }
+      .wordmark__text {
+        font-family: var(--font-display);
+        text-transform: uppercase;
+        font-size: clamp(1.2rem, 3.4vw, 1.7rem);
+        line-height: 0.9;
+        letter-spacing: -0.01em;
+        max-width: 7ch;
+      }
+
+      /* ---------- nav ---------- */
+      .site-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 0.5rem;
+        align-items: center;
+      }
+      .site-nav__link {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1;
+        color: var(--color-ink);
+        text-decoration: none;
+        border: var(--border-thin);
+        border-radius: 999px;
+        padding: 0.45em 0.75em;
+        background: var(--color-paper);
+        transition:
+          transform 0.1s ease,
+          background 0.1s ease,
+          color 0.1s ease;
+      }
+      .site-nav__link:hover {
+        background: var(--color-ink);
+        color: var(--color-paper);
+        text-decoration: none;
+        transform: translateY(-1px) rotate(-1.5deg);
+      }
+
+      @media (max-width: 560px) {
+        .site-header__inner {
+          justify-content: center;
+          text-align: center;
+        }
+        .wordmark {
+          width: 100%;
+          justify-content: center;
+        }
+        .wordmark__text {
+          max-width: none;
+        }
+        .site-nav {
+          justify-content: center;
+        }
+      }
+
+      /* ---------- footer ---------- */
+      .site-footer {
+        margin-top: clamp(3rem, 8vw, 6rem);
+        border-top: var(--border);
+        background: var(--color-ink);
+        color: var(--color-paper);
+        padding-block: clamp(2rem, 5vw, 3rem);
+      }
+      .site-footer__tagline {
+        font-family: var(--font-display);
+        text-transform: uppercase;
+        font-size: clamp(1.1rem, 3vw, 1.6rem);
+        line-height: 1.05;
+        margin: 0 0 1.2rem;
+        max-width: 28ch;
+      }
+      .site-footer__nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+      }
+      .site-footer__nav a {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--color-paper);
+        text-decoration: none;
+        border-bottom: 2px solid var(--color-pink);
+        padding-bottom: 2px;
+      }
+      .site-footer__nav a:hover {
+        color: var(--color-yellow);
+        border-color: var(--color-yellow);
+      }
+    </style>
   </body>
 </html>

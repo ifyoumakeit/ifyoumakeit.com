@@ -1,0 +1,95 @@
+---
+import { db, eq, video, tag, videoTag } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const allTags = await db.select().from(tag);
+const allVideoTags = await db.select().from(videoTag);
+
+const publishedVideoIds = new Set(allVideos.map((v) => v.id));
+
+// Count published videos per tag
+const countByTag = new Map<number, number>();
+for (const vt of allVideoTags) {
+  if (publishedVideoIds.has(vt.video_id)) {
+    countByTag.set(vt.tag_id, (countByTag.get(vt.tag_id) ?? 0) + 1);
+  }
+}
+
+// Only include tags with at least one published video
+const activeTags = allTags
+  .filter((t) => (countByTag.get(t.id) ?? 0) > 0)
+  .sort((a, b) => a.name.localeCompare(b.name, "en-US"));
+
+// For font-size weighting: scale between min and max count
+const counts = activeTags.map((t) => countByTag.get(t.id) ?? 1);
+const minCount = counts.length > 0 ? Math.min(...counts) : 1;
+const maxCount = counts.length > 0 ? Math.max(...counts) : 1;
+
+function tagFontSize(count: number): string {
+  if (maxCount === minCount) return "1rem";
+  const ratio = (count - minCount) / (maxCount - minCount);
+  // Scale from 0.8rem to 2rem
+  const size = 0.8 + ratio * 1.2;
+  return `${size.toFixed(2)}rem`;
+}
+---
+
+<Layout title="Tags — If You Make It" description="Browse all tags in the If You Make It DIY punk video archive.">
+  <div class="container tags-page">
+    <header class="page-header">
+      <h1 class="page-title">Tags</h1>
+      <p class="meta-line">{activeTags.length} tag{activeTags.length !== 1 ? "s" : ""}</p>
+    </header>
+
+    {activeTags.length > 0 ? (
+      <div class="tag-cloud">
+        {activeTags.map((t) => {
+          const count = countByTag.get(t.id) ?? 0;
+          return (
+            <a
+              class="tag-chip tag-cloud-item"
+              href={`/tags/${t.slug}/`}
+              style={`font-size: ${tagFontSize(count)};`}
+              title={`${count} video${count !== 1 ? "s" : ""}`}
+            >
+              {t.name}
+            </a>
+          );
+        })}
+      </div>
+    ) : (
+      <p class="empty">No tags yet.</p>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .tags-page {
+    padding-block: 2rem;
+  }
+  .page-header {
+    padding-block-end: 1.5rem;
+    border-bottom: var(--border);
+    margin-block-end: 1.5rem;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin: 0 0 0.25rem;
+  }
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: baseline;
+    padding-block: 1rem;
+  }
+  .tag-cloud-item {
+    line-height: 1.2;
+  }
+  .empty {
+    color: var(--color-muted);
+    font-style: italic;
+  }
+</style>

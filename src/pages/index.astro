@@ -1,38 +1,232 @@
 ---
-import { db, post, category, eq } from "astro:db";
+import { db, eq, video, artist, series, tag, videoTag } from "astro:db";
 import Layout from "../layouts/Layout.astro";
+import VideoCard from "../components/VideoCard.astro";
+import VideoEmbed from "../components/VideoEmbed.astro";
+import SectionHeading from "../components/SectionHeading.astro";
 
-const posts = await db
-  .select({
-    id: post.id,
-    title: post.title,
-    title_slug: post.title_slug,
-    subtitle: post.subtitle,
-    excerpt: post.excerpt,
-    date: post.date,
-    bgcolor: post.bgcolor,
-    category_title: category.title,
-    category_slug: category.slug,
-  })
-  .from(post)
-  .innerJoin(category, eq(post.category_id, category.id))
-  .where(eq(post.publish, 1));
+// Fetch all published series ordered by sort
+const allSeries = await db
+  .select()
+  .from(series)
+  .where(eq(series.publish, 1));
+allSeries.sort((a, b) => a.sort - b.sort);
+
+// Fetch all published videos with artist and series info
+const allVideos = await db
+  .select()
+  .from(video)
+  .where(eq(video.publish, 1));
+
+const allArtists = await db.select().from(artist);
+const artistMap = new Map(allArtists.map((a) => [a.id, a]));
+const seriesMap = new Map(allSeries.map((s) => [s.id, s]));
+
+// Stats
+const totalVideos = allVideos.length;
+const uniqueArtistIds = new Set(allVideos.map((v) => v.artist_id));
+const totalArtists = uniqueArtistIds.size;
+const years = allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear());
+const minYear = Math.min(...years);
+const maxYear = Math.max(...years);
+const totalYears = maxYear - minYear + 1;
+
+// Featured video: featured=1, most recent
+const featuredVideos = allVideos
+  .filter((v) => v.featured === 1)
+  .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+const featuredVideo = featuredVideos[0] ?? null;
+const featuredArtist = featuredVideo ? artistMap.get(featuredVideo.artist_id) : null;
+const featuredSeries = featuredVideo ? seriesMap.get(featuredVideo.series_id) : null;
+
+// Videos sorted newest-first for series sections
+const videosBySeriesId = new Map<number, typeof allVideos>();
+for (const v of allVideos) {
+  if (!videosBySeriesId.has(v.series_id)) videosBySeriesId.set(v.series_id, []);
+  videosBySeriesId.get(v.series_id)!.push(v);
+}
+for (const [, vids] of videosBySeriesId) {
+  vids.sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+}
+
+// Distinct years for browse strip (desc)
+const distinctYears = [...new Set(years)].sort((a, b) => b - a);
+
+// All tags for browse strip
+const allTags = await db.select().from(tag);
+const allVideoTags = await db.select().from(videoTag);
+const tagVideoCounts = new Map<number, number>();
+for (const vt of allVideoTags) {
+  tagVideoCounts.set(vt.tag_id, (tagVideoCounts.get(vt.tag_id) ?? 0) + 1);
+}
+// Only show tags that have at least one published video
+const publishedVideoIds = new Set(allVideos.map((v) => v.id));
+const tagPublishedCounts = new Map<number, number>();
+for (const vt of allVideoTags) {
+  if (publishedVideoIds.has(vt.video_id)) {
+    tagPublishedCounts.set(vt.tag_id, (tagPublishedCounts.get(vt.tag_id) ?? 0) + 1);
+  }
+}
+const activeTags = allTags
+  .filter((t) => (tagPublishedCounts.get(t.id) ?? 0) > 0)
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+function formatDate(d: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(d);
+}
 ---
 
-<Layout title="Home">
-  <main>
-    <h1>if you make it</h1>
-    <ul>
-      {
-        posts.map((p) => (
-          <li>
-            <a href={`/${p.category_slug}/${p.title_slug}`}>
-              <h2>{p.title}</h2>
-              <p>{p.excerpt}</p>
-            </a>
-          </li>
-        ))
-      }
+<Layout title="If You Make It — DIY Punk Video Archive" description="Bands. One pink couch. A DIY video archive since 2007.">
+
+  <section class="hero container">
+    <p class="hero-tagline">Bands. One pink couch. A DIY video archive since 2007.</p>
+    <ul class="hero-stats">
+      <li><strong>{totalVideos}</strong> videos</li>
+      <li><strong>{totalArtists}</strong> artists</li>
+      <li><strong>{totalYears}</strong> years</li>
     </ul>
-  </main>
+  </section>
+
+  {featuredVideo && featuredArtist && featuredSeries && (
+    <section class="featured container">
+      <SectionHeading title="Featured" />
+      <div class="featured-inner" data-series={featuredSeries.slug}>
+        <VideoEmbed provider={featuredVideo.provider as "youtube" | "vimeo" | "flash"} providerId={featuredVideo.provider_id} title={featuredVideo.title} />
+        <div class="featured-meta">
+          <h2 class="featured-title">
+            <a href={`/${featuredSeries.slug}/${featuredVideo.slug}/`}>{featuredVideo.title}</a>
+          </h2>
+          <p class="featured-artist">
+            <a href={`/artists/${featuredArtist.slug}/`}>{featuredArtist.name}</a>
+          </p>
+          <p class="meta-line">{featuredSeries.title} &mdash; {formatDate(new Date(featuredVideo.recorded_at))}</p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {allSeries.map((s) => {
+    const seriesVideos = (videosBySeriesId.get(s.id) ?? []).slice(0, 8);
+    if (seriesVideos.length === 0) return null;
+    return (
+      <section class="series-section container" data-series={s.slug}>
+        <SectionHeading title={s.title} href={`/${s.slug}/`} count={videosBySeriesId.get(s.id)?.length ?? 0} />
+        <div class="grid-videos">
+          {seriesVideos.map((v) => {
+            const a = artistMap.get(v.artist_id);
+            return (
+              <VideoCard
+                title={v.title}
+                href={`/${s.slug}/${v.slug}/`}
+                artistName={a?.name ?? ""}
+                seriesTitle={s.title}
+                seriesSlug={s.slug}
+                recordedAt={new Date(v.recorded_at)}
+                provider={v.provider as "youtube" | "vimeo" | "flash"}
+                providerId={v.provider_id}
+              />
+            );
+          })}
+        </div>
+      </section>
+    );
+  })}
+
+  <section class="browse-strip container">
+    <SectionHeading title="Browse by Year" href="/years/" />
+    <div class="chip-row">
+      {distinctYears.map((y) => (
+        <a class="tag-chip" href={`/years/${y}/`}>{y}</a>
+      ))}
+    </div>
+  </section>
+
+  {activeTags.length > 0 && (
+    <section class="browse-strip container">
+      <SectionHeading title="Browse by Tag" href="/tags/" />
+      <div class="chip-row">
+        {activeTags.map((t) => (
+          <a class="tag-chip" href={`/tags/${t.slug}/`}>{t.name}</a>
+        ))}
+      </div>
+    </section>
+  )}
+
 </Layout>
+
+<style>
+  .hero {
+    padding-block: 3rem;
+    text-align: center;
+  }
+  .hero-tagline {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    margin-block-end: 1rem;
+  }
+  .hero-stats {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: var(--color-muted);
+  }
+  .hero-stats strong {
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+  }
+
+  .featured-inner {
+    border: var(--border);
+    box-shadow: var(--shadow-hard);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--color-paper);
+  }
+  .featured-meta {
+    padding: 1rem 1.25rem 1.25rem;
+  }
+  .featured-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin: 0 0 0.25rem;
+  }
+  .featured-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .featured-title a:hover {
+    color: var(--accent, var(--color-pink));
+  }
+  .featured-artist a {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent, var(--color-pink));
+    text-decoration: none;
+  }
+  .featured-artist a:hover {
+    text-decoration: underline;
+  }
+
+  .series-section,
+  .browse-strip {
+    padding-block: 2rem;
+    border-top: var(--border);
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 0.75rem;
+  }
+</style>

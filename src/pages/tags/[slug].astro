@@ -1,0 +1,109 @@
+---
+import { db, eq, video, artist, series, tag, videoTag } from "astro:db";
+import Layout from "../../layouts/Layout.astro";
+import VideoCard from "../../components/VideoCard.astro";
+
+export async function getStaticPaths() {
+  const allTags = await db.select().from(tag);
+  const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+  const allVideoTags = await db.select().from(videoTag);
+
+  const publishedVideoIds = new Set(allVideos.map((v) => v.id));
+
+  // Only generate pages for tags with at least one published video
+  const tagsWithVideos = new Set(
+    allVideoTags
+      .filter((vt) => publishedVideoIds.has(vt.video_id))
+      .map((vt) => vt.tag_id)
+  );
+
+  return allTags
+    .filter((t) => tagsWithVideos.has(t.id))
+    .map((t) => ({
+      params: { slug: t.slug },
+      props: { tagData: t },
+    }));
+}
+
+const { tagData } = Astro.props;
+
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const allArtists = await db.select().from(artist);
+const allSeries = await db.select().from(series).where(eq(series.publish, 1));
+const allVideoTags = await db.select().from(videoTag);
+
+const artistById = new Map(allArtists.map((a) => [a.id, a]));
+const seriesById = new Map(allSeries.map((s) => [s.id, s]));
+
+// Video IDs tagged with this tag
+const taggedVideoIds = new Set(
+  allVideoTags.filter((vt) => vt.tag_id === tagData.id).map((vt) => vt.video_id)
+);
+
+// Get matching published videos, newest first
+const tagVideos = allVideos
+  .filter((v) => taggedVideoIds.has(v.id))
+  .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+---
+
+<Layout
+  title={`#${tagData.name} — If You Make It`}
+  description={`All videos tagged "${tagData.name}" in the If You Make It archive.`}
+>
+  <div class="container tag-page">
+    <header class="page-header">
+      <h1 class="page-title">
+        <span class="tag-hash">#</span>{tagData.name}
+      </h1>
+      <p class="meta-line">{tagVideos.length} video{tagVideos.length !== 1 ? "s" : ""}</p>
+    </header>
+
+    {tagVideos.length > 0 ? (
+      <div class="grid-videos">
+        {tagVideos.map((v) => {
+          const a = artistById.get(v.artist_id);
+          const s = seriesById.get(v.series_id);
+          if (!s) return null;
+          return (
+            <VideoCard
+              title={v.title}
+              href={`/${s.slug}/${v.slug}/`}
+              artistName={a?.name ?? ""}
+              seriesTitle={s.title}
+              seriesSlug={s.slug}
+              recordedAt={new Date(v.recorded_at)}
+              provider={v.provider as "youtube" | "vimeo" | "flash"}
+              providerId={v.provider_id}
+            />
+          );
+        })}
+      </div>
+    ) : (
+      <p class="empty">No videos with this tag yet.</p>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .tag-page {
+    padding-block: 2rem;
+  }
+  .page-header {
+    padding-block-end: 1.5rem;
+    border-bottom: var(--border);
+    margin-block-end: 1.5rem;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin: 0 0 0.25rem;
+  }
+  .tag-hash {
+    color: var(--color-muted);
+    margin-inline-end: 0.1em;
+  }
+  .empty {
+    color: var(--color-muted);
+    font-style: italic;
+  }
+</style>
