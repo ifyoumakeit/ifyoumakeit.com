@@ -11,6 +11,7 @@ interface Props {
   recordedAt: Date;
   provider: "youtube" | "vimeo" | "dailymotion" | "flash" | string;
   providerId: string;
+  thumbnailSlug?: string;
   /** Show the series badge — only useful in mixed-series contexts
       (video page related sections, artist pages). */
   showBadge?: boolean;
@@ -25,16 +26,16 @@ const {
   recordedAt,
   provider,
   providerId,
+  thumbnailSlug,
   showBadge = false,
 } = Astro.props;
 
 const year = new Date(recordedAt).getUTCFullYear();
-// Thumbnail priority: local archive image (public/thumbs/video/{slug}.jpg,
-// keyed by the video slug — the last segment of href) → YouTube's CDN →
-// styled placeholder for everything else.
+// Thumbnail priority: local archive image keyed by the original video slug,
+// then YouTube's CDN, then a styled placeholder.
 const slug = href.split("/").filter(Boolean).pop() ?? "";
 const thumb =
-  getLocalThumb(slug) ??
+  getLocalThumb(thumbnailSlug ?? slug) ??
   (provider === "youtube"
     ? `https://i.ytimg.com/vi/${providerId}/hqdefault.jpg`
     : null);

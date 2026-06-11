@@ -74,7 +74,7 @@ it behind the archival notice.
 ### URL structure (stable — don't break links)
 
 - `/{series.slug}/` — series listing
-- `/{series.slug}/{video.slug}/` — video page
+- `/video/{artist.slug}/{song.slug}/` — video page
 - `/artists/`, `/artists/{slug}/`
 - `/years/`, `/years/{year}/`
 - `/tags/`, `/tags/{slug}/`
@@ -85,7 +85,7 @@ it behind the archival notice.
 Same artist → recorded around the same time (date distance, any series) →
 similar vibes (shared-tag count), each up to 4 cards, deduped in that order;
 plus prev/next within the series by `recorded_at`. Keep this when editing
-`src/pages/[series]/[slug].astro`.
+`src/pages/video/[artist]/[slug].astro`.
 
 ## Design system
 

@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { db, eq, video, artist, series, tag, videoTag } from "astro:db";
+import { getVideoUrl } from "../../lib/video-url";
 
 export const prerender = true;
 
@@ -33,7 +34,7 @@ export const GET: APIRoute = async () => {
         id: v.id,
         title: v.title,
         slug: v.slug,
-        url: s ? `/${s.slug}/${v.slug}/` : `/${v.slug}/`,
+        url: a ? getVideoUrl(v, a) : `/video/${v.slug}/`,
         artist: a?.name ?? "",
         artistSlug: a?.slug ?? "",
         series: s?.title ?? "",

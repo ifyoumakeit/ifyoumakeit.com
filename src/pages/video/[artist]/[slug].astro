@@ -1,11 +1,12 @@
 ---
 import { db, eq, video, artist, series, song, tag, videoTag } from "astro:db";
-import Layout from "../../layouts/Layout.astro";
-import VideoEmbed from "../../components/VideoEmbed.astro";
-import VideoCard from "../../components/VideoCard.astro";
-import SeriesBadge from "../../components/SeriesBadge.astro";
-import SectionHeading from "../../components/SectionHeading.astro";
-import { getLocalThumb } from "../../lib/thumbs";
+import Layout from "../../../layouts/Layout.astro";
+import VideoEmbed from "../../../components/VideoEmbed.astro";
+import VideoCard from "../../../components/VideoCard.astro";
+import SeriesBadge from "../../../components/SeriesBadge.astro";
+import SectionHeading from "../../../components/SectionHeading.astro";
+import { getLocalThumb } from "../../../lib/thumbs";
+import { getVideoSongSlug, getVideoUrl } from "../../../lib/video-url";
 
 export async function getStaticPaths() {
   const allVideos = await db
@@ -19,13 +20,16 @@ export async function getStaticPaths() {
     .where(eq(series.publish, 1));
 
   const seriesMap = new Map(allSeries.map((s) => [s.id, s]));
+  const allArtists = await db.select().from(artist);
+  const artistMap = new Map(allArtists.map((a) => [a.id, a]));
 
   return allVideos
-    .filter((v) => seriesMap.has(v.series_id))
+    .filter((v) => seriesMap.has(v.series_id) && artistMap.has(v.artist_id))
     .map((v) => {
       const s = seriesMap.get(v.series_id)!;
+      const a = artistMap.get(v.artist_id)!;
       return {
-        params: { series: s.slug, slug: v.slug },
+        params: { artist: a.slug, slug: getVideoSongSlug(v, a) },
         props: { videoData: v, seriesData: s },
       };
     });
@@ -133,13 +137,14 @@ function videoCard(v: typeof videoData) {
   if (!s) return null;
   return {
     title: v.title,
-    href: `/${s.slug}/${v.slug}/`,
+    href: getVideoUrl(v, a!),
     artistName: a?.name ?? "",
     seriesTitle: s.title,
     seriesSlug: s.slug,
     recordedAt: new Date(v.recorded_at),
     provider: v.provider as "youtube" | "vimeo" | "dailymotion" | "flash",
     providerId: v.provider_id,
+    thumbnailSlug: v.slug,
   };
 }
 ---
@@ -234,7 +239,7 @@ function videoCard(v: typeof videoData) {
     <nav class="prev-next container" aria-label="Series navigation">
       <div class="prev-next-inner">
         {prevVideo ? (
-          <a class="prev-next-link prev-link" href={`/${seriesData.slug}/${prevVideo.slug}/`}>
+          <a class="prev-next-link prev-link" href={getVideoUrl(prevVideo, artistMap.get(prevVideo.artist_id)!)}>
             <span class="prev-next-label">← Older</span>
             <span class="prev-next-title">{prevVideo.title}</span>
           </a>
@@ -242,7 +247,7 @@ function videoCard(v: typeof videoData) {
           <span />
         )}
         {nextVideo ? (
-          <a class="prev-next-link next-link" href={`/${seriesData.slug}/${nextVideo.slug}/`}>
+          <a class="prev-next-link next-link" href={getVideoUrl(nextVideo, artistMap.get(nextVideo.artist_id)!)}>
             <span class="prev-next-label">Newer →</span>
             <span class="prev-next-title">{nextVideo.title}</span>
           </a>

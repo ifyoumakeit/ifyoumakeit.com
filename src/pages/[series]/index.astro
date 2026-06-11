@@ -3,6 +3,7 @@ import { db, eq, video, artist, series } from "astro:db";
 import Layout from "../../layouts/Layout.astro";
 import VideoCard from "../../components/VideoCard.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
+import { getVideoUrl } from "../../lib/video-url";
 
 export async function getStaticPaths() {
   const allSeries = await db
@@ -64,13 +65,14 @@ const sortedYears = [...byYear.keys()].sort((a, b) => b - a);
                 return (
                   <VideoCard
                     title={v.title}
-                    href={`/${seriesData.slug}/${v.slug}/`}
+                    href={getVideoUrl(v, a!)}
                     artistName={a?.name ?? ""}
                     seriesTitle={seriesData.title}
                     seriesSlug={seriesData.slug}
                     recordedAt={new Date(v.recorded_at)}
                     provider={v.provider as "youtube" | "vimeo" | "flash"}
                     providerId={v.provider_id}
+                    thumbnailSlug={v.slug}
                   />
                 );
               })}

@@ -2,6 +2,7 @@
 import { db, eq, video, artist, series, tag, videoTag } from "astro:db";
 import Layout from "../../layouts/Layout.astro";
 import VideoCard from "../../components/VideoCard.astro";
+import { getVideoUrl } from "../../lib/video-url";
 
 export async function getStaticPaths() {
   const allTags = await db.select().from(tag);
@@ -67,13 +68,14 @@ const tagVideos = allVideos
           return (
             <VideoCard
               title={v.title}
-              href={`/${s.slug}/${v.slug}/`}
+              href={getVideoUrl(v, a!)}
               artistName={a?.name ?? ""}
               seriesTitle={s.title}
               seriesSlug={s.slug}
               recordedAt={new Date(v.recorded_at)}
               provider={v.provider as "youtube" | "vimeo" | "flash"}
               providerId={v.provider_id}
+              thumbnailSlug={v.slug}
             />
           );
         })}
