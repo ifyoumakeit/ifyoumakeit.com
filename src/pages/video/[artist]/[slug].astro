@@ -128,7 +128,7 @@ const aroundSameTime = otherVideos
     const distB = Math.abs(new Date(b.recorded_at).getTime() - thisTime);
     return distA - distB;
   })
-  .slice(0, 4);
+  .slice(0, 3);
 aroundSameTime.forEach((v) => shownIds.add(v.id));
 
 // c. Similar vibes — videos sharing tags, ranked by shared-tag count, up to 4
