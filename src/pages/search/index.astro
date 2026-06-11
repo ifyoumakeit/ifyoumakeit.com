@@ -243,7 +243,10 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     flex-direction: column;
     gap: 0.85rem;
   }
-  .result {
+  /* Result rows are injected via innerHTML, so they never receive Astro's
+     scope attribute — these selectors must be global. Anchoring each under
+     #results (which IS in the template) keeps them from leaking site-wide. */
+  #results :global(.result) {
     position: relative;
     display: flex;
     align-items: center;
@@ -258,16 +261,16 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
       transform 0.12s ease,
       box-shadow 0.12s ease;
   }
-  .result:hover {
+  #results :global(.result:hover) {
     text-decoration: none;
     transform: translate(-2px, -2px) rotate(-0.3deg);
     box-shadow: var(--shadow-hard-sm);
   }
-  .result:focus-visible {
+  #results :global(.result:focus-visible) {
     outline: 3px solid var(--color-blue);
     outline-offset: 2px;
   }
-  .result__dot {
+  #results :global(.result__dot) {
     flex: none;
     width: 0.85rem;
     height: 0.85rem;
@@ -275,22 +278,22 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     border: 3px solid var(--color-ink);
     background: var(--accent, var(--color-pink));
   }
-  .result__text {
+  #results :global(.result__text) {
     min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
   }
-  .result__artist {
+  #results :global(.result__artist) {
     font-family: var(--font-display);
     text-transform: uppercase;
     font-size: 1.15rem;
     line-height: 1.05;
   }
-  .result:hover .result__artist {
+  #results :global(.result:hover .result__artist) {
     color: var(--accent-text, var(--color-pink-deep));
   }
-  .result__title {
+  #results :global(.result__title) {
     font-size: 0.95rem;
     color: var(--color-muted);
     line-height: 1.35;
@@ -298,13 +301,13 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .result__meta {
+  #results :global(.result__meta) {
     margin-left: auto;
     padding-left: 0.85rem;
     flex: none;
     white-space: nowrap;
   }
-  .results__empty {
+  #results :global(.results__empty) {
     font-family: var(--font-body);
     color: var(--color-muted);
     padding-block: 1.5rem;
@@ -315,7 +318,7 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
   }
 
   @media (max-width: 560px) {
-    .result__meta {
+    #results :global(.result__meta) {
       display: none;
     }
   }
