@@ -26,12 +26,12 @@ const {
 const year = new Date(recordedAt).getUTCFullYear();
 // YouTube and Vimeo have predictable thumbnail URLs (vumbnail.com proxies
 // Vimeo's thumbnail API); dailymotion/flash show the styled placeholder.
+// Only YouTube has a stable public thumbnail URL at build time.
+// Vimeo/dailymotion/flash use the styled placeholder.
 const thumb =
   provider === "youtube"
     ? `https://i.ytimg.com/vi/${providerId}/hqdefault.jpg`
-    : provider === "vimeo"
-      ? `https://vumbnail.com/${providerId}.jpg`
-      : null;
+    : null;
 ---
 
 <a class="card" href={href} data-series={seriesSlug}>
