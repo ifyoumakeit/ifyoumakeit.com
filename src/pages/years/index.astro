@@ -107,4 +107,14 @@ const sortedYears = [...byYear.keys()].sort((a, b) => b - a);
     color: var(--color-muted);
     line-height: 1.5;
   }
+
+  @media (max-width: 560px) {
+    .year-row {
+      display: block;
+      padding-block: 1.25rem;
+    }
+    .year-detail {
+      padding-block-start: 0.75rem;
+    }
+  }
 </style>

@@ -274,8 +274,8 @@ function videoCard(v: typeof videoData) {
     font-family: var(--font-display);
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--accent, var(--color-pink));
-    text-decoration: none;
+    color: var(--accent-text, var(--color-pink-deep));
+    text-decoration-color: var(--accent, var(--color-pink));
   }
   .video-artist a:hover {
     text-decoration: underline;
@@ -302,7 +302,7 @@ function videoCard(v: typeof videoData) {
     text-underline-offset: 3px;
   }
   .video-description a:hover {
-    color: var(--accent, var(--color-pink-deep));
+    color: var(--accent-text, var(--color-pink-deep));
   }
   .video-description em {
     font-style: italic;
@@ -367,6 +367,18 @@ function videoCard(v: typeof videoData) {
     color: var(--color-ink);
   }
   .prev-next-link:hover .prev-next-title {
-    color: var(--accent, var(--color-pink));
+    color: var(--accent-text, var(--color-pink-deep));
+  }
+
+  @media (max-width: 560px) {
+    .prev-next-inner {
+      flex-direction: column;
+    }
+    .prev-next-link {
+      max-width: 100%;
+    }
+    .next-link {
+      align-self: flex-end;
+    }
   }
 </style>

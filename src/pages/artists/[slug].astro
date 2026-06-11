@@ -54,7 +54,8 @@ const seriesWithVideos = allSeries.filter((s) => bySeries.has(s.id));
         )}
         {artistData.website && (
           <a class="artist-website btn" href={artistData.website} target="_blank" rel="noopener noreferrer">
-            Website ↗
+            Website <span aria-hidden="true">↗</span>
+            <span class="visually-hidden">(opens in a new tab)</span>
           </a>
         )}
       </div>
@@ -102,7 +103,7 @@ const seriesWithVideos = allSeries.filter((s) => bySeries.has(s.id));
     font-family: var(--font-display);
     font-size: clamp(2rem, 5vw, 3.5rem);
     margin: 0 0 0.5rem;
-    color: var(--color-pink);
+    color: var(--color-pink-deep);
   }
   .artist-meta-row {
     display: flex;

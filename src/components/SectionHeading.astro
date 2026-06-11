@@ -57,7 +57,7 @@ const { title, href, count } = Astro.props;
     font-weight: 700;
     font-size: 0.5em;
     line-height: 1;
-    color: var(--color-ink);
+    color: var(--accent-ink, var(--color-ink));
     background: var(--accent, var(--color-pink));
     border: var(--border-thin);
     border-radius: 999px;

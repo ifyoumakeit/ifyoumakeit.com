@@ -94,10 +94,10 @@ function formatDate(d: Date) {
 }
 ---
 
-<Layout title="If You Make It — DIY Punk Video Archive" description={`Bands in living rooms, basements, and bars. A DIY punk video archive, ${minYear}–${maxYear}.`}>
+<Layout title="If You Make It — DIY Punk Video Archive" description={`DIY punk videos, sessions, and live recordings from ${minYear}–${maxYear}.`}>
 
-  <section class="hero container">
-    <p class="hero-tagline">Bands in living rooms, basements, and bars. A DIY punk video archive, {minYear}–{maxYear}.</p>
+  <section class="hero container" aria-labelledby="archive-heading">
+    <h1 class="visually-hidden" id="archive-heading">If You Make It video archive</h1>
     <ul class="hero-stats">
       <li><strong>{totalVideos}</strong> videos</li>
       <li><strong>{totalArtists}</strong> artists</li>
@@ -200,20 +200,16 @@ function formatDate(d: Date) {
 
 <style>
   .hero {
-    padding-block: 3rem;
+    padding-block: 2rem;
     text-align: center;
-  }
-  .hero-tagline {
-    font-family: var(--font-display);
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    margin-block-end: 1rem;
   }
   .hero-stats {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    gap: 2rem;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 1rem 2rem;
     justify-content: center;
     font-size: 0.95rem;
     color: var(--color-muted);
@@ -230,6 +226,14 @@ function formatDate(d: Date) {
     border-radius: var(--radius);
     overflow: hidden;
     background: var(--color-paper);
+  }
+  .featured {
+    padding-block-end: 2rem;
+  }
+  .featured-inner :global(.embed) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
   .featured-meta {
     padding: 1rem 1.25rem 1.25rem;
@@ -249,7 +253,7 @@ function formatDate(d: Date) {
   .featured-artist a {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--accent, var(--color-pink));
+    color: var(--accent-text, var(--color-pink-deep));
     text-decoration: none;
   }
   .featured-artist a:hover {
@@ -261,11 +265,23 @@ function formatDate(d: Date) {
     padding-block: 2rem;
     border-top: var(--border);
   }
+  .featured + .series-section {
+    border-top: 0;
+  }
 
   .chip-row {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-block-start: 0.75rem;
+  }
+
+  @media (max-width: 520px) {
+    .hero {
+      padding-block: 1.5rem;
+    }
+    .hero-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 </style>

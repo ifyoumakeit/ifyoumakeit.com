@@ -9,8 +9,8 @@
   --color-paper: #faf3e7;
   --color-ink: #16121a;
   --color-pink: #ff4d8d;
-  --color-pink-deep: #d81e5b;
-  --color-blue: #2d7dff;
+  --color-pink-deep: #c91550;
+  --color-blue: #0b63ce;
   --color-yellow: #ffd23f;
   --color-muted: #6b6470;
 
@@ -29,6 +29,7 @@
   /* --- series accent (overridden by [data-series]) --- */
   --accent: var(--color-pink);
   --accent-ink: var(--color-ink);
+  --accent-text: var(--color-pink-deep);
 }
 
 /* Series accent theming via data attribute.
@@ -36,18 +37,22 @@
 [data-series="live"] {
   --accent: var(--color-blue);
   --accent-ink: var(--color-paper);
+  --accent-text: var(--color-blue);
 }
 [data-series="sessions"] {
   --accent: var(--color-pink);
   --accent-ink: var(--color-ink);
+  --accent-text: var(--color-pink-deep);
 }
 [data-series="series"] {
   --accent: var(--color-yellow);
   --accent-ink: var(--color-ink);
+  --accent-text: var(--color-ink);
 }
 [data-series="music-videos"] {
   --accent: var(--color-pink-deep);
   --accent-ink: var(--color-paper);
+  --accent-text: var(--color-pink-deep);
 }
 
 /* ============================================================
@@ -72,33 +77,32 @@ body {
   line-height: 1.55;
   color: var(--color-ink);
   background-color: var(--color-paper);
-  /* paper grain + faint halftone, CSS only */
+  /* Broad, uneven staining keeps paper tactile without a screen texture. */
   background-image:
-    radial-gradient(var(--color-ink) 0.5px, transparent 0.5px),
-    radial-gradient(rgba(22, 18, 26, 0.04) 1px, transparent 1px);
-  background-size:
-    3px 3px,
-    22px 22px;
-  background-position:
-    0 0,
-    0 0;
+    radial-gradient(
+      ellipse at 12% 8%,
+      rgba(255, 255, 255, 0.55) 0,
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 88% 28%,
+      rgba(201, 21, 80, 0.025) 0,
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 35% 92%,
+      rgba(22, 18, 26, 0.035) 0,
+      transparent 48%
+    ),
+    linear-gradient(
+      105deg,
+      rgba(255, 255, 255, 0.18),
+      transparent 32%,
+      rgba(22, 18, 26, 0.018)
+    );
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-}
-
-/* the grain layer should be VERY faint */
-body {
-  background-blend-mode: normal;
-}
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.025;
-  background-image: radial-gradient(var(--color-ink) 0.5px, transparent 0.6px);
-  background-size: 4px 4px;
 }
 
 img {
@@ -155,6 +159,16 @@ a:focus-visible {
   border-radius: 2px;
 }
 
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+[id] {
+  scroll-margin-top: 7rem;
+}
+
 ::selection {
   background: var(--color-pink);
   color: var(--color-ink);
@@ -174,7 +188,7 @@ a:focus-visible {
 .grid-videos {
   display: grid;
   gap: clamp(1.1rem, 2.5vw, 1.75rem);
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
 }
 
 /* ============================================================
@@ -196,6 +210,7 @@ a:focus-visible {
   border-radius: var(--radius);
   box-shadow: var(--shadow-hard-sm);
   padding: 0.7em 1.1em;
+  min-height: 2.75rem;
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -230,6 +245,7 @@ a:focus-visible {
   border: var(--border-thin);
   border-radius: 999px;
   padding: 0.4em 0.8em;
+  min-height: 2rem;
   text-decoration: none;
   transition:
     transform 0.1s ease,
@@ -245,10 +261,10 @@ a:focus-visible {
 
 .meta-line {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: var(--color-muted);
   line-height: 1.3;
 }

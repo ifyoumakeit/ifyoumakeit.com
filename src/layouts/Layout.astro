@@ -15,6 +15,24 @@ const {
   title,
   description = "If You Make It — a DIY punk video archive. Live recordings, sessions, and music videos.",
 } = Astro.props;
+const documentTitle =
+  title.startsWith("If You Make It —") || title.endsWith("— If You Make It")
+  ? title
+  : `${title} — If You Make It`;
+const currentPath = Astro.url.pathname;
+
+function navState(href: string): {
+  "aria-current"?: "page" | "location";
+  "data-active"?: string;
+} {
+  const isExact = currentPath === href;
+  const isSection = href !== "/" && currentPath.startsWith(href);
+
+  return {
+    "aria-current": isExact ? "page" : isSection ? "location" : undefined,
+    "data-active": isSection ? "" : undefined,
+  };
+}
 
 const publishedSeries = await db
   .select()
@@ -33,7 +51,7 @@ const staticNavLinks = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} — If You Make It</title>
+    <title>{documentTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#FF4D8D" />
     <meta name="generator" content={Astro.generator} />
@@ -53,7 +71,12 @@ const staticNavLinks = [
 
     <header class="site-header">
       <div class="container site-header__inner">
-        <a class="wordmark" href="/" aria-label="If You Make It — home">
+        <a
+          class="wordmark"
+          href="/"
+          aria-label="If You Make It — home"
+          aria-current={currentPath === "/" ? "page" : undefined}
+        >
           <svg
             class="wordmark__mark"
             viewBox="0 0 64 40"
@@ -78,26 +101,39 @@ const staticNavLinks = [
           <span class="wordmark__text">If You Make It</span>
         </a>
 
-        <nav class="site-nav" aria-label="Primary">
-          {
-            publishedSeries.map((s) => (
-              <a class="site-nav__link" href={`/${s.slug}/`}>
-                {s.title}
-              </a>
-            ))
-          }
-          {
-            staticNavLinks.map((item) => (
-              <a class="site-nav__link" href={item.href}>
-                {item.label}
-              </a>
-            ))
-          }
-        </nav>
+        <div class="site-header__nav">
+          <span class="site-era" aria-label="Established 2007 to 2014">
+            EST. 2007–2014
+          </span>
+          <nav class="site-nav" aria-label="Primary">
+            {
+              publishedSeries.map((s) => (
+                <a
+                  class="site-nav__link"
+                  href={`/${s.slug}/`}
+                  {...navState(`/${s.slug}/`)}
+                >
+                  {s.title}
+                </a>
+              ))
+            }
+            {
+              staticNavLinks.map((item) => (
+                <a
+                  class="site-nav__link"
+                  href={item.href}
+                  {...navState(item.href)}
+                >
+                  {item.label}
+                </a>
+              ))
+            }
+          </nav>
+        </div>
       </div>
     </header>
 
-    <main id="main">
+    <main id="main" tabindex="-1">
       <slot />
     </main>
 
@@ -107,8 +143,14 @@ const staticNavLinks = [
           If You Make It — bands on a pink couch since 2007. Long live DIY.
         </p>
         <nav class="site-footer__nav" aria-label="Footer">
-          {publishedSeries.map((s) => <a href={`/${s.slug}/`}>{s.title}</a>)}
-          {staticNavLinks.map((item) => <a href={item.href}>{item.label}</a>)}
+          {publishedSeries.map((s) => (
+            <a href={`/${s.slug}/`} {...navState(`/${s.slug}/`)}>
+              {s.title}
+            </a>
+          ))}
+          {staticNavLinks.map((item) => (
+            <a href={item.href} {...navState(item.href)}>{item.label}</a>
+          ))}
         </nav>
       </div>
     </footer>
@@ -117,7 +159,7 @@ const staticNavLinks = [
       .skip-link {
         position: absolute;
         left: 0.5rem;
-        top: -3rem;
+        top: -3.1rem;
         z-index: 100;
         background: var(--color-yellow);
         color: var(--color-ink);
@@ -131,6 +173,9 @@ const staticNavLinks = [
       }
       .skip-link:focus {
         top: 0.5rem;
+      }
+      #main:focus {
+        outline: none;
       }
 
       /* ---------- header ---------- */
@@ -172,13 +217,34 @@ const staticNavLinks = [
       .wordmark__text {
         font-family: var(--font-display);
         text-transform: uppercase;
-        font-size: clamp(1.2rem, 3.4vw, 1.7rem);
-        line-height: 0.9;
+        font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+        line-height: 1;
         letter-spacing: -0.01em;
-        max-width: 7ch;
+        white-space: nowrap;
       }
 
       /* ---------- nav ---------- */
+      .site-header__nav {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.6rem 1rem;
+        flex-wrap: wrap;
+      }
+      .site-era {
+        flex: none;
+        font-family: var(--font-mono);
+        font-size: 0.67rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        color: var(--color-ink);
+        background: var(--color-yellow);
+        border: var(--border-thin);
+        box-shadow: 2px 2px 0 var(--color-ink);
+        padding: 0.45em 0.65em;
+        transform: rotate(-1.5deg);
+      }
       .site-nav {
         display: flex;
         flex-wrap: wrap;
@@ -209,8 +275,17 @@ const staticNavLinks = [
         text-decoration: none;
         transform: translateY(-1px) rotate(-1.5deg);
       }
+      .site-nav__link[data-active],
+      .site-nav__link[aria-current="page"] {
+        background: var(--color-ink);
+        color: var(--color-paper);
+        box-shadow: 2px 2px 0 var(--color-pink);
+      }
 
       @media (max-width: 560px) {
+        .site-header {
+          position: static;
+        }
         .site-header__inner {
           justify-content: center;
           text-align: center;
@@ -219,8 +294,8 @@ const staticNavLinks = [
           width: 100%;
           justify-content: center;
         }
-        .wordmark__text {
-          max-width: none;
+        .site-header__nav {
+          justify-content: center;
         }
         .site-nav {
           justify-content: center;
@@ -260,6 +335,11 @@ const staticNavLinks = [
         padding-bottom: 2px;
       }
       .site-footer__nav a:hover {
+        color: var(--color-yellow);
+        border-color: var(--color-yellow);
+      }
+      .site-footer__nav a[data-active],
+      .site-footer__nav a[aria-current="page"] {
         color: var(--color-yellow);
         border-color: var(--color-yellow);
       }

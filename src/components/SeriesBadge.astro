@@ -5,7 +5,7 @@ interface Props {
   as?: "a" | "span";
 }
 
-const { title, slug, as: Tag = "a" } = Astro.props;
+const { title, slug, as: Tag = "a" }: Props = Astro.props;
 const linkProps = Tag === "a" ? { href: `/${slug}/` } : {};
 ---
 
@@ -24,7 +24,7 @@ const linkProps = Tag === "a" ? { href: `/${slug}/` } : {};
     text-transform: uppercase;
     letter-spacing: 0.02em;
     line-height: 1;
-    color: var(--color-ink);
+    color: var(--accent-ink, var(--color-ink));
     background: var(--accent);
     border: var(--border-thin);
     border-radius: 999px;
@@ -45,7 +45,7 @@ const linkProps = Tag === "a" ? { href: `/${slug}/` } : {};
     width: 0.55em;
     height: 0.55em;
     border-radius: 50%;
-    background: var(--color-ink);
+    background: currentColor;
     flex: none;
   }
 </style>
