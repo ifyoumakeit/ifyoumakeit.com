@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { db, eq, video, artist, series, tag, videoTag } from "astro:db";
+import { db, eq, video, artist, series, tag, videoTag } from "../../lib/db";
 import { getVideoUrl } from "../../lib/video-url";
 
 export const prerender = true;

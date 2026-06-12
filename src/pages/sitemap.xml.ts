@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { db, eq, video, artist, series, tag, videoTag } from "astro:db";
+import { db, eq, video, artist, series, tag, videoTag } from "../lib/db";
 import { SITE_URL } from "../lib/seo";
 import { getVideoUrl } from "../lib/video-url";
 

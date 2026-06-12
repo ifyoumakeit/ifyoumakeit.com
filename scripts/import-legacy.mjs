@@ -5,7 +5,7 @@
  * Usage: node scripts/import-legacy.mjs path/to/iymi_db.sql
  *
  * Reads the legacy CMS tables (iymi_category, iymi_posts, iymi_postmeta)
- * and emits the JSON data files that db/seed.ts loads. The raw dump is NOT
+ * and emits the JSON data files that src/lib/db.ts loads. The raw dump is NOT
  * committed to the repo (it contains user emails in unrelated tables); only
  * the generated content files are.
  *

@@ -19,7 +19,7 @@ shim for the video embeds (no YouTube iframe loads until you hit play).
 
 ## Data model
 
-Defined in `db/config.ts`:
+Defined in `src/lib/schema.ts` (Drizzle ORM):
 
 - **series** — Sessions, Live, Series, Music Videos. Each has an accent color
   that themes its pages and cards.
@@ -36,8 +36,9 @@ Defined in `db/config.ts`:
 
 `db/data/*.json` is the **real archive** — 441 videos by 249 artists
 (2007–2014), imported from the legacy production database with
-`node scripts/import-legacy.mjs path/to/iymi_db.sql`. `db/seed.ts` just loads
-those files. The raw SQL dump is not committed (it contains user emails in
+`node scripts/import-legacy.mjs path/to/iymi_db.sql`. `src/lib/db.ts` loads
+those files into an in-memory libSQL database at build time. The raw SQL dump
+is not committed (it contains user emails in
 unrelated tables); re-run the importer against the dump to regenerate.
 
 ## How videos are cross-linked
