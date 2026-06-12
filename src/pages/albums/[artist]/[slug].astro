@@ -34,10 +34,10 @@ const plainDescription = albumData.description
   ? toPlainText(albumData.description)
   : `${albumData.artist_name} — ${albumData.title}, from the If You Make It archive.`;
 
-// One smart link (song.link) fans out to every stream/buy destination; fall
-// back to the legacy "where to buy" link when no smart link exists yet.
-const listenHref = albumData.songlink_url ?? albumData.purchase_url;
-const listenLabel = albumData.songlink_url ? "Stream + buy" : "Where to buy";
+// Mostly DIY records sold through a label or Bandcamp, not streamed, so the
+// CTA is a "buy". Prefer the song.link / album.link smart link; fall back to
+// the legacy purchase link.
+const buyHref = albumData.songlink_url ?? albumData.purchase_url;
 ---
 
 <Layout
@@ -82,9 +82,9 @@ const listenLabel = albumData.songlink_url ? "Stream + buy" : "Where to buy";
           </p>
         )}
 
-        {listenHref && (
+        {buyHref && (
           <div class="album-links">
-            <a class="btn" href={listenHref} rel="external">{listenLabel} ↗</a>
+            <a class="btn" href={buyHref} rel="external">Buy the record ↗</a>
           </div>
         )}
 
