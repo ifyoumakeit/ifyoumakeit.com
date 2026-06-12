@@ -1,0 +1,403 @@
+---
+import AdminLayout from "./AdminLayout.astro";
+import { db, video, artist, series } from "../lib/db";
+import { getProviderUrl } from "./provider-url";
+import { statSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+const allVideos = await db.select().from(video);
+const allArtists = await db.select().from(artist);
+const allSeries = await db.select().from(series);
+const artistMap = new Map(allArtists.map((a) => [a.id, a]));
+const seriesMap = new Map(allSeries.map((s) => [s.id, s]));
+
+const nf = new Intl.NumberFormat("en-US");
+const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
+
+// ---- totals ----
+const published = allVideos.filter((v) => v.publish === 1);
+const hidden = allVideos.filter((v) => v.publish !== 1);
+const sum = (arr: typeof allVideos, k: "views" | "likes" | "comments") =>
+  arr.reduce((t, v) => t + (v[k] ?? 0), 0);
+const totalViews = sum(allVideos, "views");
+const totalLikes = sum(allVideos, "likes");
+const totalComments = sum(allVideos, "comments");
+
+const totals = [
+  { n: allVideos.length, label: "videos" },
+  { n: published.length, label: "published" },
+  { n: hidden.length, label: "hidden" },
+  { n: compact.format(totalViews), label: "views" },
+  { n: compact.format(totalLikes), label: "likes" },
+  { n: compact.format(totalComments), label: "comments" },
+];
+
+// ---- most viewed ----
+const mostViewed = [...allVideos].sort((a, b) => (b.views ?? 0) - (a.views ?? 0)).slice(0, 15);
+
+// ---- series breakdown ----
+const seriesStats = allSeries
+  .map((s) => {
+    const vids = allVideos.filter((v) => v.series_id === s.id);
+    return {
+      title: s.title,
+      slug: s.slug,
+      count: vids.length,
+      views: sum(vids, "views"),
+    };
+  })
+  .sort((a, b) => b.views - a.views);
+const maxSeriesViews = Math.max(1, ...seriesStats.map((s) => s.views));
+
+// ---- by year ----
+const yearMap = new Map<number, { count: number; views: number }>();
+for (const v of allVideos) {
+  const y = new Date(v.recorded_at).getUTCFullYear();
+  const cur = yearMap.get(y) ?? { count: 0, views: 0 };
+  cur.count += 1;
+  cur.views += v.views ?? 0;
+  yearMap.set(y, cur);
+}
+const byYear = [...yearMap.entries()].map(([year, d]) => ({ year, ...d })).sort((a, b) => a.year - b.year);
+const maxYearCount = Math.max(1, ...byYear.map((y) => y.count));
+
+// ---- top artists by total views ----
+const artistViews = new Map<number, { views: number; count: number }>();
+for (const v of allVideos) {
+  const cur = artistViews.get(v.artist_id) ?? { views: 0, count: 0 };
+  cur.views += v.views ?? 0;
+  cur.count += 1;
+  artistViews.set(v.artist_id, cur);
+}
+const topArtists = [...artistViews.entries()]
+  .map(([id, d]) => ({ name: artistMap.get(id)?.name ?? "—", ...d }))
+  .sort((a, b) => b.views - a.views)
+  .slice(0, 10);
+const maxArtistViews = Math.max(1, ...topArtists.map((a) => a.views));
+
+// ---- engagement (likes per view), needs some volume to be meaningful ----
+const topEngagement = allVideos
+  .filter((v) => (v.views ?? 0) >= 500 && (v.likes ?? 0) > 0)
+  .map((v) => ({
+    title: v.title,
+    artist: artistMap.get(v.artist_id)?.name ?? "—",
+    views: v.views ?? 0,
+    likes: v.likes ?? 0,
+    rate: (v.likes ?? 0) / (v.views ?? 1),
+  }))
+  .sort((a, b) => b.rate - a.rate)
+  .slice(0, 10);
+
+// ---- youtube sync health ----
+const youtube = allVideos.filter((v) => v.provider === "youtube");
+const ytWithStats = youtube.filter((v) => (v.likes ?? 0) > 0 || (v.comments ?? 0) > 0);
+const possiblyStale = youtube.filter((v) => (v.views ?? 0) > 0 && (v.likes ?? 0) === 0);
+
+let lastSync = "unknown";
+try {
+  const mtime = statSync(fileURLToPath(new URL("../../db/data/videos.json", import.meta.url))).mtime;
+  lastSync = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(mtime);
+} catch {}
+
+const hiddenList = hidden.map((v) => ({
+  title: v.title,
+  artist: artistMap.get(v.artist_id)?.name ?? "—",
+  provider: v.provider,
+  provider_id: v.provider_id,
+  id: v.id,
+}));
+---
+
+<AdminLayout title="Dashboard">
+  <div class="totals">
+    {totals.map((t) => (
+      <div class="total admin-card">
+        <span class="total-n">{t.n}</span>
+        <span class="total-label">{t.label}</span>
+      </div>
+    ))}
+  </div>
+
+  <div class="cols">
+    <section class="admin-card">
+      <h2>Views by series</h2>
+      {seriesStats.map((s) => (
+        <div class="bar-row" data-series={s.slug}>
+          <span class="bar-label">{s.title} <em>({s.count})</em></span>
+          <span class="bar"><span class="bar-fill" style={`width:${(s.views / maxSeriesViews) * 100}%`}></span></span>
+          <span class="bar-val">{compact.format(s.views)}</span>
+        </div>
+      ))}
+    </section>
+
+    <section class="admin-card">
+      <h2>YouTube sync</h2>
+      <ul class="kv">
+        <li><span>Last write to videos.json</span><strong>{lastSync}</strong></li>
+        <li><span>YouTube videos</span><strong>{youtube.length}</strong></li>
+        <li><span>With like/comment data</span><strong>{ytWithStats.length}</strong></li>
+        <li><span>Possibly stale (views &gt; 0, likes 0)</span><strong>{possiblyStale.length}</strong></li>
+      </ul>
+      <p class="hint">
+        Refresh stats with <code>npm run update:youtube</code>. "Possibly stale"
+        clears once the script has run with the likes/comments change.
+      </p>
+    </section>
+  </div>
+
+  <section class="admin-card">
+    <h2>Videos per year</h2>
+    <div class="year-bars">
+      {byYear.map((y) => (
+        <div class="year-col">
+          <span class="year-bar" style={`height:${(y.count / maxYearCount) * 100}%`} title={`${y.count} videos · ${compact.format(y.views)} views`}></span>
+          <span class="year-n">{y.count}</span>
+          <span class="year-label">{y.year}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <div class="cols">
+    <section class="admin-card">
+      <h2>Most viewed</h2>
+      <table class="mini">
+        <tbody>
+          {mostViewed.map((v) => (
+            <tr>
+              <td><a href={`/admin/videos/${v.id}`}>{artistMap.get(v.artist_id)?.name}</a><span class="muted">{v.title}</span></td>
+              <td class="num">{nf.format(v.views ?? 0)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="admin-card">
+      <h2>Top artists by views</h2>
+      {topArtists.map((a) => (
+        <div class="bar-row">
+          <span class="bar-label">{a.name} <em>({a.count})</em></span>
+          <span class="bar"><span class="bar-fill alt" style={`width:${(a.views / maxArtistViews) * 100}%`}></span></span>
+          <span class="bar-val">{compact.format(a.views)}</span>
+        </div>
+      ))}
+    </section>
+  </div>
+
+  {topEngagement.length > 0 && (
+    <section class="admin-card">
+      <h2>Top engagement <small>(likes ÷ views, min 500 views)</small></h2>
+      <table class="mini">
+        <tbody>
+          {topEngagement.map((v) => (
+            <tr>
+              <td><strong>{v.artist}</strong><span class="muted">{v.title}</span></td>
+              <td class="num">{(v.rate * 100).toFixed(2)}%</td>
+              <td class="num muted">{nf.format(v.likes)} / {compact.format(v.views)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  )}
+
+  {hiddenList.length > 0 && (
+    <section class="admin-card">
+      <h2>Hidden videos <small>({hiddenList.length})</small></h2>
+      <table class="mini">
+        <tbody>
+          {hiddenList.map((v) => (
+            <tr>
+              <td><a href={`/admin/videos/${v.id}`}>{v.artist}</a><span class="muted">{v.title}</span></td>
+              <td class="num muted">
+                {getProviderUrl(v.provider, v.provider_id) ? (
+                  <a href={getProviderUrl(v.provider, v.provider_id)} target="_blank" rel="noopener">{v.provider} ↗</a>
+                ) : (
+                  <span>{v.provider}:{v.provider_id}</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  )}
+
+  <style>
+    h2 {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-size: 1.05rem;
+      margin: 0 0 0.85rem;
+    }
+    h2 small {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--color-muted);
+      text-transform: none;
+    }
+    .totals {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .total {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0.8rem 0.9rem;
+    }
+    .total-n {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+    .total-label {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      margin-top: 0.25rem;
+    }
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    section.admin-card {
+      margin-bottom: 1rem;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 11rem 1fr 3.5rem;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+    }
+    .bar-label {
+      font-size: 0.82rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .bar-label em {
+      color: var(--color-muted);
+      font-style: normal;
+      font-size: 0.75rem;
+    }
+    .bar {
+      display: block;
+      background: rgba(22, 18, 26, 0.08);
+      border: var(--border-thin);
+      border-radius: var(--radius);
+      height: 1.1rem;
+      overflow: hidden;
+    }
+    .bar-fill {
+      display: block;
+      height: 100%;
+      background: var(--accent, var(--color-pink));
+    }
+    .bar-fill.alt {
+      background: var(--color-blue);
+    }
+    .bar-val {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-align: right;
+    }
+    .year-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.4rem;
+      height: 160px;
+    }
+    .year-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+    }
+    .year-bar {
+      width: 100%;
+      max-width: 2.4rem;
+      background: var(--color-pink);
+      border: var(--border-thin);
+      border-bottom: 0;
+      min-height: 2px;
+    }
+    .year-n {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      margin-top: 0.2rem;
+    }
+    .year-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--color-muted);
+    }
+    .mini {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .mini td {
+      padding: 0.35rem 0.4rem;
+      border-bottom: 1px solid rgba(22, 18, 26, 0.1);
+    }
+    .mini .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .mini .muted {
+      color: var(--color-muted);
+    }
+    .mini td .muted {
+      display: block;
+      font-size: 0.76rem;
+    }
+    .kv {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .kv li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid rgba(22, 18, 26, 0.1);
+      font-size: 0.85rem;
+    }
+    .kv strong {
+      font-family: var(--font-mono);
+    }
+    .hint {
+      font-size: 0.76rem;
+      color: var(--color-muted);
+      margin: 0.6rem 0 0;
+    }
+    .hint code {
+      font-family: var(--font-mono);
+      color: var(--color-ink);
+    }
+    @media (max-width: 720px) {
+      .cols {
+        grid-template-columns: 1fr;
+      }
+      .bar-row {
+        grid-template-columns: 8rem 1fr 3rem;
+      }
+    }
+  </style>
+</AdminLayout>

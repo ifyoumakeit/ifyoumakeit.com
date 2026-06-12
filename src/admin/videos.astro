@@ -1,0 +1,338 @@
+---
+import AdminLayout from "./AdminLayout.astro";
+import { db, video, artist, series } from "../lib/db";
+import { getProviderUrl } from "./provider-url";
+
+const allVideos = await db.select().from(video);
+const allArtists = await db.select().from(artist);
+const allSeries = await db.select().from(series);
+const artistMap = new Map(allArtists.map((a) => [a.id, a]));
+const seriesMap = new Map(allSeries.map((s) => [s.id, s]));
+
+const rows = allVideos
+  .map((v) => ({
+    ...v,
+    artistName: artistMap.get(v.artist_id)?.name ?? "—",
+    seriesTitle: seriesMap.get(v.series_id)?.title ?? "—",
+    year: new Date(v.recorded_at).getUTCFullYear(),
+  }))
+  .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+
+const providers = [...new Set(allVideos.map((v) => v.provider))].sort();
+const nf = new Intl.NumberFormat("en-US");
+---
+
+<AdminLayout title="Videos">
+  <div class="filters admin-card">
+    <input id="f-search" type="search" placeholder="Search artist / title…" />
+    <select id="f-series">
+      <option value="">All series</option>
+      {allSeries.map((s) => <option value={s.id}>{s.title}</option>)}
+    </select>
+    <select id="f-provider">
+      <option value="">All providers</option>
+      {providers.map((p) => <option value={p}>{p}</option>)}
+    </select>
+    <select id="f-publish">
+      <option value="">Published + hidden</option>
+      <option value="1">Published only</option>
+      <option value="0">Hidden only</option>
+    </select>
+    <select id="f-featured">
+      <option value="">Featured: any</option>
+      <option value="1">Featured only</option>
+    </select>
+    <span class="count" id="row-count">{rows.length}</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="vtable">
+      <thead>
+        <tr>
+          <th class="sortable" data-sort="artist" data-type="text">Artist / Title</th>
+          <th class="sortable" data-sort="seriestitle" data-type="text">Series</th>
+          <th class="sortable" data-sort="year" data-type="num">Year</th>
+          <th class="sortable" data-sort="provider" data-type="text">Provider</th>
+          <th class="sortable num" data-sort="views" data-type="num">Views</th>
+          <th class="sortable num" data-sort="likes" data-type="num">Likes</th>
+          <th class="sortable num" data-sort="comments" data-type="num">Cmnts</th>
+          <th class="sortable" data-sort="publish" data-type="num">Pub</th>
+          <th class="sortable" data-sort="featured" data-type="num">Feat</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((v) => (
+          <tr
+            data-id={v.id}
+            data-artist={v.artistName.toLowerCase()}
+            data-title={v.title.toLowerCase()}
+            data-series={v.series_id}
+            data-seriestitle={v.seriesTitle.toLowerCase()}
+            data-year={v.year}
+            data-provider={v.provider}
+            data-views={v.views ?? 0}
+            data-likes={v.likes ?? 0}
+            data-comments={v.comments ?? 0}
+            data-publish={v.publish}
+            data-featured={v.featured}
+          >
+            <td>
+              <strong>{v.artistName}</strong>
+              <span class="muted">{v.title}</span>
+            </td>
+            <td>{v.seriesTitle}</td>
+            <td>{v.year}</td>
+            <td>
+              {getProviderUrl(v.provider, v.provider_id) ? (
+                <a class="prov" href={getProviderUrl(v.provider, v.provider_id)} target="_blank" rel="noopener" title={`Watch on ${v.provider} ↗`}>
+                  {v.provider} ↗
+                </a>
+              ) : (
+                <span class="prov muted" title={v.provider_id}>{v.provider}</span>
+              )}
+            </td>
+            <td class="num">{nf.format(v.views ?? 0)}</td>
+            <td class="num">{nf.format(v.likes ?? 0)}</td>
+            <td class="num">{nf.format(v.comments ?? 0)}</td>
+            <td>
+              <button class="toggle" data-field="publish" aria-pressed={v.publish === 1}>
+                {v.publish === 1 ? "live" : "hidden"}
+              </button>
+            </td>
+            <td>
+              <button class="toggle star" data-field="featured" aria-pressed={v.featured === 1}>
+                {v.featured === 1 ? "★" : "☆"}
+              </button>
+            </td>
+            <td><a class="edit-link" href={`/admin/videos/${v.id}`}>edit</a></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="admin-toast" id="toast"></div>
+
+  <script>
+    const toast = (msg, isErr = false) => {
+      const t = document.getElementById("toast");
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.toggle("err", isErr);
+      t.classList.add("show");
+      window.setTimeout(() => t.classList.remove("show"), 1800);
+    };
+
+    // ---- filtering ----
+    const rows = Array.from(document.querySelectorAll("tbody tr"));
+    const els = {
+      search: document.getElementById("f-search"),
+      series: document.getElementById("f-series"),
+      provider: document.getElementById("f-provider"),
+      publish: document.getElementById("f-publish"),
+      featured: document.getElementById("f-featured"),
+      count: document.getElementById("row-count"),
+    };
+    function applyFilters() {
+      const q = els.search.value.trim().toLowerCase();
+      const s = els.series.value;
+      const p = els.provider.value;
+      const pub = els.publish.value;
+      const feat = els.featured.value;
+      let shown = 0;
+      for (const r of rows) {
+        const d = r.dataset;
+        const ok =
+          (!q || d.artist.includes(q) || d.title.includes(q)) &&
+          (!s || d.series === s) &&
+          (!p || d.provider === p) &&
+          (!pub || d.publish === pub) &&
+          (!feat || d.featured === feat);
+        r.hidden = !ok;
+        if (ok) shown++;
+      }
+      els.count.textContent = String(shown);
+    }
+    Object.values(els).forEach((el) => {
+      if (el && el.tagName !== "SPAN") el.addEventListener("input", applyFilters);
+    });
+
+    // ---- column sorting ----
+    const tbody = document.querySelector("tbody");
+    let sortState = { key: null, dir: 1 };
+    function sortBy(key, type, th) {
+      const dir = sortState.key === key && sortState.dir === 1 ? -1 : 1;
+      sortState = { key, dir };
+      const sorted = Array.from(tbody.querySelectorAll("tr")).sort((a, b) => {
+        if (type === "num") return (Number(a.dataset[key]) - Number(b.dataset[key])) * dir;
+        let cmp = (a.dataset[key] || "").localeCompare(b.dataset[key] || "") * dir;
+        // Stable secondary sort: artist column falls back to title.
+        if (cmp === 0 && key === "artist") cmp = (a.dataset.title || "").localeCompare(b.dataset.title || "");
+        return cmp;
+      });
+      for (const r of sorted) tbody.appendChild(r);
+      document.querySelectorAll("th.sortable").forEach((h) => h.removeAttribute("data-dir"));
+      th.setAttribute("data-dir", dir === 1 ? "asc" : "desc");
+    }
+    document.querySelectorAll("th.sortable").forEach((th) => {
+      th.addEventListener("click", () => sortBy(th.dataset.sort, th.dataset.type, th));
+    });
+
+    // ---- inline toggles ----
+    document.querySelectorAll("button.toggle").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const tr = btn.closest("tr");
+        const id = tr.dataset.id;
+        const field = btn.dataset.field;
+        const next = tr.dataset[field] === "1" ? 0 : 1;
+        btn.disabled = true;
+        try {
+          const res = await fetch(`/admin/api/video/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ [field]: next }),
+          });
+          const json = await res.json();
+          if (!json.ok) throw new Error(json.error || "save failed");
+          tr.dataset[field] = String(next);
+          btn.setAttribute("aria-pressed", next === 1 ? "true" : "false");
+          if (field === "publish") btn.textContent = next ? "live" : "hidden";
+          else btn.textContent = next ? "★" : "☆";
+          toast(`Saved — dev server is reloading…`);
+          applyFilters();
+        } catch (e) {
+          toast(String(e.message || e), true);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
+  </script>
+
+  <style>
+    .filters {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .filters input,
+    .filters select {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.4rem 0.5rem;
+      border: var(--border-thin);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    .filters #f-search {
+      flex: 1;
+      min-width: 12rem;
+    }
+    .count {
+      font-family: var(--font-display);
+      background: var(--color-yellow);
+      border: var(--border-thin);
+      padding: 0.2em 0.55em;
+      border-radius: var(--radius);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-hard-sm);
+      background: #fff;
+    }
+    .vtable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .vtable th {
+      text-align: left;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      font-size: 0.66rem;
+      letter-spacing: 0.04em;
+      padding: 0.55rem 0.6rem;
+      border-bottom: var(--border);
+      background: var(--color-paper);
+      position: sticky;
+      top: 3.1rem;
+      white-space: nowrap;
+    }
+    .vtable th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    .vtable th.sortable:hover {
+      background: var(--color-yellow);
+    }
+    .vtable th.sortable::after {
+      content: "↕";
+      opacity: 0.3;
+      margin-left: 0.3em;
+    }
+    .vtable th.sortable[data-dir="asc"]::after {
+      content: "↑";
+      opacity: 1;
+    }
+    .vtable th.sortable[data-dir="desc"]::after {
+      content: "↓";
+      opacity: 1;
+    }
+    .vtable th.sortable.num {
+      text-align: right;
+    }
+    .vtable td {
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid rgba(22, 18, 26, 0.12);
+      vertical-align: middle;
+    }
+    .vtable .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .vtable td strong {
+      display: block;
+    }
+    .vtable .muted {
+      color: var(--color-muted);
+      font-size: 0.8rem;
+    }
+    .prov {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+    .toggle {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: var(--border-thin);
+      border-radius: var(--radius);
+      padding: 0.25em 0.5em;
+      background: #fff;
+    }
+    .toggle[aria-pressed="true"] {
+      background: var(--color-pink);
+    }
+    .toggle.star {
+      font-size: 0.95rem;
+      padding: 0.1em 0.4em;
+    }
+    .toggle.star[aria-pressed="true"] {
+      background: var(--color-yellow);
+    }
+    .edit-link {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+  </style>
+</AdminLayout>

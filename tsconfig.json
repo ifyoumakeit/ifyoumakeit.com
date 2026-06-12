@@ -1,5 +1,6 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "comment": "src/admin is the dev-only admin tool (see integrations/admin.mjs). It never builds to dist/ and ships browser DOM scripts that aren't worth strict type-checking, so it's excluded from `astro check`.",
+  "exclude": ["dist", "src/admin"]
 }

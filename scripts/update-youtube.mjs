@@ -51,7 +51,7 @@ const ids = [...new Set(youtube.map((v) => v._id).filter((id) => YT_ID.test(id))
 
 // ---- fetch statistics + status in batches of 50 -------------------------
 
-/** id -> { viewCount, privacyStatus } for everything the API returned. */
+/** id -> { viewCount, likeCount, commentCount, privacyStatus }. */
 const info = new Map();
 
 for (let i = 0; i < ids.length; i += 50) {
@@ -69,6 +69,9 @@ for (let i = 0; i < ids.length; i += 50) {
   for (const item of json.items ?? []) {
     info.set(item.id, {
       viewCount: Number(item.statistics?.viewCount ?? 0),
+      // likes/comments can be disabled by the owner — absent from the response.
+      likeCount: Number(item.statistics?.likeCount ?? 0),
+      commentCount: Number(item.statistics?.commentCount ?? 0),
       privacyStatus: item.status?.privacyStatus ?? "unknown",
     });
   }
@@ -77,6 +80,7 @@ for (let i = 0; i < ids.length; i += 50) {
 // ---- reconcile ----------------------------------------------------------
 
 let viewUpdates = 0;
+let statUpdates = 0; // likes/comments changed
 let idRepairs = 0;
 const hidden = []; // newly set publish:0
 const restorable = []; // available again but still publish:0 (manual call)
@@ -96,6 +100,14 @@ for (const v of youtube) {
     if (hit.viewCount !== v.views) {
       v.views = hit.viewCount;
       viewUpdates++;
+    }
+    if (hit.likeCount !== (v.likes ?? 0)) {
+      v.likes = hit.likeCount;
+      statUpdates++;
+    }
+    if (hit.commentCount !== (v.comments ?? 0)) {
+      v.comments = hit.commentCount;
+      statUpdates++;
     }
     if (v.publish === 0) restorable.push(v);
     continue;
@@ -120,8 +132,8 @@ for (const v of youtube) delete v._id; // don't serialize the scratch field
 
 console.log(
   `youtube: ${youtube.length} checked, ${info.size} live · ` +
-    `${viewUpdates} view counts updated · ${idRepairs} ids repaired · ` +
-    `${hidden.length} newly hidden`
+    `${viewUpdates} view counts updated · ${statUpdates} like/comment updates · ` +
+    `${idRepairs} ids repaired · ${hidden.length} newly hidden`
 );
 for (const h of hidden) console.log(`  hide  ${h.slug}  (${h.id}) — ${h.reason}`);
 for (const v of restorable)
@@ -129,7 +141,7 @@ for (const v of restorable)
 
 if (DRY) {
   console.log("dry run — videos.json not written");
-} else if (viewUpdates || idRepairs || hidden.length) {
+} else if (viewUpdates || statUpdates || idRepairs || hidden.length) {
   // 1-space indent + trailing newline matches scripts/import-legacy.mjs output.
   writeFileSync(dataPath, JSON.stringify(videos, null, 1) + "\n");
   console.log("wrote db/data/videos.json");

@@ -40,6 +40,8 @@ export const video = sqliteTable("video", {
   featured: integer("featured").notNull().default(0),
   publish: integer("publish").notNull().default(1),
   views: integer("views").notNull().default(0),
+  likes: integer("likes").notNull().default(0),
+  comments: integer("comments").notNull().default(0),
 });
 
 export const song = sqliteTable("song", {

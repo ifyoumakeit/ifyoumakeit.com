@@ -48,7 +48,9 @@ await client.executeMultiple(`
     provider_id TEXT NOT NULL,
     featured INTEGER NOT NULL DEFAULT 0,
     publish INTEGER NOT NULL DEFAULT 1,
-    views INTEGER NOT NULL DEFAULT 0
+    views INTEGER NOT NULL DEFAULT 0,
+    likes INTEGER NOT NULL DEFAULT 0,
+    comments INTEGER NOT NULL DEFAULT 0
   );
   CREATE TABLE song (
     id INTEGER PRIMARY KEY,

@@ -1,0 +1,240 @@
+---
+import AdminLayout from "./AdminLayout.astro";
+import { db, eq, video, artist, series } from "../lib/db";
+import { getVideoUrl } from "../lib/video-url";
+import { getProviderUrl } from "./provider-url";
+
+const id = Number(Astro.params.id);
+const [row] = await db.select().from(video).where(eq(video.id, id));
+const allArtists = (await db.select().from(artist)).sort((a, b) =>
+  a.name.localeCompare(b.name),
+);
+const allSeries = await db.select().from(series);
+const a = allArtists.find((x) => x.id === row?.artist_id);
+
+const recordedDate = row
+  ? new Date(row.recorded_at).toISOString().slice(0, 10)
+  : "";
+const liveUrl = row && a ? getVideoUrl(row, a) : null;
+const hostUrl = row ? getProviderUrl(row.provider, row.provider_id) : null;
+---
+
+<AdminLayout title={row ? `Edit: ${row.title}` : "Not found"}>
+  {!row ? (
+    <p>No video with id {id}. <a href="/admin/videos">Back to videos</a>.</p>
+  ) : (
+    <form id="edit-form" class="admin-card" data-id={row.id}>
+      <div class="row">
+        <label>
+          <span>Title</span>
+          <input name="title" value={row.title} required />
+        </label>
+        <label>
+          <span>Slug</span>
+          <input name="slug" value={row.slug} required />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span>Artist</span>
+          <select name="artist_id">
+            {allArtists.map((x) => (
+              <option value={x.id} selected={x.id === row.artist_id}>{x.name}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Series</span>
+          <select name="series_id">
+            {allSeries.map((s) => (
+              <option value={s.id} selected={s.id === row.series_id}>{s.title}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span>Recorded at</span>
+          <input name="recorded_at" type="date" value={recordedDate} />
+        </label>
+        <label>
+          <span>Location</span>
+          <input name="location" value={row.location ?? ""} placeholder="optional" />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          <span>Provider</span>
+          <select name="provider">
+            {["youtube", "vimeo", "dailymotion", "flash"].map((p) => (
+              <option value={p} selected={p === row.provider}>{p}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Provider ID</span>
+          <input name="provider_id" value={row.provider_id} required />
+        </label>
+      </div>
+
+      <label class="full">
+        <span>Description (raw HTML)</span>
+        <textarea name="description" rows="6">{row.description ?? ""}</textarea>
+      </label>
+
+      <div class="row checks">
+        <label class="check">
+          <input type="checkbox" name="publish" checked={row.publish === 1} />
+          <span>Published</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="featured" checked={row.featured === 1} />
+          <span>Featured</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn">Save changes</button>
+        <a class="btn ghost" href="/admin/videos">Cancel</a>
+        {liveUrl && <a class="btn ghost" href={liveUrl} target="_blank">View on site ↗</a>}
+        {hostUrl && <a class="btn ghost" href={hostUrl} target="_blank" rel="noopener">Watch on {row.provider} ↗</a>}
+      </div>
+      <p class="hint">
+        Saving writes <code>db/data/videos.json</code> and reloads the dev server.
+        Read-only stats: {row.views ?? 0} views · {row.likes ?? 0} likes · {row.comments ?? 0} comments
+        (refresh with <code>npm run update:youtube</code>).
+      </p>
+    </form>
+  )}
+
+  <div class="admin-toast" id="toast"></div>
+
+  <script>
+    const form = document.getElementById("edit-form");
+    const toast = (msg, isErr = false) => {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.toggle("err", isErr);
+      t.classList.add("show");
+      if (!isErr) return;
+      window.setTimeout(() => t.classList.remove("show"), 2500);
+    };
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = form.dataset.id;
+        const fd = new FormData(form);
+        const patch = {
+          title: fd.get("title"),
+          slug: fd.get("slug"),
+          artist_id: Number(fd.get("artist_id")),
+          series_id: Number(fd.get("series_id")),
+          recorded_at: fd.get("recorded_at"),
+          location: fd.get("location"),
+          provider: fd.get("provider"),
+          provider_id: fd.get("provider_id"),
+          description: fd.get("description"),
+          publish: fd.get("publish") ? 1 : 0,
+          featured: fd.get("featured") ? 1 : 0,
+        };
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+          const res = await fetch(`/admin/api/video/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(patch),
+          });
+          const json = await res.json();
+          if (!json.ok) throw new Error(json.error || "save failed");
+          toast("Saved. Returning to list…");
+          window.setTimeout(() => (window.location.href = "/admin/videos"), 600);
+        } catch (err) {
+          toast(String(err.message || err), true);
+          btn.disabled = false;
+        }
+      });
+    }
+  </script>
+
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 760px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    label > span {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+    }
+    input,
+    select,
+    textarea {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      padding: 0.5rem 0.6rem;
+      border: var(--border-thin);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    textarea {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      resize: vertical;
+    }
+    .checks {
+      grid-template-columns: auto auto;
+      justify-content: start;
+      gap: 1.5rem;
+    }
+    .check {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .check span {
+      font-size: 0.9rem;
+      text-transform: none;
+      color: var(--color-ink);
+    }
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .btn.ghost {
+      background: transparent;
+    }
+    .hint {
+      font-size: 0.78rem;
+      color: var(--color-muted);
+      margin: 0;
+    }
+    .hint code {
+      font-family: var(--font-mono);
+      color: var(--color-ink);
+    }
+    @media (max-width: 620px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</AdminLayout>

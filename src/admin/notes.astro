@@ -1,0 +1,163 @@
+---
+import AdminLayout from "./AdminLayout.astro";
+import { db, video, artist } from "../lib/db";
+import { videoNotes } from "../data/video-notes";
+
+const allVideos = await db.select().from(video);
+const allArtists = await db.select().from(artist);
+const artistMap = new Map(allArtists.map((a) => [a.id, a]));
+
+// Slug -> label for the datalist (helps pick a real video slug).
+const slugs = allVideos
+  .map((v) => ({
+    slug: v.slug,
+    label: `${artistMap.get(v.artist_id)?.name ?? ""} — ${v.title}`,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
+
+const entries = Object.entries(videoNotes);
+---
+
+<AdminLayout title="Timeline notes">
+  <p class="lede">
+    Editorial notes pinned above a video on <code>/years</code>, keyed by video
+    slug. Saving rewrites <code>src/data/video-notes.ts</code>.
+  </p>
+
+  <datalist id="slug-list">
+    {slugs.map((s) => <option value={s.slug}>{s.label}</option>)}
+  </datalist>
+
+  <div class="notes admin-card">
+    <div id="rows">
+      {entries.map(([slug, note]) => (
+        <div class="note-row">
+          <input class="slug" list="slug-list" value={slug} placeholder="video-slug" />
+          <input class="note" value={note} placeholder="Note…" />
+          <button type="button" class="del" title="Remove">✕</button>
+        </div>
+      ))}
+    </div>
+    <div class="row-actions">
+      <button type="button" id="add" class="btn ghost">+ Add note</button>
+      <button type="button" id="save" class="btn">Save notes</button>
+    </div>
+  </div>
+
+  <div class="admin-toast" id="toast"></div>
+
+  <script>
+    const rowsEl = document.getElementById("rows");
+    const toast = (msg, isErr = false) => {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.toggle("err", isErr);
+      t.classList.add("show");
+      window.setTimeout(() => t.classList.remove("show"), 2000);
+    };
+
+    function makeRow(slug = "", note = "") {
+      const div = document.createElement("div");
+      div.className = "note-row";
+      div.innerHTML =
+        '<input class="slug" list="slug-list" placeholder="video-slug">' +
+        '<input class="note" placeholder="Note…">' +
+        '<button type="button" class="del" title="Remove">✕</button>';
+      div.querySelector(".slug").value = slug;
+      div.querySelector(".note").value = note;
+      return div;
+    }
+
+    rowsEl.addEventListener("click", (e) => {
+      if (e.target.classList.contains("del")) e.target.closest(".note-row").remove();
+    });
+    document.getElementById("add").addEventListener("click", () => {
+      rowsEl.appendChild(makeRow());
+    });
+
+    document.getElementById("save").addEventListener("click", async () => {
+      const notes = {};
+      for (const r of rowsEl.querySelectorAll(".note-row")) {
+        const slug = r.querySelector(".slug").value.trim();
+        const note = r.querySelector(".note").value.trim();
+        if (slug && note) notes[slug] = note;
+      }
+      const btn = document.getElementById("save");
+      btn.disabled = true;
+      try {
+        const res = await fetch("/admin/api/notes", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notes }),
+        });
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error || "save failed");
+        toast(`Saved ${json.count} notes — dev server reloading…`);
+      } catch (e) {
+        toast(String(e.message || e), true);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+
+  <style>
+    .lede {
+      color: var(--color-muted);
+      max-width: 60ch;
+    }
+    .lede code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--color-ink);
+    }
+    .notes {
+      max-width: 820px;
+    }
+    .note-row {
+      display: grid;
+      grid-template-columns: 18rem 1fr auto;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+    .note-row input {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      padding: 0.45rem 0.55rem;
+      border: var(--border-thin);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    .note-row .slug {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+    .del {
+      cursor: pointer;
+      border: var(--border-thin);
+      border-radius: var(--radius);
+      background: #fff;
+      font-weight: 700;
+      padding: 0 0.6rem;
+    }
+    .del:hover {
+      background: var(--color-pink);
+    }
+    .row-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .btn.ghost {
+      background: transparent;
+    }
+    @media (max-width: 620px) {
+      .note-row {
+        grid-template-columns: 1fr auto;
+      }
+      .note-row .note {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</AdminLayout>
