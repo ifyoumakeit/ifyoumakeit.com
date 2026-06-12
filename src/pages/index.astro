@@ -6,6 +6,7 @@ import VideoEmbed from "../components/VideoEmbed.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { getLocalThumb } from "../lib/thumbs";
 import { getVideoUrl } from "../lib/video-url";
+import { renderMarkdown } from "../lib/markdown";
 
 // Fetch all published series ordered by sort
 const allSeries = await db
@@ -107,7 +108,7 @@ function formatDate(d: Date) {
           </h3>
           <p class="meta-line">{featuredSeries.title} &mdash; {formatDate(new Date(featuredVideo.recorded_at))}</p>
           {featuredVideo.description && (
-            <div class="featured-description" set:html={featuredVideo.description} />
+            <div class="featured-description" set:html={renderMarkdown(featuredVideo.description)} />
           )}
         </div>
       </div>

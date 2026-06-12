@@ -6,6 +6,7 @@ import SectionHeading from "../../../components/SectionHeading.astro";
 import { getAlbumCover } from "../../../lib/album-covers";
 import { getAlbumUrl, getAlbumSongSlug } from "../../../lib/album-url";
 import { toPlainText } from "../../../lib/seo";
+import { renderMarkdown } from "../../../lib/markdown";
 
 export async function getStaticPaths() {
   const albums = await db.select().from(album).where(eq(album.publish, 1));
@@ -30,8 +31,9 @@ const cover = getAlbumCover(albumData.slug);
 
 const releasedYear = new Date(albumData.released_at).getUTCFullYear();
 const downloadsLabel = new Intl.NumberFormat("en-US").format(albumData.downloads);
+const descriptionHtml = renderMarkdown(albumData.description);
 const plainDescription = albumData.description
-  ? toPlainText(albumData.description)
+  ? toPlainText(descriptionHtml)
   : `${albumData.artist_name} — ${albumData.title}, from the If You Make It archive.`;
 
 // Mostly DIY records sold through a label or Bandcamp, not streamed, so the
@@ -90,7 +92,7 @@ const buyHref = albumData.songlink_url ?? albumData.purchase_url;
         )}
 
         {albumData.description && (
-          <div class="album-description" set:html={albumData.description} />
+          <div class="album-description" set:html={descriptionHtml} />
         )}
       </div>
     </div>

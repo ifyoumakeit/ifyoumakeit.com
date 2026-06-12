@@ -17,6 +17,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { htmlToMarkdown } from "./lib/html-to-md.mjs";
 
 const dumpPath = process.argv[2];
 if (!dumpPath) {
@@ -183,7 +184,7 @@ for (const p of posts) {
     slug,
     artist_name: artistName,
     artist_slug: cleanSlug(titleSlug) || cleanSlug(artistName),
-    description: stripEmails(toHtml(body)),
+    description: htmlToMarkdown(stripEmails(toHtml(body))),
     members: stripEmails(memberStr) || null,
     tracklist: parseTracklist(tracklists.get(postId)),
     released_at: date,

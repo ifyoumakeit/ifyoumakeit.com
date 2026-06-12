@@ -13,6 +13,7 @@ import {
   buildVideoTitle,
   buildVideoMetaDescription,
 } from "../../../lib/seo";
+import { renderMarkdown } from "../../../lib/markdown";
 
 export async function getStaticPaths() {
   const allVideos = await db
@@ -72,13 +73,14 @@ const pageTitle = buildVideoTitle(
   videoData.title,
   recordedYear,
 );
+const descriptionHtml = renderMarkdown(videoData.description);
 const plainDescription = buildVideoMetaDescription({
   artistName: videoArtist.name,
   songTitle: videoData.title,
   seriesSlug: seriesData.slug,
   recordedAt: new Date(videoData.recorded_at),
   location: videoData.location,
-  note: videoData.description,
+  note: descriptionHtml || undefined,
 });
 const embedUrl =
   videoData.provider === "youtube"
@@ -220,7 +222,7 @@ function videoCard(v: typeof videoData) {
       <p class="meta-line">{metaParts.join(" — ")}</p>
 
       {videoData.description && (
-        <div class="video-description" set:html={videoData.description} />
+        <div class="video-description" set:html={descriptionHtml} />
       )}
 
       {allSongs.length > 0 && (

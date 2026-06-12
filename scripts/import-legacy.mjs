@@ -16,6 +16,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { htmlToMarkdown } from "./lib/html-to-md.mjs";
 
 const dumpPath = process.argv[2];
 if (!dumpPath) {
@@ -239,7 +240,7 @@ for (const p of posts) {
     slug,
     artist_id: artistByKey.get(key).id,
     series_id: series.id,
-    description: toHtml(body),
+    description: htmlToMarkdown(toHtml(body)),
     recorded_at: date,
     provider: resolved.provider,
     provider_id: resolved.id,
