@@ -1,5 +1,5 @@
 ---
-import { db, eq, video, tag, videoTag } from "astro:db";
+import { db, eq, video, tag, videoTag } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 
 const allVideos = await db.select().from(video).where(eq(video.publish, 1));

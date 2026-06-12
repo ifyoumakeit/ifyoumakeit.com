@@ -1,4 +1,3 @@
-/// <reference path="../.astro/db-types.d.ts" />
 /// <reference types="astro/client" />
 
 // @fontsource* packages ship CSS-only entrypoints (no type declarations).

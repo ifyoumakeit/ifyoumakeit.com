@@ -8,7 +8,7 @@
  *
  * Why a standalone script: it touches the YouTube Data API v3 only (no LLM
  * tokens) and is cheap enough to run on every deploy. It reads/writes
- * db/data/videos.json — the same file db/seed.ts loads at build time.
+ * db/data/videos.json — the same file src/lib/db.ts loads at build time.
  *
  * What it does for each provider === "youtube" video:
  *   - Looks the id up via videos.list?part=statistics,status (batches of 50,
