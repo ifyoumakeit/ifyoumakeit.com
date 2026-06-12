@@ -28,7 +28,8 @@ a couple of unmigrated Flash-era files.
 - `npm install` — install (lockfile has been out of sync with `npm ci` before;
   prefer `npm install`)
 - `npm run dev` — dev server (Drizzle + in-memory libSQL, seeded at startup
-  from `db/data/*.json`)
+  from `db/data/*.json`). Also serves the **local-only admin** at `/admin` (see
+  "Local admin + dashboard" below).
 - `npm run build` — `astro check && astro build` → `dist/` (this is what CI runs)
 - `npx astro check` — type-check only
 
@@ -39,7 +40,35 @@ Always run `npm run build` before committing; it must pass with 0 errors.
   private/deleted (or has a malformed id). Add `--` `--dry` to preview. Needs a
   YouTube Data API v3 key; ~6 API calls for the whole archive. A weekly GitHub
   Action (`.github/workflows/update-youtube.yml`) runs this and commits the
-  result; it needs the `YOUTUBE_API_KEY` repo secret.
+  result; it needs the `YOUTUBE_API_KEY` repo secret. The script persists
+  `views`, `likes`, and `comments` (all from one `part=statistics` call).
+
+## Local admin + dashboard (dev-only — never deployed)
+
+`npm run dev` exposes an editing UI + analytics dashboard at `/admin` for use on
+your own machine. It writes straight to the source-of-truth files
+(`db/data/videos.json`, `src/data/video-notes.ts`); you then commit + push and CI
+rebuilds the static site. There is **no auth** (localhost only) and **no part of
+it ships to production** — `npm run build` emits zero admin code to `dist/`.
+
+How the dev-only guarantee works (`integrations/admin.mjs` + `admin-api.mjs`):
+
+1. The integration's `astro:config:setup` hook **returns early unless
+   `command === "dev"`**, so `astro build` injects no admin routes.
+2. Every injected admin route uses **`prerender: false`**; with no adapter, a
+   stray one at build time makes `astro build` fail loudly rather than ship admin
+   HTML — a fail-safe, not a silent leak.
+3. Admin pages live in **`src/admin/`** (outside `src/pages/`), so Astro never
+   auto-routes them; they only exist via the dev-only `injectRoute`.
+4. Write endpoints (`/admin/api/*`) are Vite dev-server middleware, not Astro
+   routes — they have no build output at all. After each write the dev server
+   restarts so the in-memory libSQL singleton re-seeds.
+
+**Do not** remove the `command !== "dev"` gate, remove `prerender: false`, or move
+`src/admin/*` into `src/pages/` — each would risk leaking the admin into prod.
+Verify prod stays clean with: `npm run build && grep -ri admin dist/` (expect no
+matches). The admin tooling is committed to the (public) repo on purpose — it
+holds no secrets and never runs in production.
 
 ## Architecture
 

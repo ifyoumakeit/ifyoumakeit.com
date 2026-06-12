@@ -1,0 +1,90 @@
+---
+import AdminLayout from "./AdminLayout.astro";
+import { db, video, artist } from "../lib/db";
+
+const allVideos = await db.select().from(video);
+const allArtists = await db.select().from(artist);
+
+const published = allVideos.filter((v) => v.publish === 1).length;
+const hidden = allVideos.length - published;
+const youtube = allVideos.filter((v) => v.provider === "youtube");
+const withStats = youtube.filter((v) => (v.likes ?? 0) > 0 || (v.comments ?? 0) > 0).length;
+
+const cards = [
+  { n: allVideos.length, label: "videos total", href: "/admin/videos" },
+  { n: published, label: "published" },
+  { n: hidden, label: "hidden (publish:0)" },
+  { n: allArtists.length, label: "artists" },
+  { n: youtube.length, label: "youtube videos" },
+  { n: withStats, label: "with like/comment data" },
+];
+---
+
+<AdminLayout title="Admin">
+  <p class="lede">
+    Edit the archive locally. Changes write straight to
+    <code>db/data/videos.json</code> and <code>src/data/video-notes.ts</code> —
+    then commit &amp; push to publish. The live site stays fully static.
+  </p>
+
+  <div class="stat-grid">
+    {cards.map((c) => (
+      <a class="stat admin-card" href={c.href ?? "/admin/videos"}>
+        <span class="stat-n">{c.n}</span>
+        <span class="stat-label">{c.label}</span>
+      </a>
+    ))}
+  </div>
+
+  <div class="quick">
+    <a class="btn" href="/admin/dashboard">Open dashboard →</a>
+    <a class="btn" href="/admin/videos">Manage videos →</a>
+    <a class="btn" href="/admin/notes">Edit timeline notes →</a>
+  </div>
+
+  <style>
+    .lede {
+      max-width: 60ch;
+      color: var(--color-muted);
+    }
+    .lede code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--color-ink);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+      gap: 0.85rem;
+      margin: 1.5rem 0;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+    .stat:hover {
+      box-shadow: var(--shadow-hard);
+      transform: translate(-1px, -1px);
+    }
+    .stat-n {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      margin-top: 0.3rem;
+    }
+    .quick {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</AdminLayout>

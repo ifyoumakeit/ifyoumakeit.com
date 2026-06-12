@@ -1,0 +1,162 @@
+---
+// Slim shell for the LOCAL dev-only admin. Reuses the site design tokens but
+// not the public header/footer/SEO. These pages are only ever served by
+// `astro dev` (injected in integrations/admin.mjs) and never reach dist/.
+import "@fontsource/archivo-black";
+import "@fontsource-variable/archivo";
+import "@fontsource/space-mono/400.css";
+import "@fontsource/space-mono/700.css";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const path = Astro.url.pathname;
+const links = [
+  { href: "/admin", label: "Home" },
+  { href: "/admin/dashboard", label: "Dashboard" },
+  { href: "/admin/videos", label: "Videos" },
+  { href: "/admin/notes", label: "Notes" },
+];
+const isActive = (href: string) =>
+  href === "/admin" ? path === "/admin" : path.startsWith(href);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} — IYMI Admin</title>
+  </head>
+  <body>
+    <header class="admin-bar">
+      <div class="admin-bar__inner">
+        <span class="admin-brand">IYMI&nbsp;ADMIN</span>
+        <nav class="admin-nav">
+          {links.map((l) => (
+            <a href={l.href} class:list={["admin-nav__link", { active: isActive(l.href) }]}>
+              {l.label}
+            </a>
+          ))}
+        </nav>
+        <span class="admin-flag" title="This UI only runs in `astro dev` and is never deployed.">
+          local&nbsp;dev&nbsp;only
+        </span>
+      </div>
+    </header>
+    <main class="admin-main">
+      <h1 class="admin-title">{title}</h1>
+      <slot />
+    </main>
+
+    <style>
+      .admin-bar {
+        background: var(--color-ink);
+        color: var(--color-paper);
+        border-bottom: var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .admin-bar__inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0.6rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .admin-brand {
+        font-family: var(--font-display);
+        letter-spacing: 0.04em;
+        font-size: 1rem;
+      }
+      .admin-nav {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        flex: 1;
+      }
+      .admin-nav__link {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--color-paper);
+        text-decoration: none;
+        border: var(--border-thin);
+        border-color: var(--color-paper);
+        border-radius: 999px;
+        padding: 0.4em 0.8em;
+      }
+      .admin-nav__link:hover {
+        background: var(--color-pink);
+        border-color: var(--color-pink);
+        color: var(--color-ink);
+      }
+      .admin-nav__link.active {
+        background: var(--color-yellow);
+        border-color: var(--color-yellow);
+        color: var(--color-ink);
+      }
+      .admin-flag {
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: var(--color-pink);
+        color: var(--color-ink);
+        border: var(--border-thin);
+        padding: 0.35em 0.55em;
+        transform: rotate(-1.5deg);
+      }
+      .admin-main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem 4rem;
+      }
+      .admin-title {
+        font-family: var(--font-display);
+        text-transform: uppercase;
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+        margin: 0 0 1.25rem;
+      }
+      :global(.admin-card) {
+        border: var(--border);
+        box-shadow: var(--shadow-hard-sm);
+        border-radius: var(--radius);
+        background: var(--color-paper);
+        padding: 1rem 1.1rem;
+      }
+      :global(.admin-toast) {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        background: var(--color-ink);
+        color: var(--color-paper);
+        border: var(--border);
+        box-shadow: var(--shadow-hard);
+        border-radius: var(--radius);
+        padding: 0.75rem 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+      }
+      :global(.admin-toast.show) {
+        opacity: 1;
+      }
+      :global(.admin-toast.err) {
+        background: var(--color-pink-deep);
+      }
+    </style>
+  </body>
+</html>
