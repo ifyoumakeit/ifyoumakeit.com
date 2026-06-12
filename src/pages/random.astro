@@ -1,0 +1,71 @@
+---
+import { db, eq, video, artist, series } from "../lib/db";
+import Layout from "../layouts/Layout.astro";
+import { getVideoUrl } from "../lib/video-url";
+
+// Build a list of every published video URL. The button redirects to a random
+// one client-side (true per-click randomness); with no JS, the visible link
+// below is a fallback target picked at build time.
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const allArtists = await db.select().from(artist);
+const artistMap = new Map(allArtists.map((a) => [a.id, a]));
+const publishedSeries = await db
+  .select()
+  .from(series)
+  .where(eq(series.publish, 1));
+const seriesIds = new Set(publishedSeries.map((s) => s.id));
+
+const urls = allVideos
+  .filter((v) => seriesIds.has(v.series_id) && artistMap.has(v.artist_id))
+  .map((v) => getVideoUrl(v, artistMap.get(v.artist_id)!));
+
+const fallback = urls[Math.floor(Math.random() * urls.length)] ?? "/";
+---
+
+<Layout
+  title="Random video"
+  description="Jump to a random video from the If You Make It archive."
+  noindex={true}
+>
+  <section class="random container">
+    <p class="random__dice" aria-hidden="true">🎲</p>
+    <h1 class="random__title">Rolling the dice…</h1>
+    <p class="random__note">
+      Sending you to a random video.
+      <a href={fallback}>Pick one yourself</a> if nothing happens.
+    </p>
+  </section>
+
+  <script is:inline define:vars={{ urls }}>
+    if (Array.isArray(urls) && urls.length) {
+      location.replace(urls[Math.floor(Math.random() * urls.length)]);
+    }
+  </script>
+</Layout>
+
+<style>
+  .random {
+    padding-block: 4rem 5rem;
+    text-align: center;
+  }
+  .random__dice {
+    font-size: clamp(3rem, 10vw, 5rem);
+    margin: 0 0 0.5rem;
+    line-height: 1;
+  }
+  .random__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    margin: 0 0 0.75rem;
+  }
+  .random__note {
+    color: var(--color-muted);
+  }
+  .random__note a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-pink);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+</style>
