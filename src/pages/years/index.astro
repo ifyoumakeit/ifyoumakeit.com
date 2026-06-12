@@ -3,6 +3,7 @@ import { db, eq, video, artist, series } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 import { getLocalThumb } from "../../lib/thumbs";
 import { getVideoUrl } from "../../lib/video-url";
+import { videoNotes } from "../../data/video-notes";
 
 const allVideos = await db.select().from(video).where(eq(video.publish, 1));
 const allArtists = await db.select().from(artist);
@@ -101,8 +102,10 @@ function thumbFor(v: Entry): string | null {
                     const a = artistById.get(v.artist_id);
                     const s = seriesById.get(v.series_id);
                     const thumb = thumbFor(v);
+                    const note = videoNotes[v.slug];
                     return (
                       <li>
+                        {note && <p class="entry-note">{note}</p>}
                         <a
                           class="entry"
                           href={getVideoUrl(v, a!)}
@@ -245,6 +248,36 @@ function thumbFor(v: Entry): string | null {
     border-radius: 999px;
     padding: 0.3em 0.6em;
     transform: translateY(-0.9em) rotate(6deg);
+  }
+
+  /* Curator note — a scrawled index card pinned above the recording it
+     introduces. Sits on the spine just before its entry. */
+  .entry-note {
+    position: relative;
+    margin: 0.2rem 0 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: var(--color-ink);
+    background: var(--color-yellow);
+    border: var(--border-thin);
+    border-left: 4px solid var(--color-pink);
+    border-radius: 2px;
+    box-shadow: var(--shadow-hard-sm);
+    padding: 0.55rem 0.75rem;
+    transform: rotate(-0.5deg);
+  }
+  /* dot pinning the note to the spine, matching the entries */
+  .entry-note::before {
+    content: "";
+    position: absolute;
+    left: calc(-1 * clamp(1.1rem, 3vw, 1.75rem) - 9px - 2px);
+    top: 1rem;
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    border: 3px solid var(--color-ink);
+    background: var(--color-pink);
   }
 
   /* the inked spine */
