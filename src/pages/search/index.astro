@@ -1,13 +1,15 @@
 ---
-import { db, eq, video, artist, series, album } from "../../lib/db";
+import { db, eq, video, artist, series, album, comic } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 import { getVideoUrl } from "../../lib/video-url";
 import { getAlbumUrl } from "../../lib/album-url";
+import { getComicUrl } from "../../lib/comic-url";
 
 const allVideos = await db.select().from(video).where(eq(video.publish, 1));
 const allArtists = await db.select().from(artist);
 const allSeries = await db.select().from(series).where(eq(series.publish, 1));
 const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
+const allComics = await db.select().from(comic).where(eq(comic.publish, 1));
 const artistById = new Map(allArtists.map((a) => [a.id, a]));
 const seriesById = new Map(allSeries.map((s) => [s.id, s]));
 
@@ -34,12 +36,23 @@ const albumIndex = allAlbums.map((al) => ({
   y: new Date(al.released_at).getUTCFullYear(),
   u: getAlbumUrl(al),
 }));
-const index = [...videoIndex, ...albumIndex].sort(
-  (x, y) => y.y - x.y || x.a.localeCompare(y.a),
+// Comics carry no reliable year — `y: ""` sorts them after dated records and
+// hides the year in the result meta.
+const comicIndex = allComics.map((c) => ({
+  t: c.title,
+  a: c.artist_name,
+  s: "Comic",
+  k: "comics",
+  y: "" as number | "",
+  u: getComicUrl(c),
+}));
+const index = [...videoIndex, ...albumIndex, ...comicIndex].sort(
+  (x, y) => (Number(y.y) || 0) - (Number(x.y) || 0) || x.a.localeCompare(y.a),
 );
 
 const videoCount = videoIndex.length;
 const albumCount = albumIndex.length;
+const comicCount = comicIndex.length;
 const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
 ---
 
@@ -66,7 +79,7 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
         />
       </form>
       <p class="search-status meta-line" id="status" aria-live="polite">
-        {videoCount} videos &amp; {albumCount} albums
+        {videoCount} videos, {albumCount} albums &amp; {comicCount} comics
       </p>
     </header>
 
@@ -154,8 +167,7 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
             "</span>" +
             '<span class="result__meta meta-line">' +
             esc(r.s) +
-            " · " +
-            r.y +
+            (r.y ? " · " + r.y : "") +
             "</span>" +
             "</a></li>";
         }
@@ -296,6 +308,11 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
   #results :global(.result[data-series="albums"]) {
     --accent: var(--color-blue);
     --accent-text: var(--color-blue);
+  }
+  /* Comics get the punk-yellow accent. */
+  #results :global(.result[data-series="comics"]) {
+    --accent: var(--color-yellow);
+    --accent-text: var(--color-pink-deep);
   }
   #results :global(.result__text) {
     min-width: 0;

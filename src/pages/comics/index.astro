@@ -1,0 +1,104 @@
+---
+import { db, eq, comic } from "../../lib/db";
+import Layout from "../../layouts/Layout.astro";
+import ComicCard from "../../components/ComicCard.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { getComicUrl } from "../../lib/comic-url";
+
+const comics = await db.select().from(comic).where(eq(comic.publish, 1));
+
+// No reliable publish dates in the derived data, so group by cartoonist.
+type Comic = (typeof comics)[number];
+const byArtist = new Map<string, Comic[]>();
+for (const c of comics.sort((a, b) => a.title.localeCompare(b.title))) {
+  if (!byArtist.has(c.artist_name)) byArtist.set(c.artist_name, []);
+  byArtist.get(c.artist_name)!.push(c);
+}
+const artists = [...byArtist.keys()].sort((a, b) => a.localeCompare(b));
+const pagesOf = (c: Comic): string[] => JSON.parse(c.pages);
+---
+
+<Layout
+  title="Comics"
+  description="Punk comic strips from the If You Make It archive — guest cartoonists like Liz Prince, Ramsey Beyer, Jim Kettner, and more on shows, records, and life in the DIY scene."
+>
+  <div class="comics-page">
+    <header class="comics-header container">
+      <h1 class="comics-title">Comics</h1>
+      <p class="comics-description">
+        Between the videos, If You Make It ran comic strips from punk
+        cartoonists — Liz Prince, Ramsey Beyer, Jim Kettner, and friends drawing
+        the shows, the records, and the long drives in between.
+      </p>
+      <p class="meta-line">
+        {comics.length} strip{comics.length !== 1 ? "s" : ""} · {artists.length}
+        artists
+      </p>
+    </header>
+
+    <div class="container comics-body">
+      {
+        artists.map((name) => {
+          const group = byArtist.get(name)!;
+          return (
+            <section class="artist-group">
+              <SectionHeading title={name} count={group.length} />
+              <div class="grid-comics">
+                {group.map((c) => {
+                  const pages = pagesOf(c);
+                  return (
+                    <ComicCard
+                      title={c.title}
+                      href={getComicUrl(c)}
+                      artistName={c.artist_name}
+                      coverFile={pages[0]}
+                      pageCount={pages.length}
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })
+      }
+
+      {comics.length === 0 && <p class="empty">No comics yet.</p>}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .comics-header {
+    padding-block: 2.5rem 1.5rem;
+    border-bottom: var(--border);
+  }
+  .comics-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin: 0 0 0.5rem;
+    color: var(--color-pink-deep);
+    animation: stamp-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    transform-origin: left bottom;
+  }
+  .comics-description {
+    font-size: 1.05rem;
+    max-width: 60ch;
+    margin: 0 0 0.5rem;
+  }
+  .comics-body {
+    padding-block: 1.5rem;
+  }
+  .artist-group {
+    margin-block-end: 2.5rem;
+  }
+  .grid-comics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+    margin-block-start: 0.75rem;
+  }
+  .empty {
+    color: var(--color-muted);
+    font-style: italic;
+  }
+</style>

@@ -92,3 +92,21 @@ export const album = sqliteTable("album", {
   purchase_url: text("purchase_url"),
   publish: integer("publish").notNull().default(1),
 });
+
+// Comic strips by guest punk cartoonists (Liz Prince, Ramsey Beyer, Jim
+// Kettner, …). Like albums, a comic carries its own artist_name/artist_slug
+// (cartoonists aren't bands in the artist table). `pages` is a JSON array of
+// image filenames under public/thumbs/comic/, in reading order. `released_at`
+// is nullable — the legacy publish dates aren't in the derived dataset yet.
+export const comic = sqliteTable("comic", {
+  id: integer("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  artist_name: text("artist_name").notNull(),
+  artist_slug: text("artist_slug").notNull(),
+  title_slug: text("title_slug").notNull(),
+  description: text("description"),
+  pages: text("pages").notNull(), // JSON: string[] of image filenames
+  released_at: integer("released_at", { mode: "timestamp" }),
+  publish: integer("publish").notNull().default(1),
+});

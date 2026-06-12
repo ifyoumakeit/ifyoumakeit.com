@@ -1,8 +1,9 @@
 import type { APIRoute } from "astro";
-import { db, eq, video, artist, series, tag, videoTag, album } from "../lib/db";
+import { db, eq, video, artist, series, tag, videoTag, album, comic } from "../lib/db";
 import { SITE_URL } from "../lib/seo";
 import { getVideoUrl } from "../lib/video-url";
 import { getAlbumUrl } from "../lib/album-url";
+import { getComicUrl } from "../lib/comic-url";
 
 export const prerender = true;
 
@@ -22,6 +23,7 @@ export const GET: APIRoute = async () => {
   const allTags = await db.select().from(tag);
   const allVideoTags = await db.select().from(videoTag);
   const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
+  const allComics = await db.select().from(comic).where(eq(comic.publish, 1));
 
   const artistById = new Map(allArtists.map((item) => [item.id, item]));
   const artistIds = new Set(allVideos.map((item) => item.artist_id));
@@ -42,6 +44,8 @@ export const GET: APIRoute = async () => {
     "/tags/",
     ...(allAlbums.length ? ["/albums/"] : []),
     ...allAlbums.map((item) => getAlbumUrl(item)),
+    ...(allComics.length ? ["/comics/"] : []),
+    ...allComics.map((item) => getComicUrl(item)),
     ...allSeries.map((item) => `/${item.slug}/`),
     ...allArtists
       .filter((item) => artistIds.has(item.id))

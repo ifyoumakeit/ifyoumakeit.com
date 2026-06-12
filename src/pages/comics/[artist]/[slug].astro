@@ -1,0 +1,157 @@
+---
+import { db, eq, comic, artist } from "../../../lib/db";
+import Layout from "../../../layouts/Layout.astro";
+import ComicCard from "../../../components/ComicCard.astro";
+import SectionHeading from "../../../components/SectionHeading.astro";
+import { getComicUrl, getComicPageSrc } from "../../../lib/comic-url";
+
+export async function getStaticPaths() {
+  const comics = await db.select().from(comic).where(eq(comic.publish, 1));
+  return comics.map((c) => ({
+    params: { artist: c.artist_slug, slug: c.title_slug },
+    props: { comicData: c },
+  }));
+}
+
+const { comicData } = Astro.props;
+const pages: string[] = JSON.parse(comicData.pages);
+
+// Cartoonists generally aren't bands, but cross-link if a slug happens to match.
+const allArtists = await db.select().from(artist);
+const artistMatch = allArtists.find((a) => a.slug === comicData.artist_slug);
+
+const allComics = await db.select().from(comic).where(eq(comic.publish, 1));
+type Comic = (typeof allComics)[number];
+const moreFromArtist = allComics
+  .filter((c) => c.artist_slug === comicData.artist_slug && c.id !== comicData.id)
+  .sort((a, b) => a.title.localeCompare(b.title))
+  .slice(0, 4);
+const pagesOf = (c: Comic): string[] => JSON.parse(c.pages);
+
+const description = `"${comicData.title}" — a punk comic strip by ${comicData.artist_name}, from the If You Make It archive.`;
+---
+
+<Layout title={`${comicData.title} — ${comicData.artist_name}`} description={description} type="article">
+  <article class="comic-page">
+    <header class="comic-head container">
+      <p class="comic-artist">
+        {
+          artistMatch ? (
+            <a href={`/artists/${artistMatch.slug}/`}>{comicData.artist_name}</a>
+          ) : (
+            comicData.artist_name
+          )
+        }
+      </p>
+      <h1 class="comic-title">{comicData.title}</h1>
+      <p class="meta-line">
+        {pages.length} page{pages.length !== 1 ? "s" : ""}
+      </p>
+    </header>
+
+    <div class="comic-reader">
+      {
+        pages.map((file, i) => (
+          <img
+            class="comic-reader__page"
+            src={getComicPageSrc(file)}
+            alt={`${comicData.title} — page ${i + 1}`}
+            loading={i === 0 ? "eager" : "lazy"}
+            decoding="async"
+          />
+        ))
+      }
+    </div>
+
+    {moreFromArtist.length > 0 && (
+      <section class="related-section container">
+        <SectionHeading title={`More from ${comicData.artist_name}`} />
+        <div class="grid-comics">
+          {moreFromArtist.map((c) => {
+            const p = pagesOf(c);
+            return (
+              <ComicCard
+                title={c.title}
+                href={getComicUrl(c)}
+                artistName={c.artist_name}
+                coverFile={p[0]}
+                pageCount={p.length}
+              />
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    <nav class="comic-back container">
+      <a href="/comics/">← All comics</a>
+    </nav>
+  </article>
+</Layout>
+
+<style>
+  .comic-head {
+    padding-block: 2rem 1.25rem;
+  }
+  .comic-artist {
+    margin: 0 0 0.25rem;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    color: var(--color-pink-deep);
+  }
+  .comic-artist a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .comic-artist a:hover {
+    color: var(--color-pink);
+  }
+  .comic-title {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    margin: 0 0 0.4rem;
+  }
+
+  /* The reader: wide but capped so pages stay legible. Each page is a bordered
+     "panel" on the paper, stacked in reading order. */
+  .comic-reader {
+    width: min(100% - 2rem, 1100px);
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-block: 1rem 2rem;
+  }
+  .comic-reader__page {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--color-paper);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .related-section {
+    padding-block: 2rem;
+    border-top: var(--border);
+  }
+  .grid-comics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1.25rem;
+    margin-block-start: 0.75rem;
+  }
+  .comic-back {
+    padding-block: 1.5rem 3rem;
+  }
+  .comic-back a {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.8rem;
+  }
+</style>

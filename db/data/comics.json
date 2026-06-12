@@ -1,0 +1,587 @@
+[
+ {
+  "id": 1,
+  "title": "Mind Killer",
+  "slug": "jim-kettner-mind-killer",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "mind-killer",
+  "description": null,
+  "pages": [
+   "jim-kettner-mind-killer.jpg",
+   "jim-kettner-mind-killer-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 2,
+  "title": "Scene Report Confidential LA",
+  "slug": "jim-kettner-scene-report-confidential-la",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "scene-report-confidential-la",
+  "description": null,
+  "pages": [
+   "jim-kettner-scene-report-confidential-la.jpg",
+   "jim-kettner-scene-report-confidential-la-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 3,
+  "title": "Scene Report Oakland",
+  "slug": "jim-kettner-scene-report-oakland",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "scene-report-oakland",
+  "description": null,
+  "pages": [
+   "jim-kettner-scene-report-oakland.jpg",
+   "jim-kettner-scene-report-oakland-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 4,
+  "title": "Scene Report San Diego",
+  "slug": "jim-kettner-scene-report-san-diego",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "scene-report-san-diego",
+  "description": null,
+  "pages": [
+   "jim-kettner-scene-report-san-diego.jpg",
+   "jim-kettner-scene-report-san-diego-2.jpg",
+   "jim-kettner-scene-report-san-diego-3.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 5,
+  "title": "Summer Jams Part One",
+  "slug": "jim-kettner-summer-jams-part-one",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "summer-jams-part-one",
+  "description": null,
+  "pages": [
+   "jim-kettner-summer-jams-part-one.jpg",
+   "jim-kettner-summer-jams-part-one-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 6,
+  "title": "Summer Jams Part Two",
+  "slug": "jim-kettner-summer-jams-part-two",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "summer-jams-part-two",
+  "description": null,
+  "pages": [
+   "jim-kettner-summer-jams-part-two.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 7,
+  "title": "The Ergs Reunion Part Two",
+  "slug": "jim-kettner-the-ergs-reunion-part-two",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "the-ergs-reunion-part-two",
+  "description": null,
+  "pages": [
+   "jim-kettner-the-ergs-reunion-part-two.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 8,
+  "title": "The Very Beginning",
+  "slug": "jim-kettner-the-very-beginning",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "the-very-beginning",
+  "description": null,
+  "pages": [
+   "jim-kettner-the-very-beginning.jpg",
+   "jim-kettner-the-very-beginning-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 9,
+  "title": "Wake Up Wake Up",
+  "slug": "jim-kettner-wake-up-wake-up",
+  "artist_name": "Jim Kettner",
+  "artist_slug": "jim-kettner",
+  "title_slug": "wake-up-wake-up",
+  "description": null,
+  "pages": [
+   "jim-kettner-wake-up-wake-up.jpg",
+   "jim-kettner-wake-up-wake-up-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 10,
+  "title": "Back in the Day",
+  "slug": "jim-kettner-and-eric-weiss-back-in-the-day",
+  "artist_name": "Jim Kettner & Eric Weiss",
+  "artist_slug": "jim-kettner-and-eric-weiss",
+  "title_slug": "back-in-the-day",
+  "description": null,
+  "pages": [
+   "jim-kettner-and-eric-weiss-back-in-the-day.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 11,
+  "title": "Record Collecting",
+  "slug": "liz-baillie-record-collecting",
+  "artist_name": "Liz Baillie",
+  "artist_slug": "liz-baillie",
+  "title_slug": "record-collecting",
+  "description": null,
+  "pages": [
+   "liz-baillie-record-collecting.jpg",
+   "liz-baillie-record-collecting-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 12,
+  "title": "Band Dudes",
+  "slug": "liz-prince-band-dudes",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "band-dudes",
+  "description": null,
+  "pages": [
+   "liz-prince-band-dudes.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 13,
+  "title": "Chaos in Tejas",
+  "slug": "liz-prince-chaos-in-tejas-day",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "chaos-in-tejas-day",
+  "description": null,
+  "pages": [
+   "liz-prince-chaos-in-tejas-day-1.jpg",
+   "liz-prince-chaos-in-tejas-day-2.jpg",
+   "liz-prince-chaos-in-tejas-day-3.jpg",
+   "liz-prince-chaos-in-tejas-day-4.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 14,
+  "title": "Collecting Confession",
+  "slug": "liz-prince-collecting-confession",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "collecting-confession",
+  "description": null,
+  "pages": [
+   "liz-prince-collecting-confession.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 15,
+  "title": "Comic About iPods",
+  "slug": "liz-prince-comic-about-ipods",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "comic-about-ipods",
+  "description": null,
+  "pages": [
+   "liz-prince-comic-about-ipods.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 16,
+  "title": "Cooking with the Methadones",
+  "slug": "liz-prince-cooking-with-the-methadones",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "cooking-with-the-methadones",
+  "description": null,
+  "pages": [
+   "liz-prince-cooking-with-the-methadones.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 17,
+  "title": "Fun Fun Fun Fest",
+  "slug": "liz-prince-fun-fun-fun-fest",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "fun-fun-fun-fest",
+  "description": null,
+  "pages": [
+   "liz-prince-fun-fun-fun-fest.jpg",
+   "liz-prince-fun-fun-fun-fest_2.jpg",
+   "liz-prince-fun-fun-fun-fest_3.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 18,
+  "title": "He's My Ex",
+  "slug": "liz-prince-hes-my-ex",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "hes-my-ex",
+  "description": null,
+  "pages": [
+   "liz-prince-hes-my-ex.jpg",
+   "liz-prince-hes-my-ex-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 19,
+  "title": "I Don't Want to Grow Up",
+  "slug": "liz-prince-i-dont-want-to-grow-up",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "i-dont-want-to-grow-up",
+  "description": null,
+  "pages": [
+   "liz-prince-i-dont-want-to-grow-up.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 20,
+  "title": "Lizapalooza",
+  "slug": "liz-prince-lizapalooza",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "lizapalooza",
+  "description": null,
+  "pages": [
+   "liz-prince-lizapalooza.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 21,
+  "title": "Make Me a Mixtape",
+  "slug": "liz-prince-make-me-a-mixtape",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "make-me-a-mixtape",
+  "description": null,
+  "pages": [
+   "liz-prince-make-me-a-mixtape.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 22,
+  "title": "My Exploding Heart",
+  "slug": "liz-prince-my-exploding-heart",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "my-exploding-heart",
+  "description": null,
+  "pages": [
+   "liz-prince-my-exploding-heart.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 23,
+  "title": "My Standard Break from Life",
+  "slug": "liz-prince-my-standard-break-from-life",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "my-standard-break-from-life",
+  "description": null,
+  "pages": [
+   "liz-prince-my-standard-break-from-life.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 24,
+  "title": "O Spring",
+  "slug": "liz-prince-o-spring",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "o-spring",
+  "description": null,
+  "pages": [
+   "liz-prince-o-spring.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 25,
+  "title": "Punk Rock Is Ruining My Teeth",
+  "slug": "liz-prince-punk-rock-is-ruining-my-teeth",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "punk-rock-is-ruining-my-teeth",
+  "description": null,
+  "pages": [
+   "liz-prince-punk-rock-is-ruining-my-teeth.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 26,
+  "title": "Ramones Rest Stop",
+  "slug": "liz-prince-ramones-rest-stop",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "ramones-rest-stop",
+  "description": null,
+  "pages": [
+   "liz-prince-ramones-rest-stop.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 27,
+  "title": "The Ergs Reunion Part One",
+  "slug": "liz-prince-the-ergs-reunion-part-one",
+  "artist_name": "Liz Prince",
+  "artist_slug": "liz-prince",
+  "title_slug": "the-ergs-reunion-part-one",
+  "description": null,
+  "pages": [
+   "liz-prince-the-ergs-reunion-part-one.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 28,
+  "title": "The Ergs Reunion Part Three",
+  "slug": "liz-prince-and-jim-kettner-the-ergs-reunion-part-three",
+  "artist_name": "Liz Prince & Jim Kettner",
+  "artist_slug": "liz-prince-and-jim-kettner",
+  "title_slug": "the-ergs-reunion-part-three",
+  "description": null,
+  "pages": [
+   "liz-prince-and-jim-kettner-the-ergs-reunion-part-three.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 29,
+  "title": "How to Get a Gig",
+  "slug": "mikey-heller-how-to-get-a-gig",
+  "artist_name": "Mikey Heller",
+  "artist_slug": "mikey-heller",
+  "title_slug": "how-to-get-a-gig",
+  "description": null,
+  "pages": [
+   "mikey-heller-how-to-get-a-gig.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 30,
+  "title": "Music Class",
+  "slug": "mikey-heller-music-class",
+  "artist_name": "Mikey Heller",
+  "artist_slug": "mikey-heller",
+  "title_slug": "music-class",
+  "description": null,
+  "pages": [
+   "mikey-heller-music-class.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 31,
+  "title": "An Evening with Evan Weiss",
+  "slug": "ramsey-beyer-an-evening-with-evan-weiss",
+  "artist_name": "Ramsey Beyer",
+  "artist_slug": "ramsey-beyer",
+  "title_slug": "an-evening-with-evan-weiss",
+  "description": null,
+  "pages": [
+   "ramsey-beyer-an-evening-with-evan-weiss.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 32,
+  "title": "Can't Bro Down",
+  "slug": "ramsey-beyer-cant-bro-down",
+  "artist_name": "Ramsey Beyer",
+  "artist_slug": "ramsey-beyer",
+  "title_slug": "cant-bro-down",
+  "description": null,
+  "pages": [
+   "ramsey-beyer-cant-bro-down.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 33,
+  "title": "Kings of the Beach",
+  "slug": "ramsey-beyer-kings-of-the-beach",
+  "artist_name": "Ramsey Beyer",
+  "artist_slug": "ramsey-beyer",
+  "title_slug": "kings-of-the-beach",
+  "description": null,
+  "pages": [
+   "ramsey-beyer-kings-of-the-beach.jpg",
+   "ramsey-beyer-kings-of-the-beach-2.jpg",
+   "ramsey-beyer-kings-of-the-beach-3.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 34,
+  "title": "Morning Commute",
+  "slug": "ramsey-beyer-morning-commute",
+  "artist_name": "Ramsey Beyer",
+  "artist_slug": "ramsey-beyer",
+  "title_slug": "morning-commute",
+  "description": null,
+  "pages": [
+   "ramsey-beyer-morning-commute.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 35,
+  "title": "My Life Is at Home",
+  "slug": "ramsey-beyer-my-life-is-at-home",
+  "artist_name": "Ramsey Beyer",
+  "artist_slug": "ramsey-beyer",
+  "title_slug": "my-life-is-at-home",
+  "description": null,
+  "pages": [
+   "ramsey-beyer-my-life-is-at-home.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 36,
+  "title": "Tales of a Punk Rock Nanny",
+  "slug": "ramsey-beyer-tales-of-a-punk-rock-nanny",
+  "artist_name": "Ramsey Beyer",
+  "artist_slug": "ramsey-beyer",
+  "title_slug": "tales-of-a-punk-rock-nanny",
+  "description": null,
+  "pages": [
+   "ramsey-beyer-tales-of-a-punk-rock-nanny.jpg",
+   "ramsey-beyer-tales-of-a-punk-rock-nanny-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 37,
+  "title": "The Fest 9",
+  "slug": "ramsey-beyer-the-fest-9",
+  "artist_name": "Ramsey Beyer",
+  "artist_slug": "ramsey-beyer",
+  "title_slug": "the-fest-9",
+  "description": null,
+  "pages": [
+   "ramsey-beyer-the-fest-9.jpg",
+   "ramsey-beyer-the-fest-9-2.jpg",
+   "ramsey-beyer-the-fest-9-3.jpg",
+   "ramsey-beyer-the-fest-9-4.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 38,
+  "title": "Get Out of My Dreams",
+  "slug": "sally-madden-get-out-of-my-dreams",
+  "artist_name": "Sally Madden",
+  "artist_slug": "sally-madden",
+  "title_slug": "get-out-of-my-dreams",
+  "description": null,
+  "pages": [
+   "sally-madden-get-out-of-my-dreams.jpg",
+   "sally-madden-get-out-of-my-dreams-2.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 39,
+  "title": "Grandma Take Me Home",
+  "slug": "sally-madden-grandma-take-me-home",
+  "artist_name": "Sally Madden",
+  "artist_slug": "sally-madden",
+  "title_slug": "grandma-take-me-home",
+  "description": null,
+  "pages": [
+   "sally-madden-grandma-take-me-home.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ },
+ {
+  "id": 40,
+  "title": "Shopping for Records the Hard Way",
+  "slug": "sally-madden-shopping-for-records-the-hard-way",
+  "artist_name": "Sally Madden",
+  "artist_slug": "sally-madden",
+  "title_slug": "shopping-for-records-the-hard-way",
+  "description": null,
+  "pages": [
+   "sally-madden-shopping-for-records-the-hard-way.jpg",
+   "sally-madden-shopping-for-records-the-hard-way-2.jpg",
+   "sally-madden-shopping-for-records-the-hard-way-3.jpg",
+   "sally-madden-shopping-for-records-the-hard-way-4.jpg"
+  ],
+  "released_at": null,
+  "publish": 1
+ }
+]

@@ -1,10 +1,11 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import { series, artist, video, song, tag, videoTag, album } from "./schema";
+import { series, artist, video, song, tag, videoTag, album, comic } from "./schema";
 import seriesData from "../../db/data/series.json";
 import artistsData from "../../db/data/artists.json";
 import videosData from "../../db/data/videos.json";
 import albumsData from "../../db/data/albums.json";
+import comicsData from "../../db/data/comics.json";
 
 // Build-time, in-memory data layer (replaces the deprecated astro:db).
 // A single libSQL `:memory:` database is created, schema'd and seeded once per
@@ -85,10 +86,22 @@ await client.executeMultiple(`
     purchase_url TEXT,
     publish INTEGER NOT NULL DEFAULT 1
   );
+  CREATE TABLE comic (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
+    artist_name TEXT NOT NULL,
+    artist_slug TEXT NOT NULL,
+    title_slug TEXT NOT NULL,
+    description TEXT,
+    pages TEXT NOT NULL,
+    released_at INTEGER,
+    publish INTEGER NOT NULL DEFAULT 1
+  );
 `);
 
 export const db = drizzle(client, {
-  schema: { series, artist, video, song, tag, videoTag },
+  schema: { series, artist, video, song, tag, videoTag, album, comic },
 });
 
 // Seed the archive. db/data/*.json is the source of truth.
@@ -116,7 +129,18 @@ for (let i = 0; i < albumRows.length; i += CHUNK) {
   await db.insert(album).values(albumRows.slice(i, i + CHUNK));
 }
 
+// Comics: `pages` stored as a JSON string column; `released_at` may be null
+// (legacy dates not yet imported), so guard the Date conversion.
+const comicRows = comicsData.map((c) => ({
+  ...c,
+  pages: JSON.stringify(c.pages ?? []),
+  released_at: c.released_at ? new Date(c.released_at) : null,
+}));
+for (let i = 0; i < comicRows.length; i += CHUNK) {
+  await db.insert(comic).values(comicRows.slice(i, i + CHUNK));
+}
+
 // Re-export the schema tables and the operators used across the pages, so call
 // sites import everything from "../lib/db" exactly as they did from "astro:db".
-export { series, artist, video, song, tag, videoTag, album };
+export { series, artist, video, song, tag, videoTag, album, comic };
 export { eq, asc } from "drizzle-orm";
