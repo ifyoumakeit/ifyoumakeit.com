@@ -428,7 +428,8 @@
   "provider_id": "o97M5S1xQ6g",
   "featured": 0,
   "views": 930,
-  "likes": 19
+  "likes": 19,
+  "publish": 0
  },
  {
   "id": 31,
@@ -556,7 +557,8 @@
   "featured": 0,
   "views": 1037,
   "likes": 26,
-  "comments": 2
+  "comments": 2,
+  "publish": 0
  },
  {
   "id": 40,
@@ -1363,7 +1365,8 @@
   "featured": 0,
   "views": 21638,
   "likes": 173,
-  "comments": 30
+  "comments": 30,
+  "publish": 0
  },
  {
   "id": 98,
