@@ -199,6 +199,15 @@ const nf = new Intl.NumberFormat("en-US");
           btn.setAttribute("aria-pressed", next === 1 ? "true" : "false");
           if (field === "publish") btn.textContent = next ? "live" : "hidden";
           else btn.textContent = next ? "★" : "☆";
+          // Only one featured video: clear every other star to match the server.
+          if (field === "featured" && next === 1) {
+            document.querySelectorAll("button.toggle.star").forEach((other) => {
+              if (other === btn) return;
+              other.closest("tr").dataset.featured = "0";
+              other.setAttribute("aria-pressed", "false");
+              other.textContent = "☆";
+            });
+          }
           toast(`Saved — dev server is reloading…`);
           applyFilters();
         } catch (e) {

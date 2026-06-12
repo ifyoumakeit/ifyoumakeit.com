@@ -133,6 +133,11 @@ async function putVideo(req, res, videosPath, server, id) {
     }
   }
 
+  // Only one featured video at a time: featuring this one un-features the rest.
+  if (row.featured === 1) {
+    for (const v of videos) if (v !== row && v.featured) v.featured = 0;
+  }
+
   writeFileSync(videosPath, JSON.stringify(videos, null, 1) + "\n");
   json(res, 200, { ok: true, id });
   void server.restart();
