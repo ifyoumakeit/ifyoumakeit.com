@@ -80,9 +80,12 @@ const isActive = (href: string) =>
             btn.disabled = true;
             btn.title = "No edited data files to commit.";
           } else {
-            btn.textContent = `Publish ${s.changed} change${s.changed > 1 ? "s" : ""}`;
+            const files = s.files || [];
+            btn.textContent = `Publish ${s.changed} file${s.changed > 1 ? "s" : ""}`;
             btn.disabled = false;
-            btn.title = "Commit the edited data files and push to main.";
+            // All edits to one file count as one file — list them so the count
+            // is never mistaken for the number of individual edits.
+            btn.title = `Commit & push to main: ${files.join(", ")}`;
           }
         } catch {}
       }

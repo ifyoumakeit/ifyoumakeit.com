@@ -242,8 +242,15 @@ async function publishStatus(res, rootDir) {
   try {
     const branch = await currentBranch(rootDir);
     const { stdout } = await git(rootDir, ["status", "--porcelain", "--", ...DATA_FILES]);
-    const changed = stdout.split("\n").filter((l) => l.trim()).length;
-    json(res, 200, { ok: true, branch, changed, onMain: branch === "main" });
+    // One line per changed file ("XY path"). All edits to a single file (e.g.
+    // many album rows in albums.json) count as ONE file — report basenames so
+    // the UI can say "1 file (albums.json)" instead of an ambiguous "1 change".
+    const files = stdout
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .map((l) => l.replace(/^\S+\s+/, "").split("/").pop());
+    json(res, 200, { ok: true, branch, changed: files.length, files, onMain: branch === "main" });
   } catch (e) {
     json(res, 200, { ok: false, error: String(e?.stderr || e?.message || e) });
   }
