@@ -2740,10 +2740,12 @@
   "series_id": 2,
   "description": "<p>This is from 2008&#039;s Fest in Gainesville, Florida. I had a bunch of bands come into a space we were using (Thanks Evan and Katie!) down the street from registration. So look forward to a bunch more in the near future. This song is brand new and was just released on the 1st, you can get it at chunksaah.com</p>",
   "recorded_at": "2009-01-05",
-  "provider": "dailymotion",
-  "provider_id": "x7wtos_the-bouncing-souls-gasoline_music",
+  "provider": "youtube",
+  "provider_id": "dlOD35_ZTQA",
   "featured": 0,
-  "views": 17320
+  "views": 17320,
+  "location": "Fest 2008 in Gainesville, FL",
+  "publish": 1
  },
  {
   "id": 204,
