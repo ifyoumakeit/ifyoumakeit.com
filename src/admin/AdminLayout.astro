@@ -42,11 +42,73 @@ const isActive = (href: string) =>
             </a>
           ))}
         </nav>
+        <button id="publish-btn" class="admin-publish" type="button" disabled>Publish</button>
         <span class="admin-flag" title="This UI only runs in `astro dev` and is never deployed.">
           local&nbsp;dev&nbsp;only
         </span>
       </div>
     </header>
+
+    <script>
+      // "Publish" — commit the edited data files and push to main. Refreshes its
+      // label from GET /admin/api/publish (dirty count + branch guard).
+      const btn = document.getElementById("publish-btn");
+      const toast = (msg, isErr = false) => {
+        let t = document.querySelector(".admin-toast");
+        if (!t) {
+          t = document.createElement("div");
+          t.className = "admin-toast";
+          document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.classList.toggle("err", isErr);
+        t.classList.add("show");
+        window.setTimeout(() => t.classList.remove("show"), 3000);
+      };
+      async function refresh() {
+        try {
+          const r = await fetch("/admin/api/publish");
+          const s = await r.json();
+          if (!s.ok) return;
+          if (!s.onMain) {
+            btn.textContent = `On ${s.branch}`;
+            btn.disabled = true;
+            btn.title = "Switch to the main branch to publish.";
+          } else if (s.changed === 0) {
+            btn.textContent = "Nothing to publish";
+            btn.disabled = true;
+            btn.title = "No edited data files to commit.";
+          } else {
+            btn.textContent = `Publish ${s.changed} change${s.changed > 1 ? "s" : ""}`;
+            btn.disabled = false;
+            btn.title = "Commit the edited data files and push to main.";
+          }
+        } catch {}
+      }
+      btn.addEventListener("click", async () => {
+        const message = window.prompt("Commit message:", "admin: update content");
+        if (message === null) return;
+        btn.disabled = true;
+        const prev = btn.textContent;
+        btn.textContent = "Publishing…";
+        try {
+          const r = await fetch("/admin/api/publish", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+          });
+          const j = await r.json();
+          if (!j.ok) throw new Error(j.error || "publish failed");
+          if (j.nothing) toast("Nothing to publish.");
+          else toast("Published to main — CI will deploy.");
+        } catch (e) {
+          toast(String(e.message || e), true);
+          btn.textContent = prev;
+        }
+        refresh();
+      });
+      refresh();
+    </script>
     <main class="admin-main">
       <h1 class="admin-title">{title}</h1>
       <slot />
@@ -103,6 +165,30 @@ const isActive = (href: string) =>
         background: var(--color-yellow);
         border-color: var(--color-yellow);
         color: var(--color-ink);
+      }
+      .admin-publish {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        color: var(--color-ink);
+        background: var(--color-yellow);
+        border: var(--border-thin);
+        border-color: var(--color-paper);
+        border-radius: 999px;
+        padding: 0.4em 0.85em;
+        white-space: nowrap;
+      }
+      .admin-publish:hover:not(:disabled) {
+        background: var(--color-pink);
+      }
+      .admin-publish:disabled {
+        cursor: default;
+        opacity: 0.45;
+        background: transparent;
+        color: var(--color-paper);
       }
       .admin-flag {
         font-family: var(--font-mono);

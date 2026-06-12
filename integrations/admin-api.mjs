@@ -15,6 +15,18 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const exec = promisify(execFile);
+
+// The source-of-truth files the admin edits — the only paths "Publish" commits.
+const DATA_FILES = [
+  "db/data/series.json",
+  "db/data/artists.json",
+  "db/data/videos.json",
+  "src/data/video-notes.ts",
+];
 
 // Fields a video row may have edited through the admin. Anything else in the
 // request body is ignored, so the archive can't be corrupted with junk keys.
@@ -60,6 +72,7 @@ function readBody(req) {
  * config; `server` is the Vite dev server (for restart-after-write).
  */
 export function makeApiHandler(root, server) {
+  const rootDir = fileURLToPath(root);
   const videosPath = fileURLToPath(new URL("db/data/videos.json", root));
   const notesPath = fileURLToPath(new URL("src/data/video-notes.ts", root));
 
@@ -75,6 +88,12 @@ export function makeApiHandler(root, server) {
       }
       if (req.method === "PUT" && path === "/notes") {
         return await putNotes(req, res, notesPath, server);
+      }
+      if (req.method === "GET" && path === "/publish") {
+        return await publishStatus(res, rootDir);
+      }
+      if (req.method === "POST" && path === "/publish") {
+        return await publish(req, res, rootDir);
       }
     } catch (err) {
       return json(res, 400, { ok: false, error: String(err?.message ?? err) });
@@ -151,4 +170,52 @@ async function putNotes(req, res, notesPath, server) {
   writeFileSync(notesPath, out);
   json(res, 200, { ok: true, count: Object.keys(clean).length });
   void server.restart();
+}
+
+// ---- Publish: commit the data files and push to main -----------------------
+//
+// Guarded to the `main` branch so it can never push unmerged feature work to
+// main (a `git push origin HEAD:main` from a feature branch would drag every
+// ancestor commit with it). Run the admin on `main` to publish.
+
+const git = (rootDir, args) => exec("git", args, { cwd: rootDir });
+
+async function currentBranch(rootDir) {
+  const { stdout } = await git(rootDir, ["rev-parse", "--abbrev-ref", "HEAD"]);
+  return stdout.trim();
+}
+
+// GET — how many data files are dirty + which branch, so the UI can label the
+// button ("Publish 3 changes") and warn when off main.
+async function publishStatus(res, rootDir) {
+  try {
+    const branch = await currentBranch(rootDir);
+    const { stdout } = await git(rootDir, ["status", "--porcelain", "--", ...DATA_FILES]);
+    const changed = stdout.split("\n").filter((l) => l.trim()).length;
+    json(res, 200, { ok: true, branch, changed, onMain: branch === "main" });
+  } catch (e) {
+    json(res, 200, { ok: false, error: String(e?.stderr || e?.message || e) });
+  }
+}
+
+async function publish(req, res, rootDir) {
+  const { message } = await readBody(req);
+  const msg = String(message ?? "").trim() || "admin: update content";
+
+  const branch = await currentBranch(rootDir);
+  if (branch !== "main") {
+    return json(res, 409, {
+      ok: false,
+      error: `On branch "${branch}". Switch to main to publish (refusing to push unmerged work to main).`,
+    });
+  }
+
+  const { stdout: status } = await git(rootDir, ["status", "--porcelain", "--", ...DATA_FILES]);
+  if (!status.trim()) return json(res, 200, { ok: true, nothing: true });
+
+  // Pathspec-scoped commit: only the data files, regardless of anything else in
+  // the working tree or index.
+  await git(rootDir, ["commit", "-m", msg, "--", ...DATA_FILES]);
+  const { stdout: push } = await git(rootDir, ["push", "origin", "main"]);
+  json(res, 200, { ok: true, committed: true, push: push.trim() });
 }
