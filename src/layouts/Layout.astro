@@ -93,9 +93,9 @@ const staticNavLinks: {
   { label: "Artists", href: "/artists/" },
   { label: "Albums", href: "/albums/" },
   { label: "Years", href: "/years/" },
+  { label: "About", href: "/about/" },
   { label: "Random", href: "/random/", icon: "dice" },
   { label: "Search", href: "/search/", icon: "search" },
-  { label: "About", href: "/about/" },
 ];
 ---
 
@@ -345,24 +345,39 @@ const staticNavLinks: {
         text-decoration: none;
         transform: translateY(-1px) rotate(-1.5deg);
       }
-      /* Icon-only pills (Random, Search) — condensed, square-ish, SVG follows
-         currentColor so it inverts with the pill on hover. */
-      .site-nav__link--icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding-inline: 0.5em;
-      }
-      .nav-icon {
-        display: block;
-        width: 1.05em;
-        height: 1.05em;
-      }
       .site-nav__link[data-active],
       .site-nav__link[aria-current="page"] {
         background: var(--color-ink);
         color: var(--color-paper);
         box-shadow: 2px 2px 0 var(--color-pink);
+      }
+
+      /* Icon links (Random, Search) — bigger, borderless, no pill. The SVG
+         follows currentColor; hover/active just recolor and nudge it. Rules
+         come after the active block so they win the equal-specificity ties. */
+      .site-nav__link--icon,
+      .site-nav__link--icon[data-active],
+      .site-nav__link--icon[aria-current="page"] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        padding: 0.15em;
+        color: var(--color-ink);
+      }
+      .site-nav__link--icon:hover,
+      .site-nav__link--icon[aria-current="page"] {
+        background: transparent;
+        color: var(--color-pink-deep);
+        transform: translateY(-1px) rotate(-6deg) scale(1.08);
+        box-shadow: none;
+      }
+      .nav-icon {
+        display: block;
+        width: 1.5rem;
+        height: 1.5rem;
       }
 
       @media (max-width: 560px) {
