@@ -31,7 +31,7 @@ const pagesOf = (c: Comic): string[] => JSON.parse(c.pages);
 const description = `"${comicData.title}" — a punk comic strip by ${comicData.artist_name}, from the If You Make It archive.`;
 ---
 
-<Layout title={`${comicData.title} — ${comicData.artist_name}`} description={description} type="article">
+<Layout title={`${comicData.title} — ${comicData.artist_name}`} description={description} image={`/thumbs/comic/${pages[0]}`} type="article">
   <article class="comic-page">
     <header class="comic-head container">
       <p class="comic-artist">

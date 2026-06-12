@@ -42,7 +42,7 @@ for (const v of seriesVideos) {
 const sortedYears = [...byYear.keys()].sort((a, b) => b - a);
 ---
 
-<Layout title={seriesData.title} description={seriesData.description ?? undefined}>
+<Layout title={seriesData.title} description={seriesData.description ?? undefined} image={`/og-${seriesData.slug}.png`}>
   <div data-series={seriesData.slug}>
 
     <header class="series-header container">

@@ -43,6 +43,7 @@ const buyHref = albumData.songlink_url ?? albumData.purchase_url;
 <Layout
   title={`${albumData.artist_name} – "${albumData.title}" (${releasedYear})`}
   description={plainDescription}
+  image={cover ?? "/og-albums.png"}
   type="article"
 >
   <article class="album-page" data-series="live">
