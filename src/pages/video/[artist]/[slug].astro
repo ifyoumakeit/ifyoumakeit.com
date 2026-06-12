@@ -10,7 +10,8 @@ import { getVideoSongSlug, getVideoUrl } from "../../../lib/video-url";
 import {
   DEFAULT_SOCIAL_IMAGE,
   SITE_URL,
-  toPlainText,
+  buildVideoTitle,
+  buildVideoMetaDescription,
 } from "../../../lib/seo";
 
 export async function getStaticPaths() {
@@ -65,10 +66,20 @@ const socialImage =
   (videoData.provider === "youtube"
     ? `https://i.ytimg.com/vi/${videoData.provider_id}/maxresdefault.jpg`
     : DEFAULT_SOCIAL_IMAGE);
-const plainDescription = toPlainText(
-  videoData.description ??
-    `${videoArtist.name} performs ${videoData.title} for If You Make It.`,
+const recordedYear = new Date(videoData.recorded_at).getUTCFullYear();
+const pageTitle = buildVideoTitle(
+  videoArtist.name,
+  videoData.title,
+  recordedYear,
 );
+const plainDescription = buildVideoMetaDescription({
+  artistName: videoArtist.name,
+  songTitle: videoData.title,
+  seriesSlug: seriesData.slug,
+  recordedAt: new Date(videoData.recorded_at),
+  location: videoData.location,
+  note: videoData.description,
+});
 const embedUrl =
   videoData.provider === "youtube"
     ? `https://www.youtube-nocookie.com/embed/${videoData.provider_id}`
@@ -186,7 +197,7 @@ function videoCard(v: typeof videoData) {
 ---
 
 <Layout
-  title={`${videoData.title} — ${videoArtist?.name ?? ""}`}
+  title={pageTitle}
   description={plainDescription}
   image={socialImage}
   imageAlt={`${videoArtist.name} performing ${videoData.title}`}
