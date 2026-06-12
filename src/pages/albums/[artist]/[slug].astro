@@ -1,0 +1,282 @@
+---
+import { db, eq, album, artist } from "../../../lib/db";
+import Layout from "../../../layouts/Layout.astro";
+import AlbumCard from "../../../components/AlbumCard.astro";
+import SectionHeading from "../../../components/SectionHeading.astro";
+import { getAlbumCover } from "../../../lib/album-covers";
+import { getAlbumUrl, getAlbumSongSlug } from "../../../lib/album-url";
+import { toPlainText } from "../../../lib/seo";
+
+export async function getStaticPaths() {
+  const albums = await db.select().from(album).where(eq(album.publish, 1));
+  return albums.map((a) => ({
+    params: { artist: a.artist_slug, slug: getAlbumSongSlug(a) },
+    props: { albumData: a },
+  }));
+}
+
+const { albumData } = Astro.props;
+
+const allArtists = await db.select().from(artist);
+const artistMatch = allArtists.find((a) => a.slug === albumData.artist_slug);
+
+const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
+const moreFromArtist = allAlbums
+  .filter((a) => a.artist_slug === albumData.artist_slug && a.id !== albumData.id)
+  .slice(0, 4);
+
+const tracklist: string[] = JSON.parse(albumData.tracklist ?? "[]");
+const cover = getAlbumCover(albumData.slug);
+
+const releasedYear = new Date(albumData.released_at).getUTCFullYear();
+const downloadsLabel = new Intl.NumberFormat("en-US").format(albumData.downloads);
+const plainDescription = albumData.description
+  ? toPlainText(albumData.description)
+  : `${albumData.artist_name} — ${albumData.title}, from the If You Make It archive.`;
+
+// One smart link (song.link) fans out to every stream/buy destination; fall
+// back to the legacy "where to buy" link when no smart link exists yet.
+const listenHref = albumData.songlink_url ?? albumData.purchase_url;
+const listenLabel = albumData.songlink_url ? "Stream + buy" : "Where to buy";
+---
+
+<Layout
+  title={`${albumData.artist_name} – "${albumData.title}" (${releasedYear})`}
+  description={plainDescription}
+  type="article"
+>
+  <article class="album-page" data-series="live">
+    <div class="container album-top">
+      <div class="album-cover">
+        {
+          cover ? (
+            <img src={cover} alt={`${albumData.artist_name} — ${albumData.title}`} width="600" height="600" />
+          ) : (
+            <div class="album-cover__placeholder" aria-hidden="true">♪</div>
+          )
+        }
+      </div>
+
+      <div class="album-meta">
+        <h1 class="album-artist">
+          {
+            artistMatch ? (
+              <a href={`/artists/${artistMatch.slug}/`}>{albumData.artist_name}</a>
+            ) : (
+              albumData.artist_name
+            )
+          }
+        </h1>
+        <h2 class="album-title">{albumData.title}</h2>
+        <p class="meta-line">{releasedYear}</p>
+
+        {albumData.members && (
+          <p class="album-members">
+            <span class="album-members__label">Featuring</span> {albumData.members}
+          </p>
+        )}
+
+        {albumData.downloads > 0 && (
+          <p class="album-downloads">
+            <strong>{downloadsLabel}</strong> downloads on the original site
+          </p>
+        )}
+
+        {listenHref && (
+          <div class="album-links">
+            <a class="btn" href={listenHref} rel="external">{listenLabel} ↗</a>
+          </div>
+        )}
+
+        {albumData.description && (
+          <div class="album-description" set:html={albumData.description} />
+        )}
+      </div>
+    </div>
+
+    {tracklist.length > 0 && (
+      <div class="container album-tracklist-wrap">
+        <h3 class="tracklist-heading">Tracklist</h3>
+        <ol class="tracklist">
+          {tracklist.map((t) => (
+            <li>{t}</li>
+          ))}
+        </ol>
+      </div>
+    )}
+
+    {moreFromArtist.length > 0 && (
+      <section class="related-section container">
+        <SectionHeading title={`More from ${albumData.artist_name}`} />
+        <div class="grid-albums">
+          {moreFromArtist.map((a) => (
+            <AlbumCard
+              title={a.title}
+              href={getAlbumUrl(a)}
+              slug={a.slug}
+              artistName={a.artist_name}
+              releasedAt={new Date(a.released_at)}
+              downloads={a.downloads}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <nav class="album-back container">
+      <a href="/albums/">← All albums</a>
+    </nav>
+  </article>
+</Layout>
+
+<style>
+  .album-top {
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    padding-block: 2rem;
+    align-items: start;
+  }
+  /* Square box on the container; the image fills and crops via object-fit so
+     non-square source art never stretches. */
+  .album-cover {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border: var(--border);
+    box-shadow: var(--shadow-hard);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .album-cover img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .album-cover__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    background: var(--color-blue);
+    font-family: var(--font-display);
+    font-size: 5rem;
+    color: var(--color-paper);
+  }
+  .album-artist {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 0.95;
+    margin: 0 0 0.35rem;
+    text-transform: uppercase;
+  }
+  .album-artist a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .album-artist a:hover {
+    color: var(--color-blue);
+  }
+  .album-title {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    margin: 0 0 0.5rem;
+    color: var(--color-blue);
+  }
+  .album-members {
+    margin: 0.75rem 0 0;
+    font-size: 0.95rem;
+    color: var(--color-muted);
+    max-width: 60ch;
+  }
+  .album-members__label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-ink);
+  }
+  .album-downloads {
+    margin: 0.5rem 0 0;
+    font-size: 0.95rem;
+    color: var(--color-muted);
+  }
+  .album-downloads strong {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-ink);
+  }
+  .album-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block: 1.1rem;
+  }
+  .album-description {
+    margin-block-start: 1rem;
+    max-width: 60ch;
+    line-height: 1.6;
+  }
+  .album-description :global(p) {
+    margin: 0 0 0.75rem;
+  }
+  .album-description :global(a) {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-blue);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  .album-tracklist-wrap {
+    padding-block: 1rem 2rem;
+    border-top: var(--border);
+  }
+  .tracklist-heading {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.75rem;
+    color: var(--color-muted);
+  }
+  .tracklist {
+    margin: 0;
+    padding-inline-start: 1.6rem;
+    max-width: 50ch;
+    line-height: 1.9;
+  }
+
+  .related-section {
+    padding-block: 2rem;
+    border-top: var(--border);
+  }
+  .grid-albums {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1.25rem;
+    margin-block-start: 0.75rem;
+  }
+  .album-back {
+    padding-block: 1.5rem 3rem;
+  }
+  .album-back a {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 640px) {
+    .album-top {
+      grid-template-columns: 1fr;
+    }
+    .album-cover {
+      max-width: 18rem;
+    }
+  }
+</style>

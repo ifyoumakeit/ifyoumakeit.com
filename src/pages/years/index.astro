@@ -1,21 +1,37 @@
 ---
-import { db, eq, video, artist, series } from "../../lib/db";
+import { db, eq, video, artist, series, album } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 import { getLocalThumb } from "../../lib/thumbs";
 import { getVideoUrl } from "../../lib/video-url";
+import { getAlbumUrl } from "../../lib/album-url";
+import { getAlbumCover } from "../../lib/album-covers";
 import { videoNotes } from "../../data/video-notes";
 
 const allVideos = await db.select().from(video).where(eq(video.publish, 1));
 const allArtists = await db.select().from(artist);
 const allSeries = await db.select().from(series).where(eq(series.publish, 1));
+const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
 const artistById = new Map(allArtists.map((a) => [a.id, a]));
 const seriesById = new Map(allSeries.map((s) => [s.id, s]));
 
-// One continuous chronological run, oldest first — scroll the whole story
-// from the first couch session onward. Grouped year → month for the spine.
-const chronological = [...allVideos].sort(
-  (a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime()
-);
+type Entry =
+  | { kind: "video"; date: Date; video: (typeof allVideos)[number] }
+  | { kind: "album"; date: Date; album: (typeof allAlbums)[number] };
+
+// One continuous chronological run, oldest first — every video and album
+// release interleaved by date for the spine. Grouped year → month.
+const chronological: Entry[] = [
+  ...allVideos.map((v) => ({
+    kind: "video" as const,
+    date: new Date(v.recorded_at),
+    video: v,
+  })),
+  ...allAlbums.map((a) => ({
+    kind: "album" as const,
+    date: new Date(a.released_at),
+    album: a,
+  })),
+].sort((a, b) => a.date.getTime() - b.date.getTime());
 
 const monthName = new Intl.DateTimeFormat("en-US", {
   month: "long",
@@ -27,15 +43,13 @@ const dayLabel = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 
-type Entry = (typeof chronological)[number];
-type MonthGroup = { label: string; videos: Entry[] };
+type MonthGroup = { label: string; entries: Entry[] };
 type YearGroup = { year: number; count: number; months: MonthGroup[] };
 
 const yearGroups: YearGroup[] = [];
-for (const v of chronological) {
-  const d = new Date(v.recorded_at);
-  const y = d.getUTCFullYear();
-  const m = monthName.format(d);
+for (const e of chronological) {
+  const y = e.date.getUTCFullYear();
+  const m = monthName.format(e.date);
   let yg = yearGroups.at(-1);
   if (!yg || yg.year !== y) {
     yg = { year: y, count: 0, months: [] };
@@ -43,14 +57,14 @@ for (const v of chronological) {
   }
   let mg = yg.months.at(-1);
   if (!mg || mg.label !== m) {
-    mg = { label: m, videos: [] };
+    mg = { label: m, entries: [] };
     yg.months.push(mg);
   }
-  mg.videos.push(v);
+  mg.entries.push(e);
   yg.count++;
 }
 
-function thumbFor(v: Entry): string | null {
+function videoThumb(v: (typeof allVideos)[number]): string | null {
   return (
     getLocalThumb(v.slug) ??
     (v.provider === "youtube"
@@ -68,7 +82,7 @@ function thumbFor(v: Entry): string | null {
     <header class="page-header">
       <h1 class="page-title">Timeline</h1>
       <p class="meta-line">
-        {chronological.length} recordings, {yearGroups.length} years, one scroll
+        {chronological.length} videos &amp; records, {yearGroups.length} years, one scroll
       </p>
       <ul class="legend" aria-label="Series key">
         {allSeries.map((s) => (
@@ -77,6 +91,10 @@ function thumbFor(v: Entry): string | null {
             {s.title}
           </li>
         ))}
+        <li class="legend__item legend__item--album">
+          <span class="legend__dot" aria-hidden="true"></span>
+          Albums
+        </li>
       </ul>
     </header>
 
@@ -98,10 +116,43 @@ function thumbFor(v: Entry): string | null {
                   <span class="visually-hidden">{yg.year}</span>
                 </h2>
                 <ol class="month-entries">
-                  {mg.videos.map((v) => {
+                  {mg.entries.map((e) => {
+                    if (e.kind === "album") {
+                      const al = e.album;
+                      const cover = getAlbumCover(al.slug);
+                      return (
+                        <li>
+                          <a class="entry" href={getAlbumUrl(al)} data-kind="album">
+                            <span class="entry__dot" aria-hidden="true"></span>
+                            {cover ? (
+                              <img
+                                class="entry__thumb"
+                                src={cover}
+                                alt=""
+                                loading="lazy"
+                                decoding="async"
+                                width="180"
+                                height="180"
+                              />
+                            ) : (
+                              <span class="entry__thumb entry__thumb--empty" aria-hidden="true"></span>
+                            )}
+                            <span class="entry__text">
+                              <span class="entry__artist">{al.artist_name}</span>
+                              <span class="entry__title">{al.title}</span>
+                            </span>
+                            <span class="entry__tag">album</span>
+                            <span class="entry__date meta-line">
+                              {dayLabel.format(e.date)}
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    }
+                    const v = e.video;
                     const a = artistById.get(v.artist_id);
                     const s = seriesById.get(v.series_id);
-                    const thumb = thumbFor(v);
+                    const thumb = videoThumb(v);
                     const note = videoNotes[v.slug];
                     return (
                       <li>
@@ -342,6 +393,28 @@ function thumbFor(v: Entry): string | null {
   .entry:focus-visible {
     outline: 3px solid var(--color-blue);
     outline-offset: 2px;
+  }
+  /* Album releases ride the same spine with a blue accent + tag. */
+  .entry[data-kind="album"] {
+    --accent: var(--color-blue);
+    --accent-text: var(--color-blue);
+  }
+  .legend__item--album .legend__dot {
+    background: var(--color-blue);
+  }
+  .entry__tag {
+    flex: none;
+    align-self: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-paper);
+    background: var(--color-blue);
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    padding: 0.15em 0.55em;
   }
   /* dot pinned onto the spine, colored by series */
   .entry__dot {

@@ -35,6 +35,8 @@ export default function admin() {
         page("/admin", "./src/admin/index.astro");
         page("/admin/videos", "./src/admin/videos.astro");
         page("/admin/videos/[id]", "./src/admin/edit.astro");
+        page("/admin/albums", "./src/admin/albums.astro");
+        page("/admin/albums/[id]", "./src/admin/album-edit.astro");
         page("/admin/notes", "./src/admin/notes.astro");
         page("/admin/dashboard", "./src/admin/dashboard.astro");
       },

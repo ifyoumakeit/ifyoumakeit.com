@@ -6,6 +6,7 @@
  * static production build. It reads/writes the same source-of-truth files the
  * site is built from:
  *   - db/data/videos.json          (PUT /admin/api/video/:id)
+ *   - db/data/albums.json          (PUT /admin/api/album/:id)
  *   - src/data/video-notes.ts      (PUT /admin/api/notes)
  *
  * Writes match the byte format the other scripts use (1-space indent + trailing
@@ -25,6 +26,7 @@ const DATA_FILES = [
   "db/data/series.json",
   "db/data/artists.json",
   "db/data/videos.json",
+  "db/data/albums.json",
   "src/data/video-notes.ts",
 ];
 
@@ -44,6 +46,23 @@ const VIDEO_FIELDS = [
   "publish",
 ];
 const PROVIDERS = new Set(["youtube", "vimeo", "dailymotion", "flash"]);
+
+// Album fields editable through the admin. Identity columns (slug, artist_slug)
+// are intentionally omitted — they key the URL and cover art, so they stay put.
+const ALBUM_FIELDS = [
+  "title",
+  "members",
+  "description",
+  "songlink_url",
+  "purchase_url",
+  "publish",
+];
+const NULLABLE_ALBUM_FIELDS = new Set([
+  "members",
+  "description",
+  "songlink_url",
+  "purchase_url",
+]);
 
 const json = (res, status, body) => {
   res.statusCode = status;
@@ -74,6 +93,7 @@ function readBody(req) {
 export function makeApiHandler(root, server) {
   const rootDir = fileURLToPath(root);
   const videosPath = fileURLToPath(new URL("db/data/videos.json", root));
+  const albumsPath = fileURLToPath(new URL("db/data/albums.json", root));
   const notesPath = fileURLToPath(new URL("src/data/video-notes.ts", root));
 
   return async function adminApi(req, res, next) {
@@ -85,6 +105,9 @@ export function makeApiHandler(root, server) {
     try {
       if (req.method === "PUT" && /^\/video\/\d+$/.test(path)) {
         return await putVideo(req, res, videosPath, server, Number(path.split("/")[2]));
+      }
+      if (req.method === "PUT" && /^\/album\/\d+$/.test(path)) {
+        return await putAlbum(req, res, albumsPath, server, Number(path.split("/")[2]));
       }
       if (req.method === "PUT" && path === "/notes") {
         return await putNotes(req, res, notesPath, server);
@@ -139,6 +162,29 @@ async function putVideo(req, res, videosPath, server, id) {
   }
 
   writeFileSync(videosPath, JSON.stringify(videos, null, 1) + "\n");
+  json(res, 200, { ok: true, id });
+  void server.restart();
+}
+
+async function putAlbum(req, res, albumsPath, server, id) {
+  const patch = await readBody(req);
+  const albums = JSON.parse(readFileSync(albumsPath, "utf8"));
+  const row = albums.find((a) => a.id === id);
+  if (!row) return json(res, 404, { ok: false, error: `no album id ${id}` });
+
+  for (const key of ALBUM_FIELDS) {
+    if (!(key in patch)) continue;
+    if (key === "publish") {
+      row.publish = patch.publish ? 1 : 0;
+    } else if (NULLABLE_ALBUM_FIELDS.has(key)) {
+      const val = String(patch[key] ?? "").trim();
+      row[key] = val || null; // keep the key (matches importer), null when empty
+    } else {
+      row[key] = String(patch[key] ?? "");
+    }
+  }
+
+  writeFileSync(albumsPath, JSON.stringify(albums, null, 1) + "\n");
   json(res, 200, { ok: true, id });
   void server.restart();
 }

@@ -1,9 +1,10 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import { series, artist, video, song, tag, videoTag } from "./schema";
+import { series, artist, video, song, tag, videoTag, album } from "./schema";
 import seriesData from "../../db/data/series.json";
 import artistsData from "../../db/data/artists.json";
 import videosData from "../../db/data/videos.json";
+import albumsData from "../../db/data/albums.json";
 
 // Build-time, in-memory data layer (replaces the deprecated astro:db).
 // A single libSQL `:memory:` database is created, schema'd and seeded once per
@@ -68,6 +69,22 @@ await client.executeMultiple(`
     video_id INTEGER NOT NULL REFERENCES video(id),
     tag_id INTEGER NOT NULL REFERENCES tag(id)
   );
+  CREATE TABLE album (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
+    artist_name TEXT NOT NULL,
+    artist_slug TEXT NOT NULL,
+    description TEXT,
+    members TEXT,
+    tracklist TEXT,
+    released_at INTEGER NOT NULL,
+    downloads INTEGER NOT NULL DEFAULT 0,
+    donation_amount TEXT,
+    songlink_url TEXT,
+    purchase_url TEXT,
+    publish INTEGER NOT NULL DEFAULT 1
+  );
 `);
 
 export const db = drizzle(client, {
@@ -88,7 +105,18 @@ for (let i = 0; i < videoRows.length; i += CHUNK) {
   await db.insert(video).values(videoRows.slice(i, i + CHUNK));
 }
 
+// Albums: tracklist is stored as a JSON string column; dates round-trip as
+// Date like the video table. Empty data file (no import run yet) is fine.
+const albumRows = albumsData.map((a) => ({
+  ...a,
+  tracklist: JSON.stringify(a.tracklist ?? []),
+  released_at: new Date(a.released_at),
+}));
+for (let i = 0; i < albumRows.length; i += CHUNK) {
+  await db.insert(album).values(albumRows.slice(i, i + CHUNK));
+}
+
 // Re-export the schema tables and the operators used across the pages, so call
 // sites import everything from "../lib/db" exactly as they did from "astro:db".
-export { series, artist, video, song, tag, videoTag };
+export { series, artist, video, song, tag, videoTag, album };
 export { eq, asc } from "drizzle-orm";

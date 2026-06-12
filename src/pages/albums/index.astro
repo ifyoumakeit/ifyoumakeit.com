@@ -1,0 +1,107 @@
+---
+import { db, eq, album } from "../../lib/db";
+import Layout from "../../layouts/Layout.astro";
+import AlbumCard from "../../components/AlbumCard.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { getAlbumUrl } from "../../lib/album-url";
+
+const albums = (await db.select().from(album).where(eq(album.publish, 1))).sort(
+  (a, b) => new Date(b.released_at).getTime() - new Date(a.released_at).getTime(),
+);
+
+const years = albums.map((a) => new Date(a.released_at).getUTCFullYear());
+const minYear = years.length ? Math.min(...years) : null;
+const maxYear = years.length ? Math.max(...years) : null;
+
+const byYear = new Map<number, typeof albums>();
+for (const a of albums) {
+  const y = new Date(a.released_at).getUTCFullYear();
+  if (!byYear.has(y)) byYear.set(y, []);
+  byYear.get(y)!.push(a);
+}
+const sortedYears = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<Layout
+  title="Albums"
+  description="The If You Make It free/donation download archive — demos, splits, and full-lengths from the DIY punk underground."
+>
+  <div data-series="live">
+    <header class="albums-header container">
+      <h1 class="albums-title">Albums</h1>
+      <p class="albums-description">
+        The free and donation-based records If You Make It put out and hosted.
+        The download files are long gone, but the catalog lives on — tracklists,
+        the bands behind each release, and where to find them now.
+      </p>
+      <p class="meta-line">
+        {albums.length} record{albums.length !== 1 ? "s" : ""}{
+          minYear && maxYear ? ` · ${minYear}–${maxYear}` : ""
+        }
+      </p>
+    </header>
+
+    <div class="container albums-body">
+      {
+        sortedYears.map((year) => {
+          const yearAlbums = byYear.get(year)!;
+          return (
+            <section class="year-group">
+              <SectionHeading title={String(year)} count={yearAlbums.length} />
+              <div class="grid-albums">
+                {yearAlbums.map((a) => (
+                  <AlbumCard
+                    title={a.title}
+                    href={getAlbumUrl(a)}
+                    slug={a.slug}
+                    artistName={a.artist_name}
+                    releasedAt={new Date(a.released_at)}
+                    downloads={a.downloads}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })
+      }
+
+      {albums.length === 0 && <p class="empty">No albums imported yet.</p>}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .albums-header {
+    padding-block: 2.5rem 1.5rem;
+    border-bottom: var(--border);
+  }
+  .albums-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin: 0 0 0.5rem;
+    color: var(--color-blue);
+    animation: stamp-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    transform-origin: left bottom;
+  }
+  .albums-description {
+    font-size: 1.05rem;
+    max-width: 60ch;
+    margin: 0 0 0.5rem;
+  }
+  .albums-body {
+    padding-block: 1.5rem;
+  }
+  .year-group {
+    margin-block-end: 2.5rem;
+  }
+  .grid-albums {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+    margin-block-start: 0.75rem;
+  }
+  .empty {
+    color: var(--color-muted);
+    font-style: italic;
+  }
+</style>

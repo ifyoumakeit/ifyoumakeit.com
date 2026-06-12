@@ -68,3 +68,27 @@ export const videoTag = sqliteTable("videoTag", {
     .notNull()
     .references(() => tag.id),
 });
+
+// Free/donation album-download archive from the legacy site. No FK to artist:
+// some "artists" are labels or compilations that have no video; pages resolve
+// `artist_slug` against the artist table at build time to cross-link when a
+// match exists. `tracklist` is a JSON array of track-title strings.
+// `songlink_url` is a single song.link / album.link (Odesli) smart link that
+// fans out to every stream/buy destination — not in the legacy dump, filled in
+// via the local admin. `purchase_url` is the legacy "where to buy" fallback.
+export const album = sqliteTable("album", {
+  id: integer("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  artist_name: text("artist_name").notNull(),
+  artist_slug: text("artist_slug").notNull(),
+  description: text("description"),
+  members: text("members"),
+  tracklist: text("tracklist"), // JSON: string[]
+  released_at: integer("released_at", { mode: "timestamp" }).notNull(),
+  downloads: integer("downloads").notNull().default(0),
+  donation_amount: text("donation_amount"),
+  songlink_url: text("songlink_url"),
+  purchase_url: text("purchase_url"),
+  publish: integer("publish").notNull().default(1),
+});

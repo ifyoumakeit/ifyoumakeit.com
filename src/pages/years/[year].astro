@@ -1,15 +1,23 @@
 ---
-import { db, eq, video, artist, series } from "../../lib/db";
+import { db, eq, video, artist, series, album } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 import VideoCard from "../../components/VideoCard.astro";
+import AlbumCard from "../../components/AlbumCard.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
 import { getVideoUrl } from "../../lib/video-url";
+import { getAlbumUrl } from "../../lib/album-url";
 
 export async function getStaticPaths() {
   const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+  const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
 
-  // Collect distinct UTC years
-  const years = [...new Set(allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear()))];
+  // Distinct UTC years across both videos and album releases.
+  const years = [
+    ...new Set([
+      ...allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear()),
+      ...allAlbums.map((a) => new Date(a.released_at).getUTCFullYear()),
+    ]),
+  ];
 
   return years.map((year) => ({
     params: { year: String(year) },
@@ -23,6 +31,11 @@ const yearNum = Number(year);
 const allVideos = await db.select().from(video).where(eq(video.publish, 1));
 const allArtists = await db.select().from(artist);
 const allSeries = await db.select().from(series).where(eq(series.publish, 1));
+const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
+
+const yearAlbums = allAlbums
+  .filter((a) => new Date(a.released_at).getUTCFullYear() === yearNum)
+  .sort((a, b) => new Date(a.released_at).getTime() - new Date(b.released_at).getTime());
 
 const artistById = new Map(allArtists.map((a) => [a.id, a]));
 const seriesById = new Map(allSeries.map((s) => [s.id, s]));
@@ -54,7 +67,10 @@ const MONTH_NAMES = [
   <div class="container year-page">
     <header class="page-header">
       <h1 class="page-title">{year}</h1>
-      <p class="meta-line">{yearVideos.length} video{yearVideos.length !== 1 ? "s" : ""}</p>
+      <p class="meta-line">
+        {yearVideos.length} video{yearVideos.length !== 1 ? "s" : ""}
+        {yearAlbums.length > 0 && ` · ${yearAlbums.length} album${yearAlbums.length !== 1 ? "s" : ""}`}
+      </p>
     </header>
 
     {sortedMonths.map((monthIdx) => {
@@ -87,8 +103,26 @@ const MONTH_NAMES = [
       );
     })}
 
-    {yearVideos.length === 0 && (
-      <p class="empty">No recordings found for {year}.</p>
+    {yearAlbums.length > 0 && (
+      <section class="month-group">
+        <SectionHeading title="Albums" count={yearAlbums.length} />
+        <div class="grid-albums">
+          {yearAlbums.map((a) => (
+            <AlbumCard
+              title={a.title}
+              href={getAlbumUrl(a)}
+              slug={a.slug}
+              artistName={a.artist_name}
+              releasedAt={new Date(a.released_at)}
+              downloads={a.downloads}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    {yearVideos.length === 0 && yearAlbums.length === 0 && (
+      <p class="empty">Nothing found for {year}.</p>
     )}
   </div>
 </Layout>
@@ -112,6 +146,12 @@ const MONTH_NAMES = [
   .month-group {
     padding-block: 2rem;
     border-top: var(--border);
+  }
+  .grid-albums {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1.25rem;
+    margin-block-start: 0.75rem;
   }
   .empty {
     color: var(--color-muted);

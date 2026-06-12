@@ -85,11 +85,16 @@ const publishedSeries = await db
   .where(eq(series.publish, 1))
   .orderBy(asc(series.sort));
 
-const staticNavLinks = [
+const staticNavLinks: {
+  label: string;
+  href: string;
+  icon?: "search" | "dice";
+}[] = [
   { label: "Artists", href: "/artists/" },
+  { label: "Albums", href: "/albums/" },
   { label: "Years", href: "/years/" },
-  { label: "Random", href: "/random/" },
-  { label: "Search", href: "/search/" },
+  { label: "Random", href: "/random/", icon: "dice" },
+  { label: "Search", href: "/search/", icon: "search" },
   { label: "About", href: "/about/" },
 ];
 ---
@@ -175,11 +180,29 @@ const staticNavLinks = [
             {
               staticNavLinks.map((item) => (
                 <a
-                  class="site-nav__link"
+                  class:list={["site-nav__link", { "site-nav__link--icon": item.icon }]}
                   href={item.href}
+                  aria-label={item.icon ? item.label : undefined}
+                  title={item.icon ? item.label : undefined}
                   {...navState(item.href)}
                 >
-                  {item.label}
+                  {item.icon === "search" ? (
+                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+                      <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                  ) : item.icon === "dice" ? (
+                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+                      <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" />
+                      <circle cx="15.5" cy="8.5" r="1.6" fill="currentColor" />
+                      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+                      <circle cx="8.5" cy="15.5" r="1.6" fill="currentColor" />
+                      <circle cx="15.5" cy="15.5" r="1.6" fill="currentColor" />
+                    </svg>
+                  ) : (
+                    item.label
+                  )}
                 </a>
               ))
             }
@@ -321,6 +344,19 @@ const staticNavLinks = [
         color: var(--color-paper);
         text-decoration: none;
         transform: translateY(-1px) rotate(-1.5deg);
+      }
+      /* Icon-only pills (Random, Search) — condensed, square-ish, SVG follows
+         currentColor so it inverts with the pill on hover. */
+      .site-nav__link--icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding-inline: 0.5em;
+      }
+      .nav-icon {
+        display: block;
+        width: 1.05em;
+        height: 1.05em;
       }
       .site-nav__link[data-active],
       .site-nav__link[aria-current="page"] {

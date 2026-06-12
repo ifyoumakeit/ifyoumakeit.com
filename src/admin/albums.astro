@@ -1,0 +1,144 @@
+---
+import AdminLayout from "./AdminLayout.astro";
+import { db, album } from "../lib/db";
+import { getAlbumCover } from "../lib/album-covers";
+
+const albums = (await db.select().from(album)).sort(
+  (a, b) => new Date(b.released_at).getTime() - new Date(a.released_at).getTime(),
+);
+
+const withLink = albums.filter((a) => a.songlink_url).length;
+const missingLink = albums.length - withLink;
+---
+
+<AdminLayout title="Albums">
+  <p class="lede">
+    {albums.length} albums · <strong>{withLink}</strong> with a song.link ·
+    <strong>{missingLink}</strong> still missing one. Edits write
+    <code>db/data/albums.json</code>.
+  </p>
+
+  <div class="admin-card table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Artist / album</th>
+          <th>Year</th>
+          <th>Downloads</th>
+          <th>song.link</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {albums.map((a) => {
+          const cover = getAlbumCover(a.slug);
+          return (
+            <tr class:list={[{ hidden: a.publish !== 1 }]}>
+              <td>
+                {cover ? (
+                  <img class="cover" src={cover} alt="" width="40" height="40" />
+                ) : (
+                  <span class="cover cover--none">♪</span>
+                )}
+              </td>
+              <td>
+                <strong>{a.artist_name}</strong>
+                <span class="sub">{a.title}</span>
+              </td>
+              <td>{new Date(a.released_at).getUTCFullYear()}</td>
+              <td>{a.downloads.toLocaleString()}</td>
+              <td>
+                {a.songlink_url ? (
+                  <span class="pill pill--ok">linked</span>
+                ) : (
+                  <span class="pill">—</span>
+                )}
+              </td>
+              <td><a class="btn ghost" href={`/admin/albums/${a.id}`}>Edit</a></td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+    {albums.length === 0 && (
+      <p class="empty">
+        No albums yet. Run <code>node scripts/import-legacy-albums.mjs path/to/iymi_db.sql</code>.
+      </p>
+    )}
+  </div>
+
+  <style>
+    .lede {
+      color: var(--color-muted);
+    }
+    .lede code,
+    .empty code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--color-ink);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th,
+    td {
+      text-align: left;
+      padding: 0.55rem 0.8rem;
+      border-bottom: var(--border-thin);
+      vertical-align: middle;
+    }
+    th {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+    }
+    tr.hidden {
+      opacity: 0.5;
+    }
+    .cover {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border: var(--border-thin);
+      border-radius: 4px;
+      display: block;
+    }
+    .cover--none {
+      display: grid;
+      place-content: center;
+      background: var(--color-blue);
+      color: var(--color-paper);
+    }
+    .sub {
+      display: block;
+      color: var(--color-muted);
+    }
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.15em 0.5em;
+      border-radius: 999px;
+      border: var(--border-thin);
+    }
+    .pill--ok {
+      background: var(--color-yellow);
+    }
+    .btn.ghost {
+      background: transparent;
+      padding: 0.3rem 0.7rem;
+    }
+    .empty {
+      padding: 1rem;
+      color: var(--color-muted);
+    }
+  </style>
+</AdminLayout>
