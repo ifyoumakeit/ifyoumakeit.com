@@ -1,31 +1,45 @@
 ---
-import { db, eq, video, artist, series } from "../../lib/db";
+import { db, eq, video, artist, series, album } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 import { getVideoUrl } from "../../lib/video-url";
+import { getAlbumUrl } from "../../lib/album-url";
 
 const allVideos = await db.select().from(video).where(eq(video.publish, 1));
 const allArtists = await db.select().from(artist);
 const allSeries = await db.select().from(series).where(eq(series.publish, 1));
+const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
 const artistById = new Map(allArtists.map((a) => [a.id, a]));
 const seriesById = new Map(allSeries.map((s) => [s.id, s]));
 
 // Compact, build-time search index inlined into the page — no fetch, no
-// loading state. Short keys keep the payload small (~one line per video).
-const index = allVideos
-  .map((v) => {
-    const a = artistById.get(v.artist_id);
-    const s = seriesById.get(v.series_id);
-    return {
-      t: v.title,
-      a: a?.name ?? "",
-      s: s?.title ?? "",
-      k: s?.slug ?? "",
-      y: new Date(v.recorded_at).getUTCFullYear(),
-      u: a ? getVideoUrl(v, a) : `/video/${v.slug}/`,
-    };
-  })
-  .sort((x, y) => y.y - x.y || x.a.localeCompare(y.a));
+// loading state. Short keys keep the payload small. Videos and album releases
+// share the record shape; `k` carries the accent (series slug, or "albums").
+const videoIndex = allVideos.map((v) => {
+  const a = artistById.get(v.artist_id);
+  const s = seriesById.get(v.series_id);
+  return {
+    t: v.title,
+    a: a?.name ?? "",
+    s: s?.title ?? "",
+    k: s?.slug ?? "",
+    y: new Date(v.recorded_at).getUTCFullYear(),
+    u: a ? getVideoUrl(v, a) : `/video/${v.slug}/`,
+  };
+});
+const albumIndex = allAlbums.map((al) => ({
+  t: al.title,
+  a: al.artist_name,
+  s: "Album",
+  k: "albums",
+  y: new Date(al.released_at).getUTCFullYear(),
+  u: getAlbumUrl(al),
+}));
+const index = [...videoIndex, ...albumIndex].sort(
+  (x, y) => y.y - x.y || x.a.localeCompare(y.a),
+);
 
+const videoCount = videoIndex.length;
+const albumCount = albumIndex.length;
 const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
 ---
 
@@ -43,7 +57,7 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
           type="search"
           name="q"
           id="q"
-          placeholder="band, song, year…"
+          placeholder="band, album, song, year…"
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
@@ -52,7 +66,7 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
         />
       </form>
       <p class="search-status meta-line" id="status" aria-live="polite">
-        {index.length} videos in the archive
+        {videoCount} videos &amp; {albumCount} albums
       </p>
     </header>
 
@@ -82,7 +96,7 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
       var input = document.getElementById("q");
       var results = document.getElementById("results");
       var status = document.getElementById("status");
-      var total = data.length;
+      var initialStatus = status.textContent.trim();
 
       function esc(s) {
         return s.replace(/[&<>"]/g, function (c) {
@@ -94,7 +108,7 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
         var query = q.trim().toLowerCase();
         if (!query) {
           results.innerHTML = "";
-          status.textContent = total + " videos in the archive";
+          status.textContent = initialStatus;
           return;
         }
         var terms = query.split(/\s+/);
@@ -113,9 +127,9 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
 
         if (!out.length) {
           results.innerHTML =
-            '<li class="results__empty">No videos match “' +
+            '<li class="results__empty">Nothing matches “' +
             esc(q.trim()) +
-            "”. Try a band or song name.</li>";
+            "”. Try a band, album, or song.</li>";
           status.textContent = "No matches";
           return;
         }
@@ -277,6 +291,11 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     border-radius: 999px;
     border: 3px solid var(--color-ink);
     background: var(--accent, var(--color-pink));
+  }
+  /* Album results carry no series — give them the albums blue accent. */
+  #results :global(.result[data-series="albums"]) {
+    --accent: var(--color-blue);
+    --accent-text: var(--color-blue);
   }
   #results :global(.result__text) {
     min-width: 0;

@@ -1,21 +1,30 @@
 ---
-import { db, eq, video, artist } from "../../lib/db";
+import { db, eq, video, artist, album } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
 
-// Fetch all artists and published videos
+// Fetch all artists, published videos, and published albums
 const allArtists = await db.select().from(artist);
 const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
 
-// Count videos per artist (published only)
+// Count videos per artist id, and albums per artist slug (albums key by slug).
 const videoCountByArtist = new Map<number, number>();
 for (const v of allVideos) {
   videoCountByArtist.set(v.artist_id, (videoCountByArtist.get(v.artist_id) ?? 0) + 1);
 }
+const albumCountBySlug = new Map<string, number>();
+for (const a of allAlbums) {
+  albumCountBySlug.set(a.artist_slug, (albumCountBySlug.get(a.artist_slug) ?? 0) + 1);
+}
 
-// Only include artists that have at least one published video
+// Include artists with at least one published video OR album.
 const activeArtists = allArtists
-  .filter((a) => (videoCountByArtist.get(a.id) ?? 0) > 0)
+  .filter(
+    (a) =>
+      (videoCountByArtist.get(a.id) ?? 0) > 0 ||
+      (albumCountBySlug.get(a.slug) ?? 0) > 0,
+  )
   .sort((a, b) => a.name.localeCompare(b.name, "en-US"));
 
 // Group by first letter
@@ -53,12 +62,17 @@ const sortedLetters = [...byLetter.keys()].sort((a, b) => {
           <SectionHeading title={letter} count={group.length} />
           <ul class="artist-list">
             {group.map((a) => {
-              const count = videoCountByArtist.get(a.id) ?? 0;
+              const vCount = videoCountByArtist.get(a.id) ?? 0;
+              const aCount = albumCountBySlug.get(a.slug) ?? 0;
+              const parts = [
+                vCount && `${vCount} video${vCount !== 1 ? "s" : ""}`,
+                aCount && `${aCount} album${aCount !== 1 ? "s" : ""}`,
+              ].filter(Boolean);
               return (
                 <li class="artist-row">
                   <a class="artist-name" href={`/artists/${a.slug}/`}>{a.name}</a>
                   {a.hometown && <span class="artist-hometown">{a.hometown}</span>}
-                  <span class="artist-count">{count} video{count !== 1 ? "s" : ""}</span>
+                  <span class="artist-count">{parts.join(" · ")}</span>
                 </li>
               );
             })}

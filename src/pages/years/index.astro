@@ -39,7 +39,7 @@ const monthName = new Intl.DateTimeFormat("en-US", {
 });
 const dayLabel = new Intl.DateTimeFormat("en-US", {
   month: "short",
-  day: "numeric",
+  day: "2-digit", // zero-padded so dates line up (Jan 01, Jan 05, Jan 14)
   timeZone: "UTC",
 });
 
@@ -141,9 +141,8 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
                               <span class="entry__artist">{al.artist_name}</span>
                               <span class="entry__title">{al.title}</span>
                             </span>
-                            <span class="entry__tag">album</span>
                             <span class="entry__date meta-line">
-                              {dayLabel.format(e.date)}
+                              Album · {dayLabel.format(e.date)}
                             </span>
                           </a>
                         </li>
@@ -181,7 +180,7 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
                             <span class="entry__title">{v.title}</span>
                           </span>
                           <span class="entry__date meta-line">
-                            {dayLabel.format(new Date(v.recorded_at))}
+                            {s?.title} · {dayLabel.format(new Date(v.recorded_at))}
                           </span>
                         </a>
                       </li>
@@ -401,20 +400,6 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
   }
   .legend__item--album .legend__dot {
     background: var(--color-blue);
-  }
-  .entry__tag {
-    flex: none;
-    align-self: center;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 0.58rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-paper);
-    background: var(--color-blue);
-    border: 2px solid var(--color-ink);
-    border-radius: 999px;
-    padding: 0.15em 0.55em;
   }
   /* dot pinned onto the spine, colored by series */
   .entry__dot {

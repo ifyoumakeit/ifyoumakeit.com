@@ -1,19 +1,26 @@
 ---
-import { db, eq, video, artist, series } from "../../lib/db";
+import { db, eq, video, artist, series, album } from "../../lib/db";
 import Layout from "../../layouts/Layout.astro";
 import VideoCard from "../../components/VideoCard.astro";
+import AlbumCard from "../../components/AlbumCard.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
 import { getVideoUrl } from "../../lib/video-url";
+import { getAlbumUrl } from "../../lib/album-url";
 
 export async function getStaticPaths() {
   const allArtists = await db.select().from(artist);
   const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+  const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
 
-  // Only generate pages for artists with at least one published video
-  const artistsWithVideos = new Set(allVideos.map((v) => v.artist_id));
+  // Generate a page for any artist with a published video OR album (some bands
+  // are in the archive only via their records).
+  const artistIdsWithVideos = new Set(allVideos.map((v) => v.artist_id));
+  const artistSlugsWithAlbums = new Set(allAlbums.map((a) => a.artist_slug));
 
   return allArtists
-    .filter((a) => artistsWithVideos.has(a.id))
+    .filter(
+      (a) => artistIdsWithVideos.has(a.id) || artistSlugsWithAlbums.has(a.slug),
+    )
     .map((a) => ({
       params: { slug: a.slug },
       props: { artistData: a },
@@ -27,6 +34,19 @@ const allVideos = await db.select().from(video).where(eq(video.publish, 1));
 const artistVideos = allVideos
   .filter((v) => v.artist_id === artistData.id)
   .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+
+// Albums match the artist by slug (albums carry no artist_id).
+const allAlbums = await db.select().from(album).where(eq(album.publish, 1));
+const artistAlbums = allAlbums
+  .filter((a) => a.artist_slug === artistData.slug)
+  .sort((a, b) => new Date(b.released_at).getTime() - new Date(a.released_at).getTime());
+
+const countParts = [
+  artistVideos.length &&
+    `${artistVideos.length} video${artistVideos.length !== 1 ? "s" : ""}`,
+  artistAlbums.length &&
+    `${artistAlbums.length} album${artistAlbums.length !== 1 ? "s" : ""}`,
+].filter(Boolean);
 
 // Fetch all published series to group by
 const allSeries = await db.select().from(series).where(eq(series.publish, 1));
@@ -60,9 +80,7 @@ const seriesWithVideos = allSeries.filter((s) => bySeries.has(s.id));
           </a>
         )}
       </div>
-      <p class="meta-line">
-        {artistVideos.length} video{artistVideos.length !== 1 ? "s" : ""}
-      </p>
+      <p class="meta-line">{countParts.join(" · ")}</p>
     </header>
 
     {seriesWithVideos.map((s) => {
@@ -89,6 +107,24 @@ const seriesWithVideos = allSeries.filter((s) => bySeries.has(s.id));
         </section>
       );
     })}
+
+    {artistAlbums.length > 0 && (
+      <section class="series-group">
+        <SectionHeading title="Albums" count={artistAlbums.length} />
+        <div class="grid-albums">
+          {artistAlbums.map((a) => (
+            <AlbumCard
+              title={a.title}
+              href={getAlbumUrl(a)}
+              slug={a.slug}
+              artistName={a.artist_name}
+              releasedAt={new Date(a.released_at)}
+              downloads={a.downloads}
+            />
+          ))}
+        </div>
+      </section>
+    )}
   </div>
 </Layout>
 
@@ -119,5 +155,11 @@ const seriesWithVideos = allSeries.filter((s) => bySeries.has(s.id));
   .series-group {
     padding-block: 2rem;
     border-top: var(--border);
+  }
+  .grid-albums {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1.25rem;
+    margin-block-start: 0.75rem;
   }
 </style>
