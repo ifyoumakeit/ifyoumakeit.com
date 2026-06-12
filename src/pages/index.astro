@@ -90,21 +90,12 @@ function formatDate(d: Date) {
 }
 ---
 
-<Layout title="If You Make It — DIY Punk Video Archive" description={`DIY punk videos, sessions, and live recordings from ${minYear}–${maxYear}.`}>
+<Layout title="If You Make It — DIY Punk Video Archive" description={`DIY punk videos, sessions, and live recordings from ${minYear}–2014.`}>
 
-  <section class="hero container" aria-labelledby="archive-heading">
-    <h1 class="visually-hidden" id="archive-heading">If You Make It video archive</h1>
-    <ul class="hero-stats">
-      <li><strong>{totalVideos}</strong> videos</li>
-      <li><strong>{totalArtists}</strong> artists</li>
-      <li><strong>{totalYears}</strong> years</li>
-      {totalViews > 0 && <li><strong>{formattedViews}</strong> views</li>}
-    </ul>
-  </section>
+  <h1 class="visually-hidden">If You Make It video archive</h1>
 
   {featuredVideo && featuredArtist && featuredSeries && (
-    <section class="featured container">
-      <SectionHeading title="Featured" />
+    <section class="featured container" aria-label="Featured video">
       <div class="featured-inner" data-series={featuredSeries.slug}>
         <VideoEmbed provider={featuredVideo.provider as "youtube" | "vimeo" | "dailymotion" | "flash"} providerId={featuredVideo.provider_id} title={featuredVideo.title} thumbnail={getLocalThumb(featuredVideo.slug)} />
         <div class="featured-meta">
@@ -122,6 +113,56 @@ function formatDate(d: Date) {
       </div>
     </section>
   )}
+
+  <section class="about container" aria-label="About the archive">
+    <div class="about-box">
+      <p class="about-blurb">
+        Dave Garwacke started If You Make It in New Paltz, NY and followed
+        the couch to Brooklyn: bands passing through would sit down and play
+        a song or two on a pink couch. From {minYear} to 2014 it grew into
+        an archive of acoustic sessions, basement shows, and music videos
+        from the DIY punk world. Hop Along, Waxahatchee, Tigers Jaw, The
+        Bouncing Souls, and a couple hundred friends.
+        <a class="about-link" href="/about/">Read the full story&nbsp;→</a>
+      </p>
+      <ul class="about-stats">
+        <li>
+          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2.5" y="4.5" width="19" height="15" rx="3" fill="var(--color-paper)" stroke="var(--color-ink)" stroke-width="2.5" />
+            <path d="M10 9l6 3-6 3z" fill="var(--color-pink)" stroke="var(--color-ink)" stroke-width="1.5" stroke-linejoin="round" />
+          </svg>
+          <strong>{totalVideos}</strong> videos
+        </li>
+        <li>
+          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="9" y="2.5" width="6" height="11" rx="3" fill="var(--color-pink)" stroke="var(--color-ink)" stroke-width="2.5" />
+            <path d="M5.5 11a6.5 6.5 0 0 0 13 0" fill="none" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="12" y1="17.5" x2="12" y2="21.5" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+          <strong>{totalArtists}</strong> artists
+        </li>
+        <li>
+          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2.5" y="4.5" width="19" height="17" rx="3" fill="var(--color-paper)" stroke="var(--color-ink)" stroke-width="2.5" />
+            <line x1="2.5" y1="10" x2="21.5" y2="10" stroke="var(--color-ink)" stroke-width="2.5" />
+            <line x1="8" y1="2" x2="8" y2="6" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="16" y1="2" x2="16" y2="6" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
+            <rect x="6" y="13" width="5" height="5" fill="var(--color-pink)" />
+          </svg>
+          <strong>{totalYears}</strong> years
+        </li>
+        {totalViews > 0 && (
+          <li>
+            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" fill="var(--color-paper)" stroke="var(--color-ink)" stroke-width="2.5" stroke-linejoin="round" />
+              <circle cx="12" cy="12" r="3" fill="var(--color-pink)" stroke="var(--color-ink)" stroke-width="1.5" />
+            </svg>
+            <strong>{formattedViews}</strong> views
+          </li>
+        )}
+      </ul>
+    </div>
+  </section>
 
   {allSeries.map((s) => {
     const seriesVideos = (videosBySeriesId.get(s.id) ?? []).slice(0, cap);
@@ -174,35 +215,6 @@ function formatDate(d: Date) {
 </Layout>
 
 <style>
-  .hero {
-    padding-block: 2rem;
-    text-align: center;
-  }
-  .hero-stats {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    gap: 1rem 2rem;
-    justify-content: center;
-    font-size: 0.95rem;
-    color: var(--color-muted);
-  }
-  .hero-stats strong {
-    color: var(--color-ink);
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-  }
-  /* Stats slam down one by one like rubber stamps. */
-  .hero-stats li {
-    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-  .hero-stats li:nth-child(1) { animation-delay: 0.1s; }
-  .hero-stats li:nth-child(2) { animation-delay: 0.22s; }
-  .hero-stats li:nth-child(3) { animation-delay: 0.34s; }
-  .hero-stats li:nth-child(4) { animation-delay: 0.46s; }
-
   .featured-inner {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
@@ -214,8 +226,74 @@ function formatDate(d: Date) {
     background: var(--color-paper);
   }
   .featured {
-    padding-block-end: 2rem;
+    padding-block: 1.5rem 0;
   }
+
+  /* ---------- about box: stats, era, and the pitch ---------- */
+  .about {
+    padding-block: 1.5rem 2rem;
+  }
+  .about-box {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 1.5rem 2.5rem;
+    align-items: center;
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard);
+    background: var(--color-yellow);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.3s;
+  }
+  .about-blurb {
+    margin: 0;
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+    line-height: 1.55;
+    max-width: 48ch;
+  }
+  .about-link {
+    margin-inline-start: 0.35em;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+  .about-link:hover {
+    color: var(--color-pink-deep);
+  }
+  .stat-icon {
+    display: block;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin: 0 auto 0.35rem;
+  }
+  .about-stats {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .about-stats strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+  }
+  /* Stats slam down one by one like rubber stamps. */
+  .about-stats li {
+    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .about-stats li:nth-child(1) { animation-delay: 0.4s; }
+  .about-stats li:nth-child(2) { animation-delay: 0.52s; }
+  .about-stats li:nth-child(3) { animation-delay: 0.64s; }
+  .about-stats li:nth-child(4) { animation-delay: 0.76s; }
   .featured-inner {
     animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.18s;
   }
@@ -267,9 +345,6 @@ function formatDate(d: Date) {
     padding-block: 2rem;
     border-top: var(--border);
   }
-  .featured + .series-section {
-    border-top: 0;
-  }
 
   .chip-row {
     display: flex;
@@ -278,11 +353,20 @@ function formatDate(d: Date) {
     margin-block-start: 0.75rem;
   }
 
-  @media (max-width: 520px) {
-    .hero {
-      padding-block: 1.5rem;
+  @media (max-width: 640px) {
+    .about-box {
+      grid-template-columns: 1fr;
     }
-    .hero-stats {
+    .about-stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+    .about-stats strong {
+      font-size: 1.2rem;
+    }
+  }
+  @media (max-width: 420px) {
+    .about-stats {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }

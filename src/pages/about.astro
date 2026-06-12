@@ -1,0 +1,131 @@
+---
+import { db, eq, video } from "../lib/db";
+import Layout from "../layouts/Layout.astro";
+
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const totalVideos = allVideos.length;
+const years = allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear());
+const minYear = Math.min(...years);
+---
+
+<Layout
+  title="About"
+  description="The story of If You Make It and the Pink Couch Sessions: a DIY punk video archive started by Dave Garwacke in New Paltz, NY."
+>
+  <article class="about-page container">
+    <header class="about-header">
+      <h1>About</h1>
+      <p class="about-lede">
+        A DIY punk video archive, {totalVideos} videos deep, filmed
+        {minYear}–2014, most famously from a pink couch.
+      </p>
+    </header>
+
+    <section class="about-section">
+      <h2>The story</h2>
+      <p>
+        Dave Garwacke started If You Make It in New Paltz, NY in 2006,
+        frustrated that the house shows and performances happening around him
+        weren't being documented. He began hauling recording gear to friends'
+        shows, and when he moved to Brooklyn the project moved with him,
+        couch and all.
+      </p>
+      <p>
+        The Pink Couch Sessions are the heart of it: touring bands passing
+        through the tri-state area would stop by Dave's apartment, sit down
+        on the pink couch, and play a song or two acoustic. The first session
+        went up on September 26, 2007, with Laura Stevenson playing
+        &ldquo;Amphibian.&rdquo; The series ran regularly through 2012, with
+        archival videos surfacing into 2013, and racked up over a million
+        views along the way.
+      </p>
+      <p>
+        The goal was always simple: keep a record of artists Dave admired and
+        help get them heard. Alongside the sessions, If You Make It put out
+        articles, comics, music videos, and releases on a donation-based
+        record label.
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h2>Who played</h2>
+      <p>
+        Laura Stevenson, Hop Along, Waxahatchee, Tigers Jaw, The Menzingers,
+        The Bouncing Souls, Andrew Jackson Jihad, Bomb the Music Industry!,
+        Fake Problems, Mikey Erg, Matt Pryor, Mixtapes, RVIVR, The Sidekicks,
+        A.W., Direct Hit, Aye Nako, Walter Schreifels, Spraynard, Braid, and
+        a couple hundred more. <a href="/artists/">Browse every artist.</a>
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h2>How it was made</h2>
+      <p>
+        The early sessions were shot on a Panasonic GS-320 with no external
+        mics and no manual gain, just the sound of the room. Later sessions
+        upgraded to a Canon HF100 in HD with an AT-822 stereo condenser
+        microphone. 
+      </p>
+    </section>
+
+    <p class="about-source">
+      Some of this history is also on
+      <a href="https://en.wikipedia.org/wiki/Pink_Couch_Sessions" rel="external"
+        >Wikipedia ↗</a
+      >.
+    </p>
+  </article>
+</Layout>
+
+<style>
+  .about-page {
+    max-width: 46rem;
+    padding-block: 2.5rem 3rem;
+  }
+  .about-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    margin: 0 0 0.75rem;
+  }
+  .about-lede {
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--color-muted);
+    margin: 0;
+  }
+  .about-section {
+    margin-block-start: 2.25rem;
+  }
+  .about-section h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+    text-transform: uppercase;
+    margin: 0 0 0.75rem;
+    padding-inline-start: 0.6rem;
+    border-inline-start: 6px solid var(--color-pink);
+  }
+  .about-section p {
+    line-height: 1.65;
+    margin: 0 0 1rem;
+    max-width: 62ch;
+  }
+  .about-section a,
+  .about-source a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-pink);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .about-section a:hover,
+  .about-source a:hover {
+    color: var(--color-pink-deep);
+  }
+  .about-source {
+    margin-block-start: 2.5rem;
+    padding-block-start: 1.25rem;
+    border-top: var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+</style>
