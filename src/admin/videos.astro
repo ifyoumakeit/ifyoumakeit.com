@@ -269,7 +269,9 @@ const nf = new Intl.NumberFormat("en-US");
       border-bottom: var(--border);
       background: var(--color-paper);
       position: sticky;
-      top: 3.1rem;
+      /* table-wrap is its own scroll container (overflow-x), so the header
+         sticks to the top of that box — offset 0, not the page admin bar. */
+      top: 0;
       white-space: nowrap;
     }
     .vtable th.sortable {
