@@ -17,13 +17,20 @@ const recordedDate = row
   : "";
 const liveUrl = row && a ? getVideoUrl(row, a) : null;
 const hostUrl = row ? getProviderUrl(row.provider, row.provider_id) : null;
+
+// Where to go after save/cancel — the filtered list view the user came from.
+// Restricted to the videos list to avoid redirecting anywhere unexpected.
+const rawReturn = Astro.url.searchParams.get("return") ?? "";
+const returnTo = rawReturn.startsWith("/admin/videos")
+  ? rawReturn
+  : "/admin/videos";
 ---
 
 <AdminLayout title={row ? `Edit: ${row.title}` : "Not found"}>
   {!row ? (
-    <p>No video with id {id}. <a href="/admin/videos">Back to videos</a>.</p>
+    <p>No video with id {id}. <a href={returnTo}>Back to videos</a>.</p>
   ) : (
-    <form id="edit-form" class="admin-card" data-id={row.id}>
+    <form id="edit-form" class="admin-card" data-id={row.id} data-return={returnTo}>
       <div class="row">
         <label>
           <span>Title</span>
@@ -98,7 +105,7 @@ const hostUrl = row ? getProviderUrl(row.provider, row.provider_id) : null;
 
       <div class="actions">
         <button type="submit" class="btn">Save changes</button>
-        <a class="btn ghost" href="/admin/videos">Cancel</a>
+        <a class="btn ghost" href={returnTo}>Cancel</a>
         {liveUrl && <a class="btn ghost" href={liveUrl} target="_blank">View on site ↗</a>}
         {hostUrl && <a class="btn ghost" href={hostUrl} target="_blank" rel="noopener">Watch on {row.provider} ↗</a>}
       </div>
@@ -151,7 +158,8 @@ const hostUrl = row ? getProviderUrl(row.provider, row.provider_id) : null;
           const json = await res.json();
           if (!json.ok) throw new Error(json.error || "save failed");
           toast("Saved. Returning to list…");
-          window.setTimeout(() => (window.location.href = "/admin/videos"), 600);
+          const back = form.dataset.return || "/admin/videos";
+          window.setTimeout(() => (window.location.href = back), 600);
         } catch (err) {
           toast(String(err.message || err), true);
           btn.disabled = false;

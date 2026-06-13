@@ -169,10 +169,47 @@ const nf = new Intl.NumberFormat("en-US");
         if (ok) shown++;
       }
       els.count.textContent = String(shown);
+      syncUrl();
+      syncEditLinks();
     }
+
+    // Persist the active filters in the URL so an edit can return to this exact
+    // view: edit links carry it as ?return=…, and the editor redirects back here
+    // on save.
+    function currentQuery() {
+      const params = new URLSearchParams();
+      const v = els.search.value.trim();
+      if (v) params.set("q", v);
+      if (els.series.value) params.set("series", els.series.value);
+      if (els.provider.value) params.set("provider", els.provider.value);
+      if (els.publish.value) params.set("publish", els.publish.value);
+      if (els.featured.value) params.set("featured", els.featured.value);
+      const s = params.toString();
+      return s ? "?" + s : "";
+    }
+    function syncUrl() {
+      history.replaceState(null, "", "/admin/videos" + currentQuery());
+    }
+    function syncEditLinks() {
+      const ret = encodeURIComponent("/admin/videos" + currentQuery());
+      for (const a of document.querySelectorAll("a.edit-link")) {
+        const id = a.closest("tr").dataset.id;
+        a.href = `/admin/videos/${id}?return=${ret}`;
+      }
+    }
+
     Object.values(els).forEach((el) => {
       if (el && el.tagName !== "SPAN") el.addEventListener("input", applyFilters);
     });
+
+    // Restore filters from the URL on load (e.g. after returning from an edit).
+    const init = new URLSearchParams(location.search);
+    els.search.value = init.get("q") || "";
+    els.series.value = init.get("series") || "";
+    els.provider.value = init.get("provider") || "";
+    els.publish.value = init.get("publish") || "";
+    els.featured.value = init.get("featured") || "";
+    applyFilters();
 
     // ---- column sorting ----
     const tbody = document.querySelector("tbody");

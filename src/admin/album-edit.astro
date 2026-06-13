@@ -8,13 +8,19 @@ const id = Number(Astro.params.id);
 const [row] = await db.select().from(album).where(eq(album.id, id));
 const cover = row ? getAlbumCover(row.slug) : null;
 const liveUrl = row ? getAlbumUrl(row) : null;
+
+// Return to the filtered list view the user came from (restricted to albums).
+const rawReturn = Astro.url.searchParams.get("return") ?? "";
+const returnTo = rawReturn.startsWith("/admin/albums")
+  ? rawReturn
+  : "/admin/albums";
 ---
 
 <AdminLayout title={row ? `Edit: ${row.artist_name} — ${row.title}` : "Not found"}>
   {!row ? (
-    <p>No album with id {id}. <a href="/admin/albums">Back to albums</a>.</p>
+    <p>No album with id {id}. <a href={returnTo}>Back to albums</a>.</p>
   ) : (
-    <form id="edit-form" class="admin-card" data-id={row.id}>
+    <form id="edit-form" class="admin-card" data-id={row.id} data-return={returnTo}>
       <div class="head">
         {cover ? (
           <img class="cover" src={cover} alt="" width="96" height="96" />
@@ -71,7 +77,7 @@ const liveUrl = row ? getAlbumUrl(row) : null;
 
       <div class="actions">
         <button type="submit" class="btn">Save changes</button>
-        <a class="btn ghost" href="/admin/albums">Cancel</a>
+        <a class="btn ghost" href={returnTo}>Cancel</a>
         {liveUrl && <a class="btn ghost" href={liveUrl} target="_blank">View on site ↗</a>}
       </div>
       <p class="hint">
@@ -118,7 +124,7 @@ const liveUrl = row ? getAlbumUrl(row) : null;
           const json = await res.json();
           if (!json.ok) throw new Error(json.error || "save failed");
           toast("Saved. Returning to list…");
-          window.setTimeout(() => (window.location.href = "/admin/albums"), 600);
+          window.setTimeout(() => (window.location.href = form.dataset.return || "/admin/albums"), 600);
         } catch (err) {
           toast(String(err.message || err), true);
           btn.disabled = false;
