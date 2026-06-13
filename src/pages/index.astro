@@ -9,17 +9,11 @@ import { getVideoUrl } from "../lib/video-url";
 import { renderMarkdown } from "../lib/markdown";
 
 // Fetch all published series ordered by sort
-const allSeries = await db
-  .select()
-  .from(series)
-  .where(eq(series.publish, 1));
+const allSeries = await db.select().from(series).where(eq(series.publish, 1));
 allSeries.sort((a, b) => a.sort - b.sort);
 
 // Fetch all published videos with artist and series info
-const allVideos = await db
-  .select()
-  .from(video)
-  .where(eq(video.publish, 1));
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
 
 const allArtists = await db.select().from(artist);
 const artistMap = new Map(allArtists.map((a) => [a.id, a]));
@@ -33,7 +27,7 @@ const years = allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear());
 const minYear = Math.min(...years);
 const maxYear = Math.max(...years);
 const totalYears = maxYear - minYear + 1;
-const cap = 6
+const cap = 6;
 
 const totalViews = allVideos.reduce((sum, v) => sum + v.views, 0);
 const formattedViews = new Intl.NumberFormat("en-US", {
@@ -44,10 +38,17 @@ const formattedViews = new Intl.NumberFormat("en-US", {
 // Featured video: featured=1, most recent
 const featuredVideos = allVideos
   .filter((v) => v.featured === 1)
-  .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+  .sort(
+    (a, b) =>
+      new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
+  );
 const featuredVideo = featuredVideos[0] ?? null;
-const featuredArtist = featuredVideo ? artistMap.get(featuredVideo.artist_id) : null;
-const featuredSeries = featuredVideo ? seriesMap.get(featuredVideo.series_id) : null;
+const featuredArtist = featuredVideo
+  ? artistMap.get(featuredVideo.artist_id)
+  : null;
+const featuredSeries = featuredVideo
+  ? seriesMap.get(featuredVideo.series_id)
+  : null;
 
 // Videos sorted by views (most-watched first) for series sections
 const videosBySeriesId = new Map<number, typeof allVideos>();
@@ -74,7 +75,10 @@ const publishedVideoIds = new Set(allVideos.map((v) => v.id));
 const tagPublishedCounts = new Map<number, number>();
 for (const vt of allVideoTags) {
   if (publishedVideoIds.has(vt.video_id)) {
-    tagPublishedCounts.set(vt.tag_id, (tagPublishedCounts.get(vt.tag_id) ?? 0) + 1);
+    tagPublishedCounts.set(
+      vt.tag_id,
+      (tagPublishedCounts.get(vt.tag_id) ?? 0) + 1,
+    );
   }
 }
 const activeTags = allTags
@@ -91,128 +95,250 @@ function formatDate(d: Date) {
 }
 ---
 
-<Layout title="If You Make It — DIY Punk Video Archive" description={`DIY punk videos, sessions, and live recordings from ${minYear}–2014.`}>
-
+<Layout
+  title="If You Make It — DIY Punk Video Archive"
+  description={`DIY punk videos, sessions, and live recordings from ${minYear}–2014.`}
+>
   <h1 class="visually-hidden">If You Make It video archive</h1>
 
-  {featuredVideo && featuredArtist && featuredSeries && (
-    <section class="featured container" aria-label="Featured video">
-      <div class="featured-inner" data-series={featuredSeries.slug}>
-        <VideoEmbed provider={featuredVideo.provider as "youtube" | "vimeo" | "dailymotion" | "flash"} providerId={featuredVideo.provider_id} title={featuredVideo.title} thumbnail={getLocalThumb(featuredVideo.slug)} />
-        <div class="featured-meta">
-          <h2 class="featured-artist">
-            <a href={`/artists/${featuredArtist.slug}/`}>{featuredArtist.name}</a>
-          </h2>
-          <h3 class="featured-song">
-            <a href={getVideoUrl(featuredVideo, featuredArtist)}>&ldquo;{featuredVideo.title}&rdquo;</a>
-          </h3>
-          <p class="meta-line">{featuredSeries.title} &mdash; {formatDate(new Date(featuredVideo.recorded_at))}</p>
-          {featuredVideo.description && (
-            <div class="featured-description" set:html={renderMarkdown(featuredVideo.description)} />
-          )}
+  {
+    featuredVideo && featuredArtist && featuredSeries && (
+      <section class="featured container" aria-label="Featured video">
+        <div class="featured-inner" data-series={featuredSeries.slug}>
+          <VideoEmbed
+            provider={
+              featuredVideo.provider as
+                | "youtube"
+                | "vimeo"
+                | "dailymotion"
+                | "flash"
+            }
+            providerId={featuredVideo.provider_id}
+            title={featuredVideo.title}
+            thumbnail={getLocalThumb(featuredVideo.slug)}
+          />
+          <div class="featured-meta">
+            <h2 class="featured-artist">
+              <a href={`/artists/${featuredArtist.slug}/`}>
+                {featuredArtist.name}
+              </a>
+            </h2>
+            <h3 class="featured-song">
+              <a href={getVideoUrl(featuredVideo, featuredArtist)}>
+                &ldquo;{featuredVideo.title}&rdquo;
+              </a>
+            </h3>
+            <p class="meta-line">
+              {featuredSeries.title} &mdash;{" "}
+              {formatDate(new Date(featuredVideo.recorded_at))}
+            </p>
+            {featuredVideo.description && (
+              <div
+                class="featured-description"
+                set:html={renderMarkdown(featuredVideo.description)}
+              />
+            )}
+          </div>
         </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )
+  }
 
   <section class="about container" aria-label="About the archive">
     <div class="about-box">
       <p class="about-blurb">
-        Dave Garwacke started If You Make It in New Paltz, NY and followed
-        the couch to Brooklyn: bands passing through would sit down and play
-        a song or two on a pink couch. From {minYear} to 2014 it grew into
-        an archive of acoustic sessions, basement shows, and music videos
-        from the DIY punk world. Hop Along, Waxahatchee, Tigers Jaw, The
-        Bouncing Souls, and a couple hundred friends.
+        Dave Garwacke started If You Make It in New Paltz, NY and followed the
+        couch to Brooklyn: bands passing through would sit down and play a song
+        or two on a pink couch. From {minYear} to 2014 it grew into an archive of
+        acoustic sessions, basement shows, and music videos from the DIY punk world.
+        Hop Along, Waxahatchee, Tigers Jaw, The Bouncing Souls, and a couple hundred
+        friends.
         <a class="about-link" href="/about/">Read the full story&nbsp;→</a>
       </p>
-      <ul class="about-stats">
-        <li>
-          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="2.5" y="4.5" width="19" height="15" rx="3" fill="var(--color-paper)" stroke="var(--color-ink)" stroke-width="2.5" />
-            <path d="M10 9l6 3-6 3z" fill="var(--color-pink)" stroke="var(--color-ink)" stroke-width="1.5" stroke-linejoin="round" />
-          </svg>
-          <strong>{totalVideos}</strong> videos
-        </li>
-        <li>
-          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="9" y="2.5" width="6" height="11" rx="3" fill="var(--color-pink)" stroke="var(--color-ink)" stroke-width="2.5" />
-            <path d="M5.5 11a6.5 6.5 0 0 0 13 0" fill="none" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
-            <line x1="12" y1="17.5" x2="12" y2="21.5" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
-          </svg>
-          <strong>{totalArtists}</strong> artists
-        </li>
-        <li>
-          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="2.5" y="4.5" width="19" height="17" rx="3" fill="var(--color-paper)" stroke="var(--color-ink)" stroke-width="2.5" />
-            <line x1="2.5" y1="10" x2="21.5" y2="10" stroke="var(--color-ink)" stroke-width="2.5" />
-            <line x1="8" y1="2" x2="8" y2="6" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
-            <line x1="16" y1="2" x2="16" y2="6" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" />
-            <rect x="6" y="13" width="5" height="5" fill="var(--color-pink)" />
-          </svg>
-          <strong>{totalYears}</strong> years
-        </li>
-        {totalViews > 0 && (
+      <div class="about-figures">
+        <ul class="about-stats">
           <li>
             <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" fill="var(--color-paper)" stroke="var(--color-ink)" stroke-width="2.5" stroke-linejoin="round" />
-              <circle cx="12" cy="12" r="3" fill="var(--color-pink)" stroke="var(--color-ink)" stroke-width="1.5" />
+              <rect
+                x="2.5"
+                y="4.5"
+                width="19"
+                height="15"
+                rx="3"
+                fill="var(--color-paper)"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"></rect>
+              <path
+                d="M10 9l6 3-6 3z"
+                fill="var(--color-pink)"
+                stroke="var(--color-ink)"
+                stroke-width="1.5"
+                stroke-linejoin="round"></path>
             </svg>
-            <strong>{formattedViews}</strong> views
+            <strong>{totalVideos}</strong> videos
           </li>
-        )}
-      </ul>
+          <li>
+            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect
+                x="9"
+                y="2.5"
+                width="6"
+                height="11"
+                rx="3"
+                fill="var(--color-pink)"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"></rect>
+              <path
+                d="M5.5 11a6.5 6.5 0 0 0 13 0"
+                fill="none"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"
+                stroke-linecap="round"></path>
+              <line
+                x1="12"
+                y1="17.5"
+                x2="12"
+                y2="21.5"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"
+                stroke-linecap="round"></line>
+            </svg>
+            <strong>{totalArtists}</strong> artists
+          </li>
+          <li>
+            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect
+                x="2.5"
+                y="4.5"
+                width="19"
+                height="17"
+                rx="3"
+                fill="var(--color-paper)"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"></rect>
+              <line
+                x1="2.5"
+                y1="10"
+                x2="21.5"
+                y2="10"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"></line>
+              <line
+                x1="8"
+                y1="2"
+                x2="8"
+                y2="6"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"
+                stroke-linecap="round"></line>
+              <line
+                x1="16"
+                y1="2"
+                x2="16"
+                y2="6"
+                stroke="var(--color-ink)"
+                stroke-width="2.5"
+                stroke-linecap="round"></line>
+              <rect x="6" y="13" width="5" height="5" fill="var(--color-pink)"
+              ></rect>
+            </svg>
+            <strong>{totalYears}</strong> years
+          </li>
+          {
+            totalViews > 0 && (
+              <li>
+                <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"
+                    fill="var(--color-paper)"
+                    stroke="var(--color-ink)"
+                    stroke-width="2.5"
+                    stroke-linejoin="round"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                    fill="var(--color-pink)"
+                    stroke="var(--color-ink)"
+                    stroke-width="1.5"
+                  />
+                </svg>
+                <strong>{formattedViews}</strong> views
+              </li>
+            )
+          }
+        </ul>
+        <a class="about-numbers-link" href="/stats/"
+          >See the full breakdown&nbsp;→</a
+        >
+      </div>
     </div>
   </section>
 
-  {allSeries.map((s) => {
-    const seriesVideos = (videosBySeriesId.get(s.id) ?? []).slice(0, cap);
-    if (seriesVideos.length === 0) return null;
-    return (
-      <section class="series-section container" data-series={s.slug}>
-        <SectionHeading title={s.title} href={`/${s.slug}/`} count={videosBySeriesId.get(s.id)?.length ?? 0} />
-        <div class="grid-videos">
-          {seriesVideos.map((v) => {
-            const a = artistMap.get(v.artist_id);
-            return (
-              <VideoCard
-                title={v.title}
-                href={getVideoUrl(v, a!)}
-                artistName={a?.name ?? ""}
-                seriesTitle={s.title}
-                seriesSlug={s.slug}
-                recordedAt={new Date(v.recorded_at)}
-                provider={v.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
-                providerId={v.provider_id}
-                thumbnailSlug={v.slug}
-              />
-            );
-          })}
-        </div>
-      </section>
-    );
-  })}
+  {
+    allSeries.map((s) => {
+      const seriesVideos = (videosBySeriesId.get(s.id) ?? []).slice(0, cap);
+      if (seriesVideos.length === 0) return null;
+      return (
+        <section class="series-section container" data-series={s.slug}>
+          <SectionHeading
+            title={s.title}
+            href={`/${s.slug}/`}
+            count={videosBySeriesId.get(s.id)?.length ?? 0}
+          />
+          <div class="grid-videos">
+            {seriesVideos.map((v) => {
+              const a = artistMap.get(v.artist_id);
+              return (
+                <VideoCard
+                  title={v.title}
+                  href={getVideoUrl(v, a!)}
+                  artistName={a?.name ?? ""}
+                  seriesTitle={s.title}
+                  seriesSlug={s.slug}
+                  recordedAt={new Date(v.recorded_at)}
+                  provider={
+                    v.provider as "youtube" | "vimeo" | "dailymotion" | "flash"
+                  }
+                  providerId={v.provider_id}
+                  thumbnailSlug={v.slug}
+                />
+              );
+            })}
+          </div>
+        </section>
+      );
+    })
+  }
 
   <section class="browse-strip container">
     <SectionHeading title="Browse by Year" href="/years/" />
     <div class="chip-row">
-      {distinctYears.map((y) => (
-        <a class="tag-chip" href={`/years/${y}/`}>{y}</a>
-      ))}
+      {
+        distinctYears.map((y) => (
+          <a class="tag-chip" href={`/years/${y}/`}>
+            {y}
+          </a>
+        ))
+      }
     </div>
   </section>
 
-  {activeTags.length > 0 && (
-    <section class="browse-strip container">
-      <SectionHeading title="Browse by Tag" href="/tags/" />
-      <div class="chip-row">
-        {activeTags.map((t) => (
-          <a class="tag-chip" href={`/tags/${t.slug}/`}>{t.name}</a>
-        ))}
-      </div>
-    </section>
-  )}
-
+  {
+    activeTags.length > 0 && (
+      <section class="browse-strip container">
+        <SectionHeading title="Browse by Tag" href="/tags/" />
+        <div class="chip-row">
+          {activeTags.map((t) => (
+            <a class="tag-chip" href={`/tags/${t.slug}/`}>
+              {t.name}
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
 </Layout>
 
 <style>
@@ -291,10 +417,36 @@ function formatDate(d: Date) {
   .about-stats li {
     animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
-  .about-stats li:nth-child(1) { animation-delay: 0.4s; }
-  .about-stats li:nth-child(2) { animation-delay: 0.52s; }
-  .about-stats li:nth-child(3) { animation-delay: 0.64s; }
-  .about-stats li:nth-child(4) { animation-delay: 0.76s; }
+  .about-stats li:nth-child(1) {
+    animation-delay: 0.4s;
+  }
+  .about-stats li:nth-child(2) {
+    animation-delay: 0.52s;
+  }
+  .about-stats li:nth-child(3) {
+    animation-delay: 0.64s;
+  }
+  .about-stats li:nth-child(4) {
+    animation-delay: 0.76s;
+  }
+  .about-numbers-link {
+    display: block;
+    margin-top: 1rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.88s;
+  }
+  .about-numbers-link:hover {
+    color: var(--color-pink-deep);
+  }
   .featured-inner {
     animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.18s;
   }
