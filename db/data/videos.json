@@ -2459,11 +2459,11 @@
   "series_id": 2,
   "description": "On tour from Richmond, TRB was in town to play a show with 'labelmates' Bomb the Music Industry. I think they set the land-speed record for filming a pink couch, only taking 1 take on each song. They are on tour now and have a new record, \"Fists Buried In Pockets\"",
   "recorded_at": "2008-09-29",
-  "provider": "flash",
-  "provider_id": "riotbefore.flv",
+  "provider": "youtube",
+  "provider_id": "xjMiXTqKfJU",
   "featured": 0,
   "views": 14169,
-  "publish": 0
+  "publish": 1
  },
  {
   "id": 181,
@@ -3385,10 +3385,11 @@
   "series_id": 1,
   "description": "This is from this year's Crucial Fun Fest. You'll be seeing a lot of Eric in these videos, since he was always in the front of the pack at each show. Thanks to Anthony for putting together an amazing weekend.\n\nHeathers are currently on tour with Ghost Mice. This is off of their recent full length -Here, Not There-. They will also be recording a pink couch when they come through.",
   "recorded_at": "2009-06-10",
-  "provider": "vimeo",
-  "provider_id": "5098235",
+  "provider": "youtube",
+  "provider_id": "jnu6N7cnVOM",
   "featured": 0,
-  "views": 9584
+  "views": 9584,
+  "publish": 1
  },
  {
   "id": 252,
