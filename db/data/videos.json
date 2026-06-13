@@ -3222,10 +3222,11 @@
   "series_id": 2,
   "description": "From Columbus, Ohio, comes two awesome individuals named Ryan and Lisa. We've been talking about doing a LTTM Pink Couch for a while, but it's been hard getting them this way over the last two years. They recently did a tour with local buddies, Saint Seneca, who also recorded that day. So look forward to that!\n\nYou might also know Ryan from the threesome Delay, who are also from Columbus. They also have a big hand in running the amazing Bereafest each year, which provides 1/4 of the content on this site.",
   "recorded_at": "2009-04-24",
-  "provider": "vimeo",
-  "provider_id": "4316734",
+  "provider": "youtube",
+  "provider_id": "S8geT-Xs-hI",
   "featured": 0,
-  "views": 17044
+  "views": 17044,
+  "publish": 1
  },
  {
   "id": 240,
