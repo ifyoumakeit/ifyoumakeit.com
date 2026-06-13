@@ -3779,10 +3779,11 @@
   "series_id": 2,
   "description": "My good buddy Isaac from Buffalo, NY recently clued me into this great three piece. I shot them a message a couple of weeks ago and we worked it all out.\n\nThey are playing a free show at SUNY Purchase tonight, so if you are in the area check them out.\n\nOn a side note, the Pink Couch Sessions are back after a unintentional summer recess. Stay tuned for some cool new bands.",
   "recorded_at": "2009-09-24",
-  "provider": "vimeo",
-  "provider_id": "6728598",
+  "provider": "youtube",
+  "provider_id": "s01OCOwVcSM",
   "featured": 0,
-  "views": 12432
+  "views": 12432,
+  "publish": 1
  },
  {
   "id": 287,
