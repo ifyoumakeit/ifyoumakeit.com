@@ -18,6 +18,9 @@ export default defineConfig({
     "/category/sessions": "/sessions/",
     "/category/live": "/live/",
     "/category/series": "/series/",
+    "/video/andrew-jackson-jihad/big-bird": "/video/ajj/big-bird",
+    "/video/andrew-jackson-jihad/sense-sensibility": "/video/ajj/sense-sensibility",
+    "/video/andrew-jackson-jihad/a-song-in-memory-of-stormy-the-rabbit": "/video/ajj/a-song-in-memory-of-stormy-the-rabbit",
   },
   // Local-only admin/dashboard. Self-disables unless `astro dev` (command ===
   // "dev"); ships ZERO code to the static prod build. See integrations/admin.mjs.
