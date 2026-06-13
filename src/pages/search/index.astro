@@ -85,6 +85,19 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
 
     <ul class="results" id="results"></ul>
 
+    <template id="result-template">
+      <li>
+        <a class="result">
+          <span class="result__dot" aria-hidden="true"></span>
+          <span class="result__text">
+            <span class="result__artist"></span>
+            <span class="result__title"></span>
+          </span>
+          <span class="result__meta meta-line"></span>
+        </a>
+      </li>
+    </template>
+
     <noscript>
       <p class="search-noscript">
         Search needs JavaScript. Browse by
@@ -121,33 +134,31 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
       d.h = `${d.t} ${d.a} ${d.s} ${d.y}`.toLowerCase();
     }
 
-    const escapes: Record<string, string> = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-    };
-    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => escapes[c]);
-
     const input = document.getElementById("q") as HTMLInputElement | null;
     const results = document.getElementById("results");
     const status = document.getElementById("status");
+    const template = document.getElementById(
+      "result-template",
+    ) as HTMLTemplateElement | null;
 
-    if (input && results && status) {
-      init(input, results, status);
+    if (input && results && status && template) {
+      init(input, results, status, template);
     }
 
     function init(
       input: HTMLInputElement,
       results: HTMLElement,
       status: HTMLElement,
+      template: HTMLTemplateElement,
     ) {
       const initialStatus = status.textContent?.trim() ?? "";
+      const row = template.content.firstElementChild;
+      if (!row) return;
 
       const render = (q: string) => {
         const query = q.trim().toLowerCase();
         if (!query) {
-          results.innerHTML = "";
+          results.replaceChildren();
           status.textContent = initialStatus;
           return;
         }
@@ -159,24 +170,32 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
         }
 
         if (!out.length) {
-          results.innerHTML = `<li class="results__empty">Nothing matches “${esc(q.trim())}”. Try a band, album, or song.</li>`;
+          const empty = document.createElement("li");
+          empty.className = "results__empty";
+          empty.textContent = `Nothing matches “${q.trim()}”. Try a band, album, or song.`;
+          results.replaceChildren(empty);
           status.textContent = "No matches";
           return;
         }
 
-        results.innerHTML = out
-          .map(
-            (r) =>
-              `<li><a class="result" href="${r.u}" data-series="${esc(r.k)}">` +
-              `<span class="result__dot" aria-hidden="true"></span>` +
-              `<span class="result__text">` +
-              `<span class="result__artist">${esc(r.a)}</span>` +
-              `<span class="result__title">${esc(r.t)}</span>` +
-              `</span>` +
-              `<span class="result__meta meta-line">${esc(r.s)}${r.y ? ` · ${r.y}` : ""}</span>` +
-              `</a></li>`,
-          )
-          .join("");
+        // Clone the <template> per hit and fill text/attributes — textContent
+        // escapes for us, so no manual HTML-escaping is needed.
+        const frag = document.createDocumentFragment();
+        for (const r of out) {
+          const node = row.cloneNode(true) as HTMLElement;
+          const link = node.querySelector("a.result") as HTMLAnchorElement;
+          link.href = r.u;
+          link.dataset.series = r.k;
+          (node.querySelector(".result__artist") as HTMLElement).textContent =
+            r.a;
+          (node.querySelector(".result__title") as HTMLElement).textContent =
+            r.t;
+          (node.querySelector(".result__meta") as HTMLElement).textContent = r.y
+            ? `${r.s} · ${r.y}`
+            : r.s;
+          frag.appendChild(node);
+        }
+        results.replaceChildren(frag);
         status.textContent = `${out.length} ${out.length === 1 ? "result" : "results"}`;
       };
 
