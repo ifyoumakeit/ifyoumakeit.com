@@ -35,49 +35,78 @@ const formattedViews = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 }).format(totalViews);
 
-// Hero video — "On this day": a video recorded on today's month/day in any
-// year (most-watched wins when several share the date). When nothing matches
-// today, fall back to a deterministic pick-of-the-week so the slot still
-// rotates between daily builds. Dates are UTC to stay stable across machines.
+// Hero video — "On this day": a video recorded on today's UTC month/day in any
+// year (most-watched wins ties). When nothing matches exactly, fall back to a
+// recording from *around now* — first this week (within 3 days, any year),
+// then this month — so the hero stays tied to the calendar instead of jumping
+// to a random date. UTC throughout to stay stable across machines.
 const heroPool = allVideos.filter(
   (v) => artistMap.has(v.artist_id) && seriesMap.has(v.series_id),
 );
 
 const now = new Date();
+// Day-of-year in a fixed common year, so month/day compare regardless of year.
+const CUMULATIVE_DAYS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+const dayOfYear = (d: Date) =>
+  CUMULATIVE_DAYS[d.getUTCMonth()] + d.getUTCDate();
+const todayDoy = dayOfYear(now);
+const calendarDistance = (d: Date) => {
+  const diff = Math.abs(dayOfYear(d) - todayDoy);
+  return Math.min(diff, 365 - diff); // wrap around the year boundary
+};
+
+// Deterministic "random" that advances each day, so daily builds rotate the
+// pick within a bucket while staying reproducible for a given date.
+const daySeed = now.getUTCFullYear() * 366 + todayDoy;
+const pickDaily = <T extends { id: number }>(rows: T[]): T | null =>
+  rows.length
+    ? [...rows].sort((a, b) => a.id - b.id)[daySeed % rows.length]
+    : null;
+
 const onThisDay = heroPool
-  .filter((v) => {
-    const d = new Date(v.recorded_at);
-    return (
-      d.getUTCMonth() === now.getUTCMonth() &&
-      d.getUTCDate() === now.getUTCDate()
-    );
-  })
+  .filter((v) => calendarDistance(new Date(v.recorded_at)) === 0)
   .sort((a, b) => b.views - a.views);
-
-// Deterministic "random" seeded by the week of the year — stable for a week,
-// so on matchless days the hero rotates weekly rather than every build.
-const dayOfYear = Math.floor(
-  (Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) -
-    Date.UTC(now.getUTCFullYear(), 0, 1)) /
-    86_400_000,
+const thisWeek = heroPool.filter(
+  (v) => calendarDistance(new Date(v.recorded_at)) <= 3,
 );
-const weekSeed = now.getUTCFullYear() * 53 + Math.floor(dayOfYear / 7);
-const byId = [...heroPool].sort((a, b) => a.id - b.id);
-const pickOfWeek = byId.length ? byId[weekSeed % byId.length] : null;
+const thisMonth = heroPool.filter(
+  (v) => new Date(v.recorded_at).getUTCMonth() === now.getUTCMonth(),
+);
 
-const isOnThisDay = onThisDay.length > 0;
-const featuredVideo = onThisDay[0] ?? pickOfWeek;
+let heroTier: "day" | "week" | "month" | "archive";
+let featuredVideo: (typeof heroPool)[number] | null;
+if (onThisDay.length) {
+  featuredVideo = onThisDay[0];
+  heroTier = "day";
+} else if (thisWeek.length) {
+  featuredVideo = pickDaily(thisWeek);
+  heroTier = "week";
+} else if (thisMonth.length) {
+  featuredVideo = pickDaily(thisMonth);
+  heroTier = "month";
+} else {
+  featuredVideo = pickDaily(heroPool);
+  heroTier = "archive";
+}
+
 const featuredArtist = featuredVideo
   ? artistMap.get(featuredVideo.artist_id)
   : null;
 const featuredSeries = featuredVideo
   ? seriesMap.get(featuredVideo.series_id)
   : null;
+const featuredYear = featuredVideo
+  ? new Date(featuredVideo.recorded_at).getUTCFullYear()
+  : null;
 const featuredEyebrow = !featuredVideo
   ? ""
-  : isOnThisDay
-    ? `On this day in ${new Date(featuredVideo.recorded_at).getUTCFullYear()}`
-    : "Pick of the week";
+  : heroTier === "day"
+    ? `On this day in ${featuredYear}`
+    : heroTier === "week"
+      ? `Around this time in ${featuredYear}`
+      : heroTier === "month"
+        ? `This month in ${featuredYear}`
+        : "From the archive";
 
 // Videos sorted by views (most-watched first) for series sections
 const videosBySeriesId = new Map<number, typeof allVideos>();
