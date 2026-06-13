@@ -16,9 +16,7 @@ const isArchival = provider === "flash";
 const isPlayable = isYouTube || isVimeo || isDailymotion;
 const poster =
   thumbnail ??
-  (isYouTube
-    ? `https://i.ytimg.com/vi/${providerId}/maxresdefault.jpg`
-    : null);
+  (isYouTube ? `https://i.ytimg.com/vi/${providerId}/maxresdefault.jpg` : null);
 ---
 
 <div class="embed">
@@ -32,28 +30,26 @@ const poster =
         data-title={title}
         aria-label={`Play video: ${title}`}
       >
-        {
-          poster ? (
-            <img
-              class="embed__thumb"
-              src={poster}
-              onerror={
-                isYouTube && !thumbnail
-                  ? `this.onerror=null;this.src='https://i.ytimg.com/vi/${providerId}/hqdefault.jpg'`
-                  : undefined
-              }
-              alt=""
-              loading="lazy"
-              decoding="async"
-              width="1280"
-              height="720"
-            />
-          ) : (
-            <span class="embed__placeholder" aria-hidden="true">
-              <span class="embed__provider">{provider}</span>
-            </span>
-          )
-        }
+        {poster ? (
+          <img
+            class="embed__thumb"
+            src={poster}
+            onerror={
+              isYouTube && !thumbnail
+                ? `this.onerror=null;this.src='https://i.ytimg.com/vi/${providerId}/hqdefault.jpg'`
+                : undefined
+            }
+            alt=""
+            loading="lazy"
+            decoding="async"
+            width="1280"
+            height="720"
+          />
+        ) : (
+          <span class="embed__placeholder" aria-hidden="true">
+            <span class="embed__provider">{provider}</span>
+          </span>
+        )}
         <span class="embed__play" aria-hidden="true">
           <svg viewBox="0 0 68 48" focusable="false">
             <path
@@ -79,18 +75,50 @@ const poster =
             decoding="async"
           />
         )}
-        <svg class="embed__archival-mark" viewBox="0 0 64 40" aria-hidden="true">
+        <svg
+          class="embed__archival-mark"
+          viewBox="0 0 64 40"
+          aria-hidden="true"
+        >
           <g
             stroke="var(--color-ink)"
             stroke-width="3"
             stroke-linejoin="round"
             stroke-linecap="round"
           >
-            <rect x="10" y="6" width="44" height="14" rx="6" fill="var(--color-pink)" />
-            <rect x="8" y="17" width="48" height="13" rx="5" fill="var(--color-pink)" />
+            <rect
+              x="10"
+              y="6"
+              width="44"
+              height="14"
+              rx="6"
+              fill="var(--color-pink)"
+            />
+            <rect
+              x="8"
+              y="17"
+              width="48"
+              height="13"
+              rx="5"
+              fill="var(--color-pink)"
+            />
             <line x1="32" y1="19" x2="32" y2="28" />
-            <rect x="6" y="13" width="10" height="17" rx="4" fill="var(--color-pink-deep)" />
-            <rect x="48" y="13" width="10" height="17" rx="4" fill="var(--color-pink-deep)" />
+            <rect
+              x="6"
+              y="13"
+              width="10"
+              height="17"
+              rx="4"
+              fill="var(--color-pink-deep)"
+            />
+            <rect
+              x="48"
+              y="13"
+              width="10"
+              height="17"
+              rx="4"
+              fill="var(--color-pink-deep)"
+            />
           </g>
         </svg>
         <p class="embed__archival-text">
@@ -101,51 +129,45 @@ const poster =
   }
 </div>
 
-{
-  isPlayable && (
-    <script is:inline>
-      (function () {
-        if (window.__iymiEmbedInit) return;
-        window.__iymiEmbedInit = true;
-        document.addEventListener("click", function (e) {
-          var btn = e.target.closest && e.target.closest(".embed__facade");
-          if (!btn) return;
-          var provider = btn.getAttribute("data-provider");
-          var id = btn.getAttribute("data-provider-id");
-          if (!provider || !id) return;
-          var sources = {
-            youtube:
-              "https://www.youtube-nocookie.com/embed/" +
-              encodeURIComponent(id) +
-              "?autoplay=1",
-            vimeo:
-              "https://player.vimeo.com/video/" +
-              encodeURIComponent(id) +
-              "?autoplay=1",
-            dailymotion:
-              "https://www.dailymotion.com/embed/video/" +
-              encodeURIComponent(id) +
-              "?autoplay=1",
-          };
-          var src = sources[provider];
-          if (!src) return;
-          var iframe = document.createElement("iframe");
-          iframe.style.cssText =
-            "position:absolute;inset:0;width:100%;height:100%;border:0;display:block";
-          iframe.src = src;
-          iframe.title = "Video: " + (btn.getAttribute("data-title") || "Untitled");
-          iframe.setAttribute("allowfullscreen", "");
-          iframe.setAttribute(
-            "allow",
-            "autoplay; encrypted-media; fullscreen; picture-in-picture"
-          );
-          iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
-          btn.replaceWith(iframe);
-        });
-      })();
-    </script>
-  )
-}
+<script>
+  // Click-to-play: swap a facade button for its provider iframe on first
+  // click. A single delegated listener covers every embed on the page; Astro
+  // bundles this module once per page, so no init guard is needed.
+  type Provider = "youtube" | "vimeo" | "dailymotion";
+
+  const embedUrl: Record<Provider, (id: string) => string> = {
+    youtube: (id) =>
+      `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1`,
+    vimeo: (id) =>
+      `https://player.vimeo.com/video/${encodeURIComponent(id)}?autoplay=1`,
+    dailymotion: (id) =>
+      `https://www.dailymotion.com/embed/video/${encodeURIComponent(id)}?autoplay=1`,
+  };
+
+  document.addEventListener("click", (event) => {
+    const facade = (event.target as Element | null)?.closest<HTMLButtonElement>(
+      ".embed__facade",
+    );
+    if (!facade) return;
+
+    const provider = facade.dataset.provider as Provider | undefined;
+    const id = facade.dataset.providerId;
+    if (!provider || !id || !(provider in embedUrl)) return;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText =
+      "position:absolute;inset:0;width:100%;height:100%;border:0;display:block";
+    iframe.src = embedUrl[provider](id);
+    iframe.title = `Video: ${facade.dataset.title || "Untitled"}`;
+    iframe.setAttribute("allowfullscreen", "");
+    iframe.setAttribute(
+      "allow",
+      "autoplay; encrypted-media; fullscreen; picture-in-picture",
+    );
+    iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+    facade.replaceWith(iframe);
+  });
+</script>
 
 <style>
   .embed {
