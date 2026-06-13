@@ -264,7 +264,11 @@ const nf = new Intl.NumberFormat("en-US");
       border-radius: var(--radius);
     }
     .table-wrap {
-      overflow-x: auto;
+      /* Own scroll container so the sticky header sticks to the top of THIS box
+         instead of floating over the page (which left a gap and covered the
+         first result row). */
+      overflow: auto;
+      max-height: calc(100vh - 11rem);
       border: var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow-hard-sm);
@@ -282,10 +286,13 @@ const nf = new Intl.NumberFormat("en-US");
       font-size: 0.66rem;
       letter-spacing: 0.04em;
       padding: 0.55rem 0.6rem;
-      border-bottom: var(--border);
+      /* box-shadow, not border-bottom: a collapsed border scrolls away when the
+         header sticks; this line travels with it. */
+      box-shadow: 0 3px 0 var(--color-ink);
       background: var(--color-paper);
       position: sticky;
-      top: 3.1rem;
+      top: 0;
+      z-index: 1;
       white-space: nowrap;
     }
     .vtable th.sortable {
