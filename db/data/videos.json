@@ -2087,7 +2087,7 @@
  {
   "id": 153,
   "title": "Sense, Sensibility",
-  "slug": "andrew-jackson-jihad-sense-sensibility",
+  "slug": "ajj-sense-sensibility",
   "artist_id": 84,
   "series_id": 2,
   "description": "Somehow we found the time and energy to travel from Hamden, CT back to brooklyn and record this at 2:30 in the morning. Thanks to Sean and Ben for trekking out here, if you missed them on the Asian Man tour, you're probably already regretting it. This is a new song, freshly named.",
@@ -2097,7 +2097,8 @@
   "featured": 0,
   "views": 669380,
   "likes": 6025,
-  "comments": 431
+  "comments": 431,
+  "publish": 1
  },
  {
   "id": 154,
@@ -2651,7 +2652,7 @@
  {
   "id": 196,
   "title": "A Song In Memory Of Stormy The Rabbit",
-  "slug": "andrew-jackson-jihad-a-song-in-memory-of-stormy-the-rabbit",
+  "slug": "ajj-a-song-in-memory-of-stormy-the-rabbit",
   "artist_id": 84,
   "series_id": 1,
   "description": "From the last day of the Asian Man tour. Sean and Ben plus members of Bomb the Music Industry and Sheena from Lemuria. This tour featured some of the nicest people playing music right now. I'm sure they all had a great time hanging out too, just listen to those solos!",
@@ -2661,7 +2662,8 @@
   "featured": 0,
   "views": 7356,
   "likes": 256,
-  "comments": 16
+  "comments": 16,
+  "publish": 1
  },
  {
   "id": 197,
@@ -5417,7 +5419,7 @@
  {
   "id": 788,
   "title": "Big Bird",
-  "slug": "andrew-jackson-jihad-big-bird",
+  "slug": "ajj-big-bird",
   "artist_id": 84,
   "series_id": 1,
   "description": "From their tour with Laura Stevenson & The Cans and ROAR. Both bands join AJJ on stage for the last song of the night and the tour! I wish I had better audio but who cares! This was fun.",
@@ -5427,7 +5429,8 @@
   "featured": 0,
   "views": 26800,
   "likes": 456,
-  "comments": 38
+  "comments": 38,
+  "publish": 1
  },
  {
   "id": 793,
