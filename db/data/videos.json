@@ -3726,11 +3726,11 @@
   "series_id": 2,
   "description": "I filmed this video almost a year ago when they were on tour with Virgins. Since then Ryan has moved to Brooklyn, and started Stolen Parts with a few notable dudes around here.\n\nAnnoyingly, I kept forgetting the name of the song each time he told me, and it also got lost in the bowels of the Dailymotion vault.\n\nThis is from their split with Ohio's Delay.",
   "recorded_at": "2009-08-31",
-  "provider": "dailymotion",
-  "provider_id": "x7s04k_monikers_music",
+  "provider": "youtube",
+  "provider_id": "NtSrp_6BTVY",
   "featured": 0,
   "views": 7967,
-  "publish": 0
+  "publish": 1
  },
  {
   "id": 283,
@@ -4300,10 +4300,11 @@
   "series_id": 2,
   "description": "Kenny stopped by with RJ of [Academy Fight Song](http://academyfightsong.com/) a little while back after taking the train in from Philly. Originally in the band The Starting Line, Kenny has went off on his own and started Person L.\n\nThis is off his 2009 release \"The Positives\".",
   "recorded_at": "2010-04-06",
-  "provider": "dailymotion",
-  "provider_id": "xcuyux_person-l-stay-calm",
+  "provider": "youtube",
+  "provider_id": "J20EJGLUgoU",
   "featured": 0,
-  "views": 8396
+  "views": 8396,
+  "publish": 1
  },
  {
   "id": 510,
