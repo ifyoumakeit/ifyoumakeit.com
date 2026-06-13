@@ -134,8 +134,22 @@ const nf = new Intl.NumberFormat("en-US");
       featured: document.getElementById("f-featured"),
       count: document.getElementById("row-count"),
     };
+    // Forgiving text match: every query term must hit. A term hits if it's a
+    // substring of the row text, if a word starts with it (partial typing), or
+    // if it's a word plus a short suffix like a plural "s" — so "kudrows" still
+    // finds "Kudrow". Searches artist, title, series and year together.
+    function termHits(term, hay, words) {
+      if (hay.includes(term)) return true;
+      for (const w of words) {
+        if (w.startsWith(term)) return true;
+        if (term.startsWith(w) && term.length - w.length <= 2 && w.length >= 3)
+          return true;
+      }
+      return false;
+    }
     function applyFilters() {
       const q = els.search.value.trim().toLowerCase();
+      const terms = q ? q.split(/\s+/) : [];
       const s = els.series.value;
       const p = els.provider.value;
       const pub = els.publish.value;
@@ -143,8 +157,10 @@ const nf = new Intl.NumberFormat("en-US");
       let shown = 0;
       for (const r of rows) {
         const d = r.dataset;
+        const hay = `${d.artist} ${d.title} ${d.seriestitle} ${d.year}`;
+        const words = hay.split(/\s+/).filter(Boolean);
         const ok =
-          (!q || d.artist.includes(q) || d.title.includes(q)) &&
+          terms.every((t) => termHits(t, hay, words)) &&
           (!s || d.series === s) &&
           (!p || d.provider === p) &&
           (!pub || d.publish === pub) &&
