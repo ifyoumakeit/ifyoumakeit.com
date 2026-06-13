@@ -35,20 +35,49 @@ const formattedViews = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 }).format(totalViews);
 
-// Featured video: featured=1, most recent
-const featuredVideos = allVideos
-  .filter((v) => v.featured === 1)
-  .sort(
-    (a, b) =>
-      new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
-  );
-const featuredVideo = featuredVideos[0] ?? null;
+// Hero video — "On this day": a video recorded on today's month/day in any
+// year (most-watched wins when several share the date). When nothing matches
+// today, fall back to a deterministic pick-of-the-week so the slot still
+// rotates between daily builds. Dates are UTC to stay stable across machines.
+const heroPool = allVideos.filter(
+  (v) => artistMap.has(v.artist_id) && seriesMap.has(v.series_id),
+);
+
+const now = new Date();
+const onThisDay = heroPool
+  .filter((v) => {
+    const d = new Date(v.recorded_at);
+    return (
+      d.getUTCMonth() === now.getUTCMonth() &&
+      d.getUTCDate() === now.getUTCDate()
+    );
+  })
+  .sort((a, b) => b.views - a.views);
+
+// Deterministic "random" seeded by the week of the year — stable for a week,
+// so on matchless days the hero rotates weekly rather than every build.
+const dayOfYear = Math.floor(
+  (Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) -
+    Date.UTC(now.getUTCFullYear(), 0, 1)) /
+    86_400_000,
+);
+const weekSeed = now.getUTCFullYear() * 53 + Math.floor(dayOfYear / 7);
+const byId = [...heroPool].sort((a, b) => a.id - b.id);
+const pickOfWeek = byId.length ? byId[weekSeed % byId.length] : null;
+
+const isOnThisDay = onThisDay.length > 0;
+const featuredVideo = onThisDay[0] ?? pickOfWeek;
 const featuredArtist = featuredVideo
   ? artistMap.get(featuredVideo.artist_id)
   : null;
 const featuredSeries = featuredVideo
   ? seriesMap.get(featuredVideo.series_id)
   : null;
+const featuredEyebrow = !featuredVideo
+  ? ""
+  : isOnThisDay
+    ? `On this day in ${new Date(featuredVideo.recorded_at).getUTCFullYear()}`
+    : "Pick of the week";
 
 // Videos sorted by views (most-watched first) for series sections
 const videosBySeriesId = new Map<number, typeof allVideos>();
@@ -103,7 +132,7 @@ function formatDate(d: Date) {
 
   {
     featuredVideo && featuredArtist && featuredSeries && (
-      <section class="featured container" aria-label="Featured video">
+      <section class="featured container" aria-label={featuredEyebrow}>
         <div class="featured-inner" data-series={featuredSeries.slug}>
           <VideoEmbed
             provider={
@@ -118,6 +147,7 @@ function formatDate(d: Date) {
             thumbnail={getLocalThumb(featuredVideo.slug)}
           />
           <div class="featured-meta">
+            <p class="featured-eyebrow">{featuredEyebrow}</p>
             <h2 class="featured-artist">
               <a href={`/artists/${featuredArtist.slug}/`}>
                 {featuredArtist.name}
@@ -459,6 +489,21 @@ function formatDate(d: Date) {
   .featured-meta {
     padding: clamp(1.25rem, 2.5vw, 2rem);
     border-left: var(--border);
+  }
+  .featured-eyebrow {
+    display: inline-block;
+    margin: 0 0 0.7rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-ink);
+    background: var(--accent, var(--color-pink));
+    border: var(--border-thin);
+    border-radius: 999px;
+    padding: 0.35em 0.75em;
+    transform: rotate(-1.5deg);
   }
   .featured-artist {
     font-family: var(--font-display);

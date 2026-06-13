@@ -1,0 +1,31 @@
+name: Daily build
+
+# Triggers a Netlify production deploy once a day so the homepage "On this day"
+# hero reflects the current date. Netlify auto-deploys on every push to main, so
+# this just pushes an empty commit — no Netlify credentials needed, only the
+# built-in GITHUB_TOKEN. Also runnable on demand from the Actions tab.
+#
+# The commit message carries [skip actions] so it doesn't re-run the CI
+# workflow (nothing changed to type-check); Netlify ignores that keyword and
+# still builds. Runs at 00:05 UTC, just after the date rolls over.
+
+on:
+  schedule:
+    - cron: "5 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push empty commit to trigger a Netlify deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: daily rebuild for On This Day [skip actions]"
+          git push
