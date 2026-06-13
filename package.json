@@ -9,6 +9,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "update:youtube": "node scripts/update-youtube.mjs",
+    "update:songlinks": "node scripts/update-songlinks.mjs",
     "astro": "astro"
   },
   "dependencies": {
