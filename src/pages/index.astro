@@ -213,6 +213,19 @@ function formatDate(d: Date) {
     </section>
   )}
 
+  <section class="browse-strip container">
+    <SectionHeading title="By the Numbers" href="/stats/" />
+    <div class="chip-row">
+      <a class="tag-chip" href="/stats/">{totalVideos} videos</a>
+      <a class="tag-chip" href="/stats/">{totalArtists} artists</a>
+      <a class="tag-chip" href="/stats/">{totalYears} years</a>
+      {totalViews > 0 && (
+        <a class="tag-chip" href="/stats/">{formattedViews} views</a>
+      )}
+    </div>
+  </section>
+
+
 </Layout>
 
 <style>
