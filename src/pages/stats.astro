@@ -1,0 +1,629 @@
+---
+import { db, eq, video, artist, series } from "../lib/db";
+import Layout from "../layouts/Layout.astro";
+import { getVideoUrl } from "../lib/video-url";
+
+// Everything here is computed at build time from the seeded archive. Querying
+// the db (rather than the raw JSON) means the publish=1 default is applied, so
+// these figures match what the rest of the site renders.
+const allVideos = await db.select().from(video).where(eq(video.publish, 1));
+const allArtists = await db.select().from(artist);
+const allSeries = await db.select().from(series).where(eq(series.publish, 1));
+allSeries.sort((a, b) => a.sort - b.sort);
+
+const artistById = new Map(allArtists.map((a) => [a.id, a]));
+
+// ── headline figures ────────────────────────────────────────────
+const totalVideos = allVideos.length;
+const totalArtists = new Set(allVideos.map((v) => v.artist_id)).size;
+const years = allVideos.map((v) => new Date(v.recorded_at).getUTCFullYear());
+const minYear = Math.min(...years);
+const maxYear = Math.max(...years);
+const sum = (key: "views" | "likes" | "comments") =>
+  allVideos.reduce((s, v) => s + (v[key] ?? 0), 0);
+const totalViews = sum("views");
+const totalLikes = sum("likes");
+const totalComments = sum("comments");
+
+const nf = new Intl.NumberFormat("en-US");
+const compact = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
+const stamps = [
+  { value: totalVideos, label: "videos" },
+  { value: totalArtists, label: "artists" },
+  { value: maxYear - minYear + 1, label: "years" },
+  { value: totalViews, label: "views", compact: true },
+  { value: totalLikes, label: "likes", compact: true },
+  { value: totalComments, label: "comments", compact: true },
+].filter((s) => s.value > 0);
+
+// ── by series ───────────────────────────────────────────────────
+const seriesStats = allSeries
+  .map((s) => {
+    const vids = allVideos.filter((v) => v.series_id === s.id);
+    return {
+      ...s,
+      count: vids.length,
+      views: vids.reduce((sum, v) => sum + (v.views ?? 0), 0),
+    };
+  })
+  .filter((s) => s.count > 0)
+  .sort((a, b) => b.count - a.count);
+const maxSeriesCount = Math.max(...seriesStats.map((s) => s.count), 1);
+
+// ── recordings per year ─────────────────────────────────────────
+const yearCounts = new Map<number, number>();
+for (let y = minYear; y <= maxYear; y++) yearCounts.set(y, 0);
+for (const y of years) yearCounts.set(y, (yearCounts.get(y) ?? 0) + 1);
+const yearRows = [...yearCounts.entries()].map(([year, count]) => ({
+  year,
+  count,
+}));
+const maxYearCount = Math.max(...yearRows.map((r) => r.count), 1);
+const peakYear = yearRows.reduce((a, b) => (b.count > a.count ? b : a));
+
+// ── most-watched ────────────────────────────────────────────────
+const topVideos = [...allVideos]
+  .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
+  .slice(0, 10)
+  .map((v) => {
+    const a = artistById.get(v.artist_id);
+    return { v, a, href: a ? getVideoUrl(v, a) : "#" };
+  });
+const maxTopViews = Math.max(...topVideos.map((t) => t.v.views ?? 0), 1);
+
+// ── most-recorded artists ───────────────────────────────────────
+const countByArtist = new Map<number, number>();
+for (const v of allVideos)
+  countByArtist.set(v.artist_id, (countByArtist.get(v.artist_id) ?? 0) + 1);
+const topArtists = [...countByArtist.entries()]
+  .map(([id, count]) => ({ artist: artistById.get(id), count }))
+  .filter((r) => r.artist)
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 10);
+const maxArtistCount = Math.max(...topArtists.map((r) => r.count), 1);
+
+// ── how it's hosted (preservation reality) ──────────────────────
+const providerLabels: Record<string, string> = {
+  youtube: "YouTube",
+  vimeo: "Vimeo",
+  dailymotion: "Dailymotion",
+  flash: "Flash / self-hosted",
+};
+const providerCounts = new Map<string, number>();
+for (const v of allVideos)
+  providerCounts.set(v.provider, (providerCounts.get(v.provider) ?? 0) + 1);
+const providerRows = [...providerCounts.entries()]
+  .map(([provider, count]) => ({
+    provider,
+    label: providerLabels[provider] ?? provider,
+    count,
+  }))
+  .sort((a, b) => b.count - a.count);
+---
+
+<Layout
+  title="By the Numbers — If You Make It"
+  description={`The If You Make It archive in figures: ${totalVideos} videos by ${totalArtists} artists, ${minYear}–${maxYear}, ${compact.format(totalViews)} views and counting.`}
+>
+  <div class="container stats-page">
+    <header class="page-header">
+      <h1 class="page-title">By the Numbers</h1>
+      <p class="meta-line">
+        {minYear}–{maxYear} · one couch, a few hundred friends, counted up
+      </p>
+    </header>
+
+    <!-- marquee figures -->
+    <ul class="stamps" aria-label="Archive totals">
+      {
+        stamps.map((s) => (
+          <li class="stamp">
+            <span class="stamp__num">
+              {s.compact ? compact.format(s.value) : nf.format(s.value)}
+            </span>
+            <span class="stamp__label">{s.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- by series -->
+    <section class="stat-block">
+      <h2 class="stat-heading">The archive by series</h2>
+      <ul class="bars">
+        {
+          seriesStats.map((s) => (
+            <li class="bar-row" data-series={s.slug}>
+              <a class="bar-label" href={`/${s.slug}/`}>
+                {s.title}
+              </a>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style={`width:${(s.count / maxSeriesCount) * 100}%`}
+                />
+              </div>
+              <span class="bar-value">
+                {s.count}
+                <span class="bar-value__sub">
+                  {compact.format(s.views)} views
+                </span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- by year -->
+    <section class="stat-block">
+      <h2 class="stat-heading">Recordings by year</h2>
+      <p class="meta-line stat-sub">
+        Busiest year was <strong>{peakYear.year}</strong> with {peakYear.count} recordings.
+      </p>
+      <ol class="columns" aria-label="Recordings per year">
+        {
+          yearRows.map((r) => (
+            <li class="column">
+              <span class="column__count">{r.count}</span>
+              <a
+                class="column__bar"
+                href={`/years/${r.year}/`}
+                style={`height:${Math.max((r.count / maxYearCount) * 100, 4)}%`}
+                aria-label={`${r.year}: ${r.count} recordings`}
+              />
+              <span class="column__year">{`'${String(r.year).slice(2)}`}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- most-watched -->
+    <section class="stat-block">
+      <h2 class="stat-heading">Most-watched</h2>
+      <ol class="chart">
+        {
+          topVideos.map((t, i) => (
+            <li class="chart-row">
+              <span class="chart-rank">{i + 1}</span>
+              <a class="chart-link" href={t.href}>
+                <span class="chart-name">
+                  <span class="chart-artist">{t.a?.name}</span>
+                  <span class="chart-title">{t.v.title}</span>
+                </span>
+                <span class="chart-bar-wrap">
+                  <span
+                    class="chart-bar"
+                    style={`width:${((t.v.views ?? 0) / maxTopViews) * 100}%`}
+                  />
+                </span>
+              </a>
+              <span class="chart-value">{nf.format(t.v.views ?? 0)}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- most-recorded artists -->
+    <section class="stat-block">
+      <h2 class="stat-heading">Most-recorded artists</h2>
+      <ol class="chart">
+        {
+          topArtists.map((r, i) => (
+            <li class="chart-row">
+              <span class="chart-rank">{i + 1}</span>
+              <a class="chart-link" href={`/artists/${r.artist!.slug}/`}>
+                <span class="chart-name">
+                  <span class="chart-artist">{r.artist!.name}</span>
+                </span>
+                <span class="chart-bar-wrap">
+                  <span
+                    class="chart-bar"
+                    style={`width:${(r.count / maxArtistCount) * 100}%`}
+                  />
+                </span>
+              </a>
+              <span class="chart-value">
+                {r.count} <span class="chart-value__sub">videos</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- how it's hosted -->
+    <section class="stat-block">
+      <h2 class="stat-heading">How it's hosted</h2>
+      <p class="meta-line stat-sub">
+        Most of the archive lives on YouTube — which is exactly why a second
+        home for it matters.
+      </p>
+      <ul class="bars">
+        {
+          providerRows.map((p) => (
+            <li class="bar-row" data-provider={p.provider}>
+              <span class="bar-label bar-label--plain">{p.label}</span>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style={`width:${(p.count / totalVideos) * 100}%`}
+                />
+              </div>
+              <span class="bar-value">{p.count}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .stats-page {
+    padding-block: 2rem 3rem;
+  }
+  .page-header {
+    padding-block-end: 1.5rem;
+    border-bottom: var(--border);
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    margin: 0 0 0.25rem;
+    animation: stamp-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    transform-origin: left bottom;
+  }
+
+  /* ---------- marquee stamps ---------- */
+  .stamps {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 1rem;
+  }
+  .stamp {
+    text-align: center;
+    background: var(--color-paper);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hard);
+    padding: 1.1rem 0.75rem;
+    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .stamp:nth-child(odd) {
+    transform: rotate(-1.4deg);
+  }
+  .stamp:nth-child(even) {
+    transform: rotate(1.4deg);
+  }
+  .stamp:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .stamp:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+  .stamp:nth-child(3) {
+    animation-delay: 0.19s;
+  }
+  .stamp:nth-child(4) {
+    animation-delay: 0.26s;
+  }
+  .stamp:nth-child(5) {
+    animation-delay: 0.33s;
+  }
+  .stamp:nth-child(6) {
+    animation-delay: 0.4s;
+  }
+  .stamp__num {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    line-height: 1;
+    color: var(--color-ink);
+  }
+  .stamp:nth-child(3n + 1) .stamp__num {
+    color: var(--color-pink-deep);
+  }
+  .stamp:nth-child(3n + 2) .stamp__num {
+    color: var(--color-blue);
+  }
+  .stamp__label {
+    display: block;
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+  }
+
+  /* ---------- shared section ---------- */
+  .stat-block {
+    padding-block: 2rem;
+    border-top: var(--border);
+    margin-top: 2rem;
+  }
+  .stat-block:first-of-type {
+    border-top: 0;
+  }
+  .stat-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    margin: 0 0 1rem;
+    text-transform: uppercase;
+  }
+  .stat-sub {
+    margin: -0.5rem 0 1.25rem;
+  }
+  .stat-sub strong {
+    color: var(--color-pink-deep);
+  }
+
+  /* ---------- horizontal bars (series, providers) ---------- */
+  .bars {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .bar-row {
+    display: grid;
+    grid-template-columns: minmax(6rem, 9rem) 1fr auto;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .bar-label {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  a.bar-label:hover {
+    color: var(--accent, var(--color-pink-deep));
+  }
+  .bar-label--plain {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+  }
+  .bar-track {
+    height: 1.5rem;
+    background: var(--color-paper);
+    border: var(--border-thin);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    min-width: 0.5rem;
+    background: var(--accent, var(--color-pink));
+    border-right: var(--border-thin);
+    border-radius: 0 999px 999px 0;
+    animation: grow-x 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.1s;
+    transform-origin: left;
+  }
+  .bar-value {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    line-height: 1;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .bar-value__sub {
+    display: block;
+    margin-top: 0.2rem;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+  }
+  /* provider bars share the pink accent but tint by host */
+  .bar-row[data-provider="vimeo"] {
+    --accent: var(--color-blue);
+  }
+  .bar-row[data-provider="dailymotion"] {
+    --accent: var(--color-yellow);
+  }
+
+  /* ---------- year column chart ---------- */
+  .columns {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(0.4rem, 2vw, 1.25rem);
+    height: 14rem;
+    border-bottom: 3px solid var(--color-ink);
+    padding-bottom: 0;
+  }
+  .column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    gap: 0.4rem;
+  }
+  .column__count {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--color-ink);
+  }
+  .column__bar {
+    display: block;
+    width: 100%;
+    max-width: 4rem;
+    background: var(--color-pink);
+    border: var(--border-thin);
+    border-bottom: 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: var(--shadow-hard-sm);
+    transition:
+      transform 0.12s ease,
+      background 0.12s ease;
+    animation: grow-y 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.15s;
+    transform-origin: bottom;
+  }
+  .column__bar:hover {
+    background: var(--color-pink-deep);
+    transform: translateY(-3px);
+  }
+  .column__year {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+
+  /* ---------- ranked charts (videos, artists) ---------- */
+  .chart {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    counter-reset: rank;
+  }
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1.75rem 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .chart-rank {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--color-muted);
+    text-align: center;
+  }
+  .chart-row:nth-child(1) .chart-rank {
+    color: var(--color-pink-deep);
+  }
+  .chart-link {
+    min-width: 0;
+    display: grid;
+    gap: 0.3rem;
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .chart-name {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .chart-artist {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chart-link:hover .chart-artist {
+    color: var(--color-pink-deep);
+  }
+  .chart-title {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chart-bar-wrap {
+    display: block;
+    height: 0.55rem;
+    background: var(--color-paper);
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .chart-bar {
+    display: block;
+    height: 100%;
+    min-width: 4px;
+    background: var(--color-pink);
+    animation: grow-x 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.1s;
+    transform-origin: left;
+  }
+  .chart-link:hover .chart-bar {
+    background: var(--color-pink-deep);
+  }
+  .chart-value {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .chart-value__sub {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  @keyframes grow-x {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes grow-y {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stamp,
+    .bar-fill,
+    .column__bar,
+    .chart-bar {
+      animation: none;
+    }
+  }
+
+  /* ---------- small screens ---------- */
+  @media (max-width: 560px) {
+    .bar-row {
+      grid-template-columns: minmax(4.5rem, 7rem) 1fr auto;
+      gap: 0.6rem;
+    }
+    .columns {
+      height: 11rem;
+    }
+    .column__count {
+      font-size: 0.7rem;
+    }
+    .chart-title {
+      display: none;
+    }
+  }
+</style>
