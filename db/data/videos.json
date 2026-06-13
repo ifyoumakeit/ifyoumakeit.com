@@ -4549,7 +4549,8 @@
   "provider": "vimeo",
   "provider_id": "16209376",
   "featured": 0,
-  "views": 6134
+  "views": 6134,
+  "publish": 0
  },
  {
   "id": 569,
