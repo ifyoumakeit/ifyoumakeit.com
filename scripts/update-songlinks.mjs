@@ -142,16 +142,35 @@ function pickBest(album, results) {
 
 // ------------------------------------------------------------------- run
 
+const url = (b) => `https://album.link/i/${b.r.collectionId}`;
+const pct = (n) => `${Math.round(n * 100)}%`.padStart(4);
+
 const matched = [];
 const uncertain = [];
 const none = [];
-let processed = 0;
 
-for (const album of albums) {
-  if (album.songlink_url && !REFRESH) continue;
-  if (processed >= LIMIT) break;
-  processed++;
+// Precompute the work list so we can show "[i/N]" and an ETA up front.
+const todo = albums.filter((a) => REFRESH || !a.songlink_url).slice(0, LIMIT);
+const processed = todo.length;
 
+if (!processed) {
+  console.log(
+    albums.length
+      ? "All albums already have a songlink_url. Use --refresh to re-check them."
+      : "No albums in db/data/albums.json.",
+  );
+  process.exit(0);
+}
+
+const etaMin = Math.max(1, Math.ceil((todo.length * DELAY) / 60000));
+console.log(
+  `Checking ${todo.length} album(s) against the iTunes catalog ` +
+    `(~${etaMin} min at ${DELAY}ms each)…\n`,
+);
+
+let i = 0;
+for (const album of todo) {
+  i++;
   const selfTitled = isSelfTitled(album);
   const term = selfTitled
     ? album.artist_name
@@ -165,22 +184,30 @@ for (const album of albums) {
     process.exit(1);
   }
 
-  const row = { album, best };
+  let tag;
   if (best && best.aScore >= ARTIST_MIN && best.tScore >= TITLE_MIN) {
-    matched.push(row);
+    matched.push({ album, best });
+    tag = "✓";
   } else if (best && best.aScore >= 0.5) {
-    uncertain.push(row);
+    uncertain.push({ album, best });
+    tag = "?";
   } else {
-    none.push(row);
+    none.push({ album, best });
+    tag = "·";
   }
 
-  await sleep(DELAY);
+  // Live progress so a long run isn't silent.
+  console.log(
+    `[${String(i).padStart(3)}/${todo.length}] ${tag} ${album.artist_name} — ${album.title}` +
+      (best && tag !== "·"
+        ? `  → ${best.r.artistName} — ${best.r.collectionName} [${pct(best.aScore)}/${pct(best.tScore)}]`
+        : ""),
+  );
+
+  if (i < todo.length) await sleep(DELAY);
 }
 
 // ------------------------------------------------------------------- report
-
-const url = (b) => `https://album.link/i/${b.r.collectionId}`;
-const pct = (n) => `${Math.round(n * 100)}%`.padStart(4);
 
 console.log(`\nProcessed ${processed} album(s).\n`);
 console.log(`✓ MATCHED (${matched.length}) — will be written:`);
