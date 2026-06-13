@@ -93,117 +93,120 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     </noscript>
   </div>
 
-  <script type="application/json" id="search-index" set:html={indexJson} is:inline></script>
+  <script
+    type="application/json"
+    id="search-index"
+    set:html={indexJson}
+    is:inline
+  />
 
-  <script is:inline>
-    (function () {
-      var data = JSON.parse(
-        document.getElementById("search-index").textContent
-      );
-      // Precompute a lowercase haystack per record once.
-      for (var i = 0; i < data.length; i++) {
-        var d = data[i];
-        d.h = (d.t + " " + d.a + " " + d.s + " " + d.y).toLowerCase();
-      }
+  <script>
+    // Live client-side filtering over the build-time index emitted above.
+    interface Rec {
+      t: string; // title
+      a: string; // artist
+      s: string; // series / kind label
+      k: string; // accent key (series slug, "albums", "comics")
+      y: number | ""; // year ("" for comics)
+      u: string; // url
+      h?: string; // lowercased haystack, precomputed below
+    }
 
-      var input = document.getElementById("q");
-      var results = document.getElementById("results");
-      var status = document.getElementById("status");
-      var initialStatus = status.textContent.trim();
+    const indexEl = document.getElementById("search-index");
+    const data: Rec[] = indexEl?.textContent
+      ? JSON.parse(indexEl.textContent)
+      : [];
+    // Precompute a lowercase haystack per record once.
+    for (const d of data) {
+      d.h = `${d.t} ${d.a} ${d.s} ${d.y}`.toLowerCase();
+    }
 
-      function esc(s) {
-        return s.replace(/[&<>"]/g, function (c) {
-          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
-        });
-      }
+    const escapes: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+    };
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => escapes[c]);
 
-      function render(q) {
-        var query = q.trim().toLowerCase();
+    const input = document.getElementById("q") as HTMLInputElement | null;
+    const results = document.getElementById("results");
+    const status = document.getElementById("status");
+
+    if (input && results && status) {
+      init(input, results, status);
+    }
+
+    function init(
+      input: HTMLInputElement,
+      results: HTMLElement,
+      status: HTMLElement,
+    ) {
+      const initialStatus = status.textContent?.trim() ?? "";
+
+      const render = (q: string) => {
+        const query = q.trim().toLowerCase();
         if (!query) {
           results.innerHTML = "";
           status.textContent = initialStatus;
           return;
         }
-        var terms = query.split(/\s+/);
-        var out = [];
-        for (var i = 0; i < data.length && out.length < 120; i++) {
-          var d = data[i];
-          var ok = true;
-          for (var t = 0; t < terms.length; t++) {
-            if (d.h.indexOf(terms[t]) === -1) {
-              ok = false;
-              break;
-            }
-          }
-          if (ok) out.push(d);
+        const terms = query.split(/\s+/);
+        const out: Rec[] = [];
+        for (let i = 0; i < data.length && out.length < 120; i++) {
+          const d = data[i];
+          if (terms.every((t) => (d.h ?? "").includes(t))) out.push(d);
         }
 
         if (!out.length) {
-          results.innerHTML =
-            '<li class="results__empty">Nothing matches “' +
-            esc(q.trim()) +
-            "”. Try a band, album, or song.</li>";
+          results.innerHTML = `<li class="results__empty">Nothing matches “${esc(q.trim())}”. Try a band, album, or song.</li>`;
           status.textContent = "No matches";
           return;
         }
 
-        var html = "";
-        for (var j = 0; j < out.length; j++) {
-          var r = out[j];
-          html +=
-            '<li><a class="result" href="' +
-            r.u +
-            '" data-series="' +
-            esc(r.k) +
-            '">' +
-            '<span class="result__dot" aria-hidden="true"></span>' +
-            '<span class="result__text">' +
-            '<span class="result__artist">' +
-            esc(r.a) +
-            "</span>" +
-            '<span class="result__title">' +
-            esc(r.t) +
-            "</span>" +
-            "</span>" +
-            '<span class="result__meta meta-line">' +
-            esc(r.s) +
-            (r.y ? " · " + r.y : "") +
-            "</span>" +
-            "</a></li>";
-        }
-        results.innerHTML = html;
-        status.textContent =
-          out.length + (out.length === 1 ? " result" : " results");
-      }
+        results.innerHTML = out
+          .map(
+            (r) =>
+              `<li><a class="result" href="${r.u}" data-series="${esc(r.k)}">` +
+              `<span class="result__dot" aria-hidden="true"></span>` +
+              `<span class="result__text">` +
+              `<span class="result__artist">${esc(r.a)}</span>` +
+              `<span class="result__title">${esc(r.t)}</span>` +
+              `</span>` +
+              `<span class="result__meta meta-line">${esc(r.s)}${r.y ? ` · ${r.y}` : ""}</span>` +
+              `</a></li>`,
+          )
+          .join("");
+        status.textContent = `${out.length} ${out.length === 1 ? "result" : "results"}`;
+      };
 
       // Deep-link support: ?q= prefills and the URL updates as you type.
-      var params = new URLSearchParams(location.search);
-      var initial = params.get("q") || "";
+      const initial = new URLSearchParams(location.search).get("q") || "";
       input.value = initial;
 
-      var raf;
-      function update() {
+      let raf = 0;
+      const update = () => {
         cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(function () {
+        raf = requestAnimationFrame(() => {
           render(input.value);
-          var u = input.value
-            ? "?q=" + encodeURIComponent(input.value)
+          const u = input.value
+            ? `?q=${encodeURIComponent(input.value)}`
             : location.pathname;
           history.replaceState(null, "", u);
         });
-      }
+      };
       input.addEventListener("input", update);
       // Don't reload the page on Enter — it's already live.
       document
         .querySelector(".search-form")
-        .addEventListener("submit", function (e) {
+        ?.addEventListener("submit", (e) => {
           e.preventDefault();
           input.blur();
         });
 
       if (initial) render(initial);
       input.focus();
-    })();
+    }
   </script>
 </Layout>
 

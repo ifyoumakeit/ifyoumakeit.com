@@ -36,8 +36,19 @@ const fallback = urls[Math.floor(Math.random() * urls.length)] ?? "/";
     </p>
   </section>
 
-  <script is:inline define:vars={{ urls }}>
-    if (Array.isArray(urls) && urls.length) {
+  <script
+    type="application/json"
+    id="random-urls"
+    set:html={JSON.stringify(urls)}
+    is:inline
+  />
+
+  <script>
+    // Redirect to a random video. The candidate URLs are emitted as JSON
+    // above (define:vars only works on is:inline scripts, which can't be TS).
+    const el = document.getElementById("random-urls");
+    const urls: string[] = el?.textContent ? JSON.parse(el.textContent) : [];
+    if (urls.length) {
       location.replace(urls[Math.floor(Math.random() * urls.length)]);
     }
   </script>
