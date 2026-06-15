@@ -72,7 +72,7 @@ mkdirSync(dirname(outPath), { recursive: true });
 // --- brand overlay (transparent PNG, rendered once per design) ------------
 // Everything sits on a black canvas so the type never competes with the video;
 // the overlay PNG is transparent over the bands and over the video center.
-const BG = "16121A"; // ffmpeg pad color (no 0x here; added below)
+const BG = "000000"; // ffmpeg pad color (no 0x here; added below)
 const root = join(dirname(new URL(import.meta.url).pathname), "..");
 const b64 = (p) => readFileSync(join(root, p)).toString("base64");
 
@@ -86,14 +86,14 @@ async function renderOverlay(labelText) {
     html,body{width:1080px;height:1920px;background:transparent;font-synthesis:none}
     .band{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 50px}
     .top{top:0;height:656px;gap:16px}
-    .bottom{bottom:0;height:656px;gap:14px}
+    .bottom{bottom:0;height:656px;gap:10px}
     .brand{font-family:"Archivo Black";font-size:104px;line-height:.9;color:#FF4D8D;text-transform:uppercase;letter-spacing:-.02em}
     .label{font-family:"Archivo Black";font-size:48px;color:#FAF3E7;text-transform:uppercase;letter-spacing:.01em}
     .cta-lead{font-family:"Archivo Black";font-size:64px;line-height:.95;color:#FAF3E7;text-transform:uppercase;letter-spacing:-.01em}
     .cta{font-family:"Space Mono";font-weight:700;font-size:42px;color:#FAF3E7;text-transform:uppercase;letter-spacing:.02em}
   </style></head><body>
     <div class="band top"><div class="brand">IFYOUMAKEIT</div><div class="label">${labelText}</div></div>
-    <div class="band bottom"><div class="cta-lead">SEE MORE</div><div class="cta">@ifyoumakeit or at ifyoumakeit.com</div></div>
+    <div class="band bottom"><div class="cta-lead">SEE MORE</div><div class="cta">@ifyoumakeit</div><div class="cta">ifyoumakeit.com</div></div>
   </body></html>`;
 
   // Cache by a hash of the rendered HTML, so any design or label change makes a
