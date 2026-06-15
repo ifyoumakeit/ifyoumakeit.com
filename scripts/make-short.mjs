@@ -26,11 +26,12 @@
  *   --refresh-overlay re-render the cached text PNG
  *   --dry             print the ffmpeg command and exit
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { basename, dirname, extname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 
 const args = process.argv.slice(2);
 const DRY = args.includes("--dry");
@@ -68,16 +69,14 @@ const outPath =
   join(dirname(input), "shorts", `${basename(input, extname(input))}-short.mp4`);
 mkdirSync(dirname(outPath), { recursive: true });
 
-// --- brand overlay (transparent PNG, rendered once per label) -------------
-const PAPER = "FAF3E7"; // ffmpeg pad color (no 0x here; added below)
+// --- brand overlay (transparent PNG, rendered once per design) ------------
+// Everything sits on a black canvas so the type never competes with the video;
+// the overlay PNG is transparent over the bands and over the video center.
+const BG = "16121A"; // ffmpeg pad color (no 0x here; added below)
 const root = join(dirname(new URL(import.meta.url).pathname), "..");
 const b64 = (p) => readFileSync(join(root, p)).toString("base64");
 
 async function renderOverlay(labelText) {
-  const slug = labelText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  const out = join(tmpdir(), `iymi-short-overlay-${slug}.png`);
-  if (existsSync(out) && !REFRESH) return out;
-
   const archivo = b64("node_modules/@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2");
   const mono = b64("node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2");
   const html = `<!doctype html><html><head><meta charset="utf-8"><style>
@@ -85,16 +84,23 @@ async function renderOverlay(labelText) {
     @font-face{font-family:"Space Mono";src:url(data:font/woff2;base64,${mono}) format("woff2");font-weight:700}
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{width:1080px;height:1920px;background:transparent;font-synthesis:none}
-    .band{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 60px}
-    .top{top:0;height:656px;gap:12px}
-    .bottom{bottom:0;height:656px}
+    .band{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 50px}
+    .top{top:0;height:656px;gap:16px}
+    .bottom{bottom:0;height:656px;gap:14px}
     .brand{font-family:"Archivo Black";font-size:104px;line-height:.9;color:#FF4D8D;text-transform:uppercase;letter-spacing:-.02em}
-    .label{font-family:"Archivo Black";font-size:48px;color:#16121A;text-transform:uppercase;letter-spacing:.01em}
-    .cta{font-family:"Space Mono";font-weight:700;font-size:34px;color:#16121A;text-transform:uppercase;letter-spacing:.02em;line-height:1.4;max-width:960px}
+    .label{font-family:"Archivo Black";font-size:48px;color:#FAF3E7;text-transform:uppercase;letter-spacing:.01em}
+    .cta-lead{font-family:"Archivo Black";font-size:64px;line-height:.95;color:#FAF3E7;text-transform:uppercase;letter-spacing:-.01em}
+    .cta{font-family:"Space Mono";font-weight:700;font-size:42px;color:#FAF3E7;text-transform:uppercase;letter-spacing:.02em}
   </style></head><body>
     <div class="band top"><div class="brand">IFYOUMAKEIT</div><div class="label">${labelText}</div></div>
-    <div class="band bottom"><div class="cta">SEE MORE @ifyoumakeit or at ifyoumakeit.com</div></div>
+    <div class="band bottom"><div class="cta-lead">SEE MORE</div><div class="cta">@ifyoumakeit or at ifyoumakeit.com</div></div>
   </body></html>`;
+
+  // Cache by a hash of the rendered HTML, so any design or label change makes a
+  // fresh PNG instead of reusing a stale one.
+  const hash = createHash("sha1").update(html).digest("hex").slice(0, 10);
+  const out = join(tmpdir(), `iymi-short-overlay-${hash}.png`);
+  if (existsSync(out) && !REFRESH) return out;
 
   const require = createRequire(import.meta.url);
   const { chromium } = require("/Users/davidgarwacke/.npm/_npx/e41f203b7505f1fb/node_modules/playwright-core");
@@ -114,7 +120,7 @@ const overlay = await renderOverlay(label);
 // transparent text PNG over the blank bands.
 const filter =
   "[0:v]scale=1080:1920:force_original_aspect_ratio=decrease:flags=lanczos,setsar=1," +
-  `pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=0x${PAPER}[base];` +
+  `pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=0x${BG}[base];` +
   "[base][1:v]overlay=0:0[v]";
 
 const ff = [
