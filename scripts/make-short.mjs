@@ -73,6 +73,7 @@ let band = flag(["--band", "--artist"], null);
 let song = flag(["--song", "--title"], null);
 let label = flag(["--label"], null);
 let year = null;
+let dateText = null;
 let fullUrl = "https://ifyoumakeit.com";
 
 const idArg = flag(["--id", "--video"], null);
@@ -91,6 +92,12 @@ if (idArg) {
   song ??= v.title;
   label ??= ser?.title ?? null;
   year = new Date(v.recorded_at).getUTCFullYear();
+  dateText = new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(v.recorded_at));
   if (artist) {
     const songSlug = v.slug.startsWith(`${artist.slug}-`)
       ? v.slug.slice(artist.slug.length + 1)
@@ -105,8 +112,8 @@ label = seriesText.toUpperCase();
 // SEO hook; first hashtags surface above the title.
 const hashtag = (s) => "#" + s.replace(/[^A-Za-z0-9]+/g, "");
 const caption =
-  `${band ?? "If You Make It"}${song ? ` – "${song}"` : ""} | ${seriesText}${year ? ` (${year})` : ""}\n\n` +
-  "From If You Make It, a DIY punk video archive. Watch the full session and hundreds more:\n" +
+  `${band ?? "If You Make It"}${song ? ` – "${song}"` : ""} | ${seriesText}${dateText ? ` (${dateText})` : year ? ` (${year})` : ""}\n\n` +
+  "From If You Make It. Watch the full session and hundreds more:\n" +
   `▶ Full video: ${fullUrl}\n` +
   "🌐 ifyoumakeit.com\n" +
   "📺 @ifyoumakeit\n\n" +
