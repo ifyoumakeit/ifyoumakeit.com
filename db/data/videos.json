@@ -24,7 +24,7 @@
   "provider": "youtube",
   "provider_id": "b5xpH_muRp0",
   "featured": 0,
-  "views": 7995,
+  "views": 8001,
   "likes": 446,
   "comments": 28
  },
@@ -82,7 +82,7 @@
   "provider": "youtube",
   "provider_id": "jqlpxfz6_FU",
   "featured": 0,
-  "views": 203,
+  "views": 206,
   "likes": 10,
   "comments": 3
  },
@@ -154,7 +154,7 @@
   "provider": "youtube",
   "provider_id": "ngYMpRHmJYw",
   "featured": 0,
-  "views": 1262,
+  "views": 1263,
   "likes": 13
  },
  {
@@ -210,7 +210,7 @@
   "provider": "youtube",
   "provider_id": "aZphnfScaAE",
   "featured": 0,
-  "views": 833,
+  "views": 836,
   "likes": 10,
   "comments": 1
  },
@@ -339,7 +339,7 @@
   "provider": "youtube",
   "provider_id": "aujKPKfmaMA",
   "featured": 0,
-  "views": 370,
+  "views": 372,
   "likes": 18,
   "comments": 1
  },
@@ -382,7 +382,7 @@
   "provider": "youtube",
   "provider_id": "FqKKRZ4KO_k",
   "featured": 0,
-  "views": 169,
+  "views": 170,
   "likes": 16,
   "comments": 5
  },
@@ -412,8 +412,8 @@
   "provider": "youtube",
   "provider_id": "K08-uspv-Aw",
   "featured": 0,
-  "views": 648,
-  "likes": 46,
+  "views": 652,
+  "likes": 47,
   "comments": 17
  },
  {
@@ -840,7 +840,7 @@
   "provider": "youtube",
   "provider_id": "_7wRau4_Zn0",
   "featured": 0,
-  "views": 233,
+  "views": 234,
   "likes": 2,
   "comments": 1
  },
@@ -911,7 +911,7 @@
   "provider": "youtube",
   "provider_id": "e0xrCnf11c8",
   "featured": 0,
-  "views": 272,
+  "views": 273,
   "likes": 5
  },
  {
@@ -967,7 +967,7 @@
   "provider": "youtube",
   "provider_id": "QZszzKMeRP8",
   "featured": 0,
-  "views": 459,
+  "views": 461,
   "likes": 4
  },
  {
@@ -1010,7 +1010,7 @@
   "provider": "youtube",
   "provider_id": "r3xSsZZvnjI",
   "featured": 0,
-  "views": 429,
+  "views": 430,
   "likes": 10,
   "comments": 1
  },
@@ -1025,8 +1025,8 @@
   "provider": "youtube",
   "provider_id": "FlrRmGqoMSg",
   "featured": 0,
-  "views": 185882,
-  "likes": 1470,
+  "views": 185921,
+  "likes": 1471,
   "comments": 146
  },
  {
@@ -1053,7 +1053,7 @@
   "provider": "youtube",
   "provider_id": "eVaIPBC5Vz0",
   "featured": 0,
-  "views": 1631,
+  "views": 1633,
   "likes": 31
  },
  {
@@ -1080,7 +1080,7 @@
   "provider": "youtube",
   "provider_id": "eVaIPBC5Vz0",
   "featured": 0,
-  "views": 1631,
+  "views": 1633,
   "likes": 31
  },
  {
@@ -1164,7 +1164,7 @@
   "provider": "youtube",
   "provider_id": "pk2bevIO2MA",
   "featured": 0,
-  "views": 1823,
+  "views": 1825,
   "likes": 85,
   "comments": 8
  },
@@ -1307,7 +1307,7 @@
   "provider": "youtube",
   "provider_id": "1lDgls6R-f0",
   "featured": 0,
-  "views": 5036,
+  "views": 5037,
   "likes": 50,
   "comments": 2
  },
@@ -1363,7 +1363,7 @@
   "provider": "youtube",
   "provider_id": "YT9XwEQV-Ps",
   "featured": 0,
-  "views": 21638,
+  "views": 21639,
   "likes": 173,
   "comments": 30,
   "publish": 0
@@ -1423,7 +1423,7 @@
   "provider": "youtube",
   "provider_id": "QVf1AKfAzCk",
   "featured": 0,
-  "views": 425,
+  "views": 427,
   "likes": 14
  },
  {
@@ -1465,7 +1465,7 @@
   "provider": "youtube",
   "provider_id": "6j3sXNpwmmc",
   "featured": 0,
-  "views": 11623,
+  "views": 11627,
   "likes": 173,
   "comments": 10
  },
@@ -1596,7 +1596,7 @@
   "provider": "youtube",
   "provider_id": "FtWcDaxDCBE",
   "featured": 0,
-  "views": 25295,
+  "views": 25297,
   "likes": 192,
   "comments": 29
  },
@@ -1750,8 +1750,9 @@
   "provider": "youtube",
   "provider_id": "6XkXquseBrY",
   "featured": 0,
-  "views": 23499,
-  "publish": 1
+  "views": 70,
+  "publish": 1,
+  "likes": 7
  },
  {
   "id": 128,
@@ -1838,7 +1839,7 @@
   "provider": "youtube",
   "provider_id": "6X5hOnq9ZUw",
   "featured": 0,
-  "views": 82,
+  "views": 86,
   "likes": 3
  },
  {
@@ -1894,7 +1895,7 @@
   "provider": "youtube",
   "provider_id": "opXEiYFCxfM",
   "featured": 0,
-  "views": 99,
+  "views": 100,
   "likes": 1
  },
  {
@@ -1964,8 +1965,8 @@
   "provider": "youtube",
   "provider_id": "fOWWRmgq0gc",
   "featured": 0,
-  "views": 17,
-  "likes": 5,
+  "views": 31,
+  "likes": 7,
   "comments": 2
  },
  {
@@ -2022,8 +2023,8 @@
   "provider": "youtube",
   "provider_id": "mNAZqwcEppo",
   "featured": 0,
-  "views": 52144,
-  "likes": 1274,
+  "views": 52176,
+  "likes": 1276,
   "comments": 77
  },
  {
@@ -2037,7 +2038,7 @@
   "provider": "youtube",
   "provider_id": "xPYPzN9w86A",
   "featured": 0,
-  "views": 3754,
+  "views": 3757,
   "likes": 42,
   "comments": 14
  },
@@ -2052,7 +2053,7 @@
   "provider": "youtube",
   "provider_id": "8OZB4c6x-ws",
   "featured": 0,
-  "views": 1156,
+  "views": 1157,
   "likes": 17,
   "comments": 5
  },
@@ -2067,7 +2068,7 @@
   "provider": "youtube",
   "provider_id": "eVaIPBC5Vz0",
   "featured": 0,
-  "views": 1631,
+  "views": 1633,
   "likes": 31
  },
  {
@@ -2095,8 +2096,8 @@
   "provider": "youtube",
   "provider_id": "ovmITcaVeJ0",
   "featured": 0,
-  "views": 669380,
-  "likes": 6025,
+  "views": 669471,
+  "likes": 6026,
   "comments": 431,
   "publish": 1
  },
@@ -2125,7 +2126,7 @@
   "provider": "youtube",
   "provider_id": "gwvJTl1kJPw",
   "featured": 0,
-  "views": 9696,
+  "views": 9697,
   "likes": 101,
   "comments": 14
  },
@@ -2140,7 +2141,7 @@
   "provider": "youtube",
   "provider_id": "LwBHrl_96Ig",
   "featured": 0,
-  "views": 3110,
+  "views": 3114,
   "likes": 81,
   "comments": 6
  },
@@ -2169,8 +2170,8 @@
   "provider": "youtube",
   "provider_id": "zmyd6undBuU",
   "featured": 0,
-  "views": 455,
-  "likes": 22,
+  "views": 457,
+  "likes": 23,
   "comments": 1
  },
  {
@@ -2184,7 +2185,7 @@
   "provider": "youtube",
   "provider_id": "bTazc0eGKxI",
   "featured": 0,
-  "views": 1236,
+  "views": 1237,
   "likes": 26,
   "comments": 1
  },
@@ -2199,7 +2200,7 @@
   "provider": "youtube",
   "provider_id": "Vf-zuxp3i00",
   "featured": 0,
-  "views": 3546,
+  "views": 3550,
   "likes": 55,
   "comments": 5
  },
@@ -2228,8 +2229,8 @@
   "provider": "youtube",
   "provider_id": "1tiswQ2yhNs",
   "featured": 0,
-  "views": 112665,
-  "likes": 990,
+  "views": 112680,
+  "likes": 991,
   "comments": 104
  },
  {
@@ -2302,7 +2303,7 @@
   "provider": "youtube",
   "provider_id": "gQWqbhAVyTo",
   "featured": 0,
-  "views": 376,
+  "views": 377,
   "likes": 6,
   "comments": 1
  },
@@ -2331,8 +2332,8 @@
   "provider": "youtube",
   "provider_id": "8gPFjkbQhrU",
   "featured": 0,
-  "views": 3173,
-  "likes": 144,
+  "views": 3178,
+  "likes": 145,
   "comments": 11
  },
  {
@@ -2346,8 +2347,9 @@
   "provider": "youtube",
   "provider_id": "pqv6L1Ze3T0",
   "featured": 0,
-  "views": 7145,
-  "publish": 1
+  "views": 18,
+  "publish": 1,
+  "likes": 4
  },
  {
   "id": 171,
@@ -2360,8 +2362,8 @@
   "provider": "youtube",
   "provider_id": "YyZQp49U5U4",
   "featured": 0,
-  "views": 258597,
-  "likes": 2745,
+  "views": 258709,
+  "likes": 2747,
   "comments": 239
  },
  {
@@ -2375,8 +2377,8 @@
   "provider": "youtube",
   "provider_id": "rdR3oJ2ETCA",
   "featured": 0,
-  "views": 11412,
-  "likes": 168,
+  "views": 11416,
+  "likes": 169,
   "comments": 17
  },
  {
@@ -2390,8 +2392,10 @@
   "provider": "youtube",
   "provider_id": "xnZIpSNmGiQ",
   "featured": 0,
-  "views": 18894,
-  "publish": 1
+  "views": 26,
+  "publish": 1,
+  "likes": 4,
+  "comments": 1
  },
  {
   "id": 175,
@@ -2404,9 +2408,9 @@
   "provider": "youtube",
   "provider_id": "aZJVf-2knMU",
   "featured": 0,
-  "views": 31578,
+  "views": 31601,
   "likes": 1009,
-  "comments": 37
+  "comments": 36
  },
  {
   "id": 177,
@@ -2462,8 +2466,9 @@
   "provider": "youtube",
   "provider_id": "xjMiXTqKfJU",
   "featured": 0,
-  "views": 14169,
-  "publish": 1
+  "views": 33,
+  "publish": 1,
+  "likes": 4
  },
  {
   "id": 181,
@@ -2476,7 +2481,7 @@
   "provider": "youtube",
   "provider_id": "UYOy-7awGQc",
   "featured": 0,
-  "views": 1498,
+  "views": 1499,
   "likes": 27,
   "comments": 3
  },
@@ -2547,7 +2552,7 @@
   "provider": "youtube",
   "provider_id": "UWOA0wpixH4",
   "featured": 0,
-  "views": 1724,
+  "views": 1725,
   "likes": 57,
   "comments": 20
  },
@@ -2590,7 +2595,7 @@
   "provider": "youtube",
   "provider_id": "7RKjTQK1uK0",
   "featured": 0,
-  "views": 772,
+  "views": 774,
   "likes": 6
  },
  {
@@ -2604,8 +2609,10 @@
   "provider": "youtube",
   "provider_id": "PGm3q2CsCoY",
   "featured": 0,
-  "views": 14254,
-  "publish": 1
+  "views": 28,
+  "publish": 1,
+  "likes": 3,
+  "comments": 2
  },
  {
   "id": 191,
@@ -2660,8 +2667,8 @@
   "provider": "youtube",
   "provider_id": "VABoejxmo9U",
   "featured": 0,
-  "views": 7356,
-  "likes": 256,
+  "views": 7358,
+  "likes": 257,
   "comments": 16,
   "publish": 1
  },
@@ -2706,7 +2713,7 @@
   "provider": "youtube",
   "provider_id": "xQNmEQHkSkg",
   "featured": 0,
-  "views": 11057,
+  "views": 11058,
   "likes": 108,
   "comments": 12
  },
@@ -2734,7 +2741,7 @@
   "provider": "youtube",
   "provider_id": "I7NA4PcKT1Y",
   "featured": 0,
-  "views": 147089,
+  "views": 147110,
   "likes": 1049,
   "comments": 123
  },
@@ -2749,9 +2756,11 @@
   "provider": "youtube",
   "provider_id": "dlOD35_ZTQA",
   "featured": 0,
-  "views": 17320,
+  "views": 50,
   "location": "Fest 2008 in Gainesville, FL",
-  "publish": 1
+  "publish": 1,
+  "likes": 6,
+  "comments": 1
  },
  {
   "id": 204,
@@ -2764,9 +2773,9 @@
   "provider": "youtube",
   "provider_id": "f_lSUtiS8P8",
   "featured": 0,
-  "views": 89003,
+  "views": 89019,
   "likes": 848,
-  "comments": 103
+  "comments": 102
  },
  {
   "id": 205,
@@ -2779,8 +2788,8 @@
   "provider": "youtube",
   "provider_id": "I_pXzy-Umrw",
   "featured": 0,
-  "views": 16292,
-  "likes": 175,
+  "views": 16297,
+  "likes": 176,
   "comments": 10
  },
  {
@@ -2807,7 +2816,7 @@
   "provider": "youtube",
   "provider_id": "InD8xY268FY",
   "featured": 0,
-  "views": 98176,
+  "views": 98224,
   "likes": 726,
   "comments": 47
  },
@@ -2822,7 +2831,7 @@
   "provider": "youtube",
   "provider_id": "C36sE3rcKS8",
   "featured": 0,
-  "views": 42334,
+  "views": 42339,
   "likes": 353,
   "comments": 48
  },
@@ -2850,7 +2859,7 @@
   "provider": "youtube",
   "provider_id": "KcfkAB6o6e0",
   "featured": 0,
-  "views": 114234,
+  "views": 114244,
   "likes": 831,
   "comments": 54
  },
@@ -2865,8 +2874,8 @@
   "provider": "youtube",
   "provider_id": "BNhrN4Y68l8",
   "featured": 0,
-  "views": 34098,
-  "likes": 309,
+  "views": 34102,
+  "likes": 310,
   "comments": 33
  },
  {
@@ -2880,7 +2889,7 @@
   "provider": "youtube",
   "provider_id": "U9dISWLrO7Y",
   "featured": 0,
-  "views": 6209,
+  "views": 6210,
   "likes": 95,
   "comments": 9
  },
@@ -2908,9 +2917,11 @@
   "provider": "youtube",
   "provider_id": "gM2xoTcXCAs",
   "featured": 0,
-  "views": 23170,
+  "views": 43,
   "location": "Fest",
-  "publish": 1
+  "publish": 1,
+  "likes": 2,
+  "comments": 2
  },
  {
   "id": 215,
@@ -2949,7 +2960,7 @@
   "provider": "youtube",
   "provider_id": "zgRsaHrKLK0",
   "featured": 0,
-  "views": 15068,
+  "views": 15072,
   "likes": 209,
   "comments": 19
  },
@@ -2990,7 +3001,7 @@
   "provider": "youtube",
   "provider_id": "HPa1rWIcEz8",
   "featured": 0,
-  "views": 55,
+  "views": 75,
   "publish": 1,
   "likes": 8,
   "comments": 1
@@ -3019,8 +3030,9 @@
   "provider": "youtube",
   "provider_id": "OS1RlD1TQaQ",
   "featured": 0,
-  "views": 9350,
-  "publish": 1
+  "views": 49,
+  "publish": 1,
+  "likes": 3
  },
  {
   "id": 223,
@@ -3059,8 +3071,10 @@
   "provider": "youtube",
   "provider_id": "ICzQHjVwxVs",
   "featured": 0,
-  "views": 11164,
-  "publish": 1
+  "views": 51,
+  "publish": 1,
+  "likes": 7,
+  "comments": 5
  },
  {
   "id": 226,
@@ -3086,8 +3100,10 @@
   "provider": "youtube",
   "provider_id": "F4npe_KL66o",
   "featured": 0,
-  "views": 12753,
-  "publish": 1
+  "views": 42,
+  "publish": 1,
+  "likes": 3,
+  "comments": 3
  },
  {
   "id": 228,
@@ -3126,8 +3142,10 @@
   "provider": "youtube",
   "provider_id": "E2RMkmO7SYs",
   "featured": 0,
-  "views": 9195,
-  "publish": 1
+  "views": 46,
+  "publish": 1,
+  "likes": 3,
+  "comments": 1
  },
  {
   "id": 231,
@@ -3231,8 +3249,10 @@
   "provider": "youtube",
   "provider_id": "S8geT-Xs-hI",
   "featured": 0,
-  "views": 17044,
-  "publish": 1
+  "views": 26,
+  "publish": 1,
+  "likes": 5,
+  "comments": 1
  },
  {
   "id": 240,
@@ -3259,7 +3279,7 @@
   "provider": "youtube",
   "provider_id": "XXqE58_bum8",
   "featured": 0,
-  "views": 364,
+  "views": 365,
   "likes": 24,
   "comments": 7
  },
@@ -3287,8 +3307,8 @@
   "provider": "youtube",
   "provider_id": "PB0hxYUxZLQ",
   "featured": 0,
-  "views": 1871,
-  "likes": 120,
+  "views": 1878,
+  "likes": 121,
   "comments": 12
  },
  {
@@ -3302,8 +3322,9 @@
   "provider": "youtube",
   "provider_id": "G6FhBLEOowQ",
   "featured": 0,
-  "views": 9589,
-  "publish": 1
+  "views": 9,
+  "publish": 1,
+  "likes": 1
  },
  {
   "id": 245,
@@ -3396,8 +3417,9 @@
   "provider": "youtube",
   "provider_id": "jnu6N7cnVOM",
   "featured": 0,
-  "views": 9584,
-  "publish": 1
+  "views": 31,
+  "publish": 1,
+  "likes": 3
  },
  {
   "id": 252,
@@ -3410,8 +3432,8 @@
   "provider": "youtube",
   "provider_id": "ebT3ki-TSjI",
   "featured": 0,
-  "views": 14731,
-  "likes": 110,
+  "views": 14735,
+  "likes": 111,
   "comments": 7
  },
  {
@@ -3438,7 +3460,7 @@
   "provider": "youtube",
   "provider_id": "TtzTk11hj64",
   "featured": 0,
-  "views": 636,
+  "views": 641,
   "likes": 50,
   "comments": 6
  },
@@ -3466,9 +3488,9 @@
   "provider": "youtube",
   "provider_id": "Ultw3TPcZE8",
   "featured": 0,
-  "views": 189352,
-  "likes": 1673,
-  "comments": 134
+  "views": 189381,
+  "likes": 1674,
+  "comments": 135
  },
  {
   "id": 257,
@@ -3481,9 +3503,11 @@
   "provider": "youtube",
   "provider_id": "_9Q_IT_SMD4",
   "featured": 0,
-  "views": 10108,
+  "views": 27,
   "publish": 1,
-  "location": "Death By Audio"
+  "location": "Death By Audio",
+  "likes": 5,
+  "comments": 2
  },
  {
   "id": 258,
@@ -3509,8 +3533,9 @@
   "provider": "youtube",
   "provider_id": "hY3poPx6Urs",
   "featured": 0,
-  "views": 14805,
-  "publish": 1
+  "views": 24,
+  "publish": 1,
+  "likes": 4
  },
  {
   "id": 260,
@@ -3616,7 +3641,7 @@
   "provider": "youtube",
   "provider_id": "FxvsFUV8aj4",
   "featured": 0,
-  "views": 15797,
+  "views": 15800,
   "likes": 134,
   "comments": 15
  },
@@ -3644,8 +3669,8 @@
   "provider": "youtube",
   "provider_id": "vJK40W1Y3gs",
   "featured": 0,
-  "views": 65302,
-  "likes": 392,
+  "views": 65314,
+  "likes": 393,
   "comments": 41
  },
  {
@@ -3737,8 +3762,9 @@
   "provider": "youtube",
   "provider_id": "NtSrp_6BTVY",
   "featured": 0,
-  "views": 7967,
-  "publish": 1
+  "views": 19,
+  "publish": 1,
+  "likes": 1
  },
  {
   "id": 283,
@@ -3790,8 +3816,10 @@
   "provider": "youtube",
   "provider_id": "s01OCOwVcSM",
   "featured": 0,
-  "views": 12432,
-  "publish": 1
+  "views": 11,
+  "publish": 1,
+  "likes": 3,
+  "comments": 1
  },
  {
   "id": 287,
@@ -3860,7 +3888,7 @@
   "provider": "youtube",
   "provider_id": "QO2tIOrZVa4",
   "featured": 0,
-  "views": 65633,
+  "views": 65634,
   "likes": 242,
   "comments": 22
  },
@@ -3875,7 +3903,7 @@
   "provider": "youtube",
   "provider_id": "l_nJcMVynsk",
   "featured": 0,
-  "views": 11056,
+  "views": 11058,
   "likes": 70,
   "comments": 4
  },
@@ -3890,8 +3918,10 @@
   "provider": "youtube",
   "provider_id": "Qd14L_0lvRU",
   "featured": 0,
-  "views": 12081,
-  "publish": 1
+  "views": 25,
+  "publish": 1,
+  "likes": 3,
+  "comments": 3
  },
  {
   "id": 295,
@@ -3904,8 +3934,8 @@
   "provider": "youtube",
   "provider_id": "mNAZqwcEppo",
   "featured": 0,
-  "views": 52144,
-  "likes": 1274,
+  "views": 52176,
+  "likes": 1276,
   "comments": 77
  },
  {
@@ -3933,7 +3963,7 @@
   "provider": "youtube",
   "provider_id": "voE4lcM6-Zs",
   "featured": 0,
-  "views": 318,
+  "views": 319,
   "likes": 26,
   "comments": 9
  },
@@ -3948,7 +3978,7 @@
   "provider": "youtube",
   "provider_id": "F4cs87oFmQ4",
   "featured": 0,
-  "views": 177,
+  "views": 178,
   "likes": 13,
   "comments": 1
  },
@@ -3991,8 +4021,9 @@
   "provider": "youtube",
   "provider_id": "kmLZ27FSRww",
   "featured": 0,
-  "views": 12564,
-  "publish": 1
+  "views": 12,
+  "publish": 1,
+  "likes": 2
  },
  {
   "id": 303,
@@ -4046,7 +4077,7 @@
   "provider": "youtube",
   "provider_id": "2LyPPNbvm-I",
   "featured": 0,
-  "views": 9012,
+  "views": 9013,
   "likes": 59,
   "comments": 8
  },
@@ -4076,7 +4107,7 @@
   "provider": "youtube",
   "provider_id": "USei-JDO7Ac",
   "featured": 0,
-  "views": 44663,
+  "views": 44666,
   "likes": 386,
   "comments": 36
  },
@@ -4119,7 +4150,7 @@
   "provider": "youtube",
   "provider_id": "ssP6IH6ehQQ",
   "featured": 0,
-  "views": 37846,
+  "views": 37848,
   "likes": 199,
   "comments": 20
  },
@@ -4164,7 +4195,7 @@
   "provider": "youtube",
   "provider_id": "CwRA07-qrkU",
   "featured": 0,
-  "views": 1829,
+  "views": 1830,
   "likes": 13,
   "comments": 1
  },
@@ -4179,7 +4210,7 @@
   "provider": "youtube",
   "provider_id": "QO2tIOrZVa4",
   "featured": 0,
-  "views": 65633,
+  "views": 65634,
   "likes": 242,
   "comments": 22
  },
@@ -4209,7 +4240,7 @@
   "provider": "youtube",
   "provider_id": "8PDRko4M6MQ",
   "featured": 0,
-  "views": 49429,
+  "views": 49438,
   "likes": 436,
   "comments": 29
  },
@@ -4224,7 +4255,7 @@
   "provider": "youtube",
   "provider_id": "y457H7uw0PM",
   "featured": 0,
-  "views": 9598,
+  "views": 9601,
   "likes": 103,
   "comments": 9
  },
@@ -4239,7 +4270,7 @@
   "provider": "youtube",
   "provider_id": "UurnPl_YsGE",
   "featured": 0,
-  "views": 44405,
+  "views": 44406,
   "likes": 275,
   "comments": 24
  },
@@ -4254,7 +4285,7 @@
   "provider": "youtube",
   "provider_id": "91ATaE3_Wt4",
   "featured": 0,
-  "views": 33805,
+  "views": 33811,
   "likes": 307,
   "comments": 19
  },
@@ -4299,7 +4330,7 @@
   "provider": "youtube",
   "provider_id": "_0Hm1-DAtuc",
   "featured": 0,
-  "views": 21481,
+  "views": 21485,
   "likes": 165,
   "comments": 14
  },
@@ -4314,8 +4345,10 @@
   "provider": "youtube",
   "provider_id": "J20EJGLUgoU",
   "featured": 0,
-  "views": 8396,
-  "publish": 1
+  "views": 9359,
+  "publish": 1,
+  "likes": 40,
+  "comments": 10
  },
  {
   "id": 510,
@@ -4328,7 +4361,7 @@
   "provider": "youtube",
   "provider_id": "9zcldgq-KsY",
   "featured": 0,
-  "views": 5219,
+  "views": 5221,
   "likes": 50,
   "comments": 7
  },
@@ -4343,7 +4376,7 @@
   "provider": "youtube",
   "provider_id": "PEobSkJ6BoU",
   "featured": 0,
-  "views": 53027,
+  "views": 53031,
   "likes": 382,
   "comments": 54
  },
@@ -4358,7 +4391,7 @@
   "provider": "youtube",
   "provider_id": "RthN_ItDzCU",
   "featured": 0,
-  "views": 5627,
+  "views": 5629,
   "likes": 30,
   "comments": 4
  },
@@ -4388,7 +4421,7 @@
   "provider": "youtube",
   "provider_id": "1jSs2DDia4E",
   "featured": 0,
-  "views": 29999,
+  "views": 30003,
   "likes": 139,
   "comments": 15
  },
@@ -4418,7 +4451,7 @@
   "provider": "youtube",
   "provider_id": "lbnop7IpsCM",
   "featured": 0,
-  "views": 15990,
+  "views": 15991,
   "likes": 115,
   "comments": 24
  },
@@ -4492,8 +4525,8 @@
   "provider": "youtube",
   "provider_id": "6JqMe1DC2SQ",
   "featured": 0,
-  "views": 43581,
-  "likes": 345,
+  "views": 43594,
+  "likes": 346,
   "comments": 35
  },
  {
@@ -4507,7 +4540,7 @@
   "provider": "youtube",
   "provider_id": "kV8N0IpZ6rE",
   "featured": 0,
-  "views": 22848,
+  "views": 22854,
   "likes": 183,
   "comments": 34
  },
@@ -4522,7 +4555,7 @@
   "provider": "youtube",
   "provider_id": "K63ngXCEkkI",
   "featured": 0,
-  "views": 20504,
+  "views": 20505,
   "likes": 75,
   "comments": 10
  },
@@ -4552,8 +4585,8 @@
   "provider": "youtube",
   "provider_id": "6oFC7kTKi7c",
   "featured": 0,
-  "views": 42874,
-  "likes": 797,
+  "views": 42889,
+  "likes": 798,
   "comments": 41
  },
  {
@@ -4611,7 +4644,7 @@
   "provider": "youtube",
   "provider_id": "uQeAOM-vLns",
   "featured": 0,
-  "views": 19548,
+  "views": 19551,
   "likes": 152,
   "comments": 15
  },
@@ -4626,8 +4659,8 @@
   "provider": "youtube",
   "provider_id": "A1dkKAFzDNQ",
   "featured": 0,
-  "views": 200458,
-  "likes": 2241,
+  "views": 200509,
+  "likes": 2242,
   "comments": 182
  },
  {
@@ -4656,7 +4689,7 @@
   "provider": "youtube",
   "provider_id": "Q-6hbQzl5lI",
   "featured": 0,
-  "views": 43470,
+  "views": 43472,
   "likes": 322,
   "comments": 27
  },
@@ -4671,8 +4704,8 @@
   "provider": "youtube",
   "provider_id": "3eYp5SXVXIA",
   "featured": 0,
-  "views": 8196,
-  "likes": 71,
+  "views": 8198,
+  "likes": 72,
   "comments": 8
  },
  {
@@ -4686,7 +4719,7 @@
   "provider": "youtube",
   "provider_id": "b-ClkyAeRjs",
   "featured": 0,
-  "views": 37202,
+  "views": 37205,
   "likes": 313,
   "comments": 53
  },
@@ -4714,7 +4747,7 @@
   "provider": "youtube",
   "provider_id": "aUAuGq-7yNo",
   "featured": 0,
-  "views": 10776,
+  "views": 10782,
   "likes": 123,
   "comments": 13
  },
@@ -4744,7 +4777,7 @@
   "provider": "youtube",
   "provider_id": "c4B0J3bKfG0",
   "featured": 0,
-  "views": 60844,
+  "views": 60848,
   "likes": 334,
   "comments": 20
  },
@@ -4759,7 +4792,7 @@
   "provider": "youtube",
   "provider_id": "HPCsb9aL3Aw",
   "featured": 0,
-  "views": 64537,
+  "views": 64538,
   "likes": 551,
   "comments": 49
  },
@@ -4804,7 +4837,7 @@
   "provider": "youtube",
   "provider_id": "1NR_Q8SFE34",
   "featured": 0,
-  "views": 38001,
+  "views": 38011,
   "likes": 720,
   "comments": 24
  },
@@ -4864,7 +4897,7 @@
   "provider": "youtube",
   "provider_id": "bEWzK7NvztU",
   "featured": 0,
-  "views": 3130,
+  "views": 3131,
   "likes": 33,
   "comments": 19
  },
@@ -4879,7 +4912,7 @@
   "provider": "youtube",
   "provider_id": "why69fklcIs",
   "featured": 0,
-  "views": 7812,
+  "views": 7813,
   "likes": 91,
   "comments": 9
  },
@@ -4907,7 +4940,7 @@
   "provider": "youtube",
   "provider_id": "PCCBIP2GSvs",
   "featured": 0,
-  "views": 26828,
+  "views": 26836,
   "likes": 269,
   "comments": 24
  },
@@ -4922,7 +4955,7 @@
   "provider": "youtube",
   "provider_id": "JtZ-snUy0EM",
   "featured": 0,
-  "views": 7782,
+  "views": 7783,
   "likes": 90,
   "comments": 10
  },
@@ -4937,7 +4970,7 @@
   "provider": "youtube",
   "provider_id": "9h3HCQxsr2I",
   "featured": 0,
-  "views": 3820,
+  "views": 3821,
   "likes": 52,
   "comments": 2
  },
@@ -4967,7 +5000,7 @@
   "provider": "youtube",
   "provider_id": "iVUXxkhBcCg",
   "featured": 0,
-  "views": 28669,
+  "views": 28680,
   "likes": 384,
   "comments": 23
  },
@@ -4982,7 +5015,7 @@
   "provider": "youtube",
   "provider_id": "JvuG86qGmuI",
   "featured": 0,
-  "views": 15581,
+  "views": 15586,
   "likes": 202,
   "comments": 14
  },
@@ -4997,7 +5030,7 @@
   "provider": "youtube",
   "provider_id": "yjNc9-3rtag",
   "featured": 0,
-  "views": 15612,
+  "views": 15616,
   "likes": 148,
   "comments": 13
  },
@@ -5012,7 +5045,7 @@
   "provider": "youtube",
   "provider_id": "5qxaIWVjs6w",
   "featured": 0,
-  "views": 41062,
+  "views": 41071,
   "likes": 301,
   "comments": 36
  },
@@ -5027,7 +5060,7 @@
   "provider": "youtube",
   "provider_id": "Z9n5vFtjlxY",
   "featured": 0,
-  "views": 24852,
+  "views": 24857,
   "likes": 268,
   "comments": 31
  },
@@ -5042,8 +5075,8 @@
   "provider": "youtube",
   "provider_id": "Gl9xPWrDuFA",
   "featured": 0,
-  "views": 84691,
-  "likes": 769,
+  "views": 84703,
+  "likes": 770,
   "comments": 84
  },
  {
@@ -5057,7 +5090,7 @@
   "provider": "youtube",
   "provider_id": "wKKqFMTpGHc",
   "featured": 0,
-  "views": 203300,
+  "views": 203333,
   "likes": 1675,
   "comments": 95
  },
@@ -5102,7 +5135,7 @@
   "provider": "youtube",
   "provider_id": "aPstyAzQD_U",
   "featured": 0,
-  "views": 53548,
+  "views": 53556,
   "likes": 429,
   "comments": 35
  },
@@ -5117,7 +5150,7 @@
   "provider": "youtube",
   "provider_id": "055TvIWZTrQ",
   "featured": 0,
-  "views": 5837,
+  "views": 5838,
   "likes": 61,
   "comments": 9
  },
@@ -5147,7 +5180,7 @@
   "provider": "youtube",
   "provider_id": "nwtyS9qqIis",
   "featured": 0,
-  "views": 20691,
+  "views": 20700,
   "likes": 239,
   "comments": 1
  },
@@ -5162,9 +5195,9 @@
   "provider": "youtube",
   "provider_id": "59Ya-jUJQKA",
   "featured": 0,
-  "views": 160226,
+  "views": 160249,
   "likes": 1162,
-  "comments": 96
+  "comments": 95
  },
  {
   "id": 715,
@@ -5190,7 +5223,7 @@
   "provider": "youtube",
   "provider_id": "IN5lc3vFWyA",
   "featured": 0,
-  "views": 265228,
+  "views": 265268,
   "likes": 2439,
   "comments": 147
  },
@@ -5205,7 +5238,7 @@
   "provider": "youtube",
   "provider_id": "E_2CmdZGxl8",
   "featured": 0,
-  "views": 24797,
+  "views": 24800,
   "likes": 240,
   "comments": 14
  },
@@ -5220,7 +5253,7 @@
   "provider": "youtube",
   "provider_id": "009HvA79J_8",
   "featured": 0,
-  "views": 24237,
+  "views": 24239,
   "likes": 245,
   "comments": 34
  },
@@ -5235,8 +5268,8 @@
   "provider": "youtube",
   "provider_id": "o0NUsi9a9mk",
   "featured": 1,
-  "views": 182101,
-  "likes": 1933,
+  "views": 182124,
+  "likes": 1932,
   "comments": 192
  },
  {
@@ -5250,7 +5283,7 @@
   "provider": "youtube",
   "provider_id": "HrBp6V5AHK8",
   "featured": 0,
-  "views": 23724,
+  "views": 23725,
   "likes": 232,
   "comments": 13
  },
@@ -5265,7 +5298,7 @@
   "provider": "youtube",
   "provider_id": "h7DU50-lBME",
   "featured": 0,
-  "views": 48421,
+  "views": 48428,
   "likes": 349,
   "comments": 44
  },
@@ -5280,7 +5313,7 @@
   "provider": "youtube",
   "provider_id": "bQA9jb2RCA8",
   "featured": 0,
-  "views": 9209,
+  "views": 9210,
   "likes": 68,
   "comments": 7
  },
@@ -5295,7 +5328,7 @@
   "provider": "youtube",
   "provider_id": "lM2Uh7BQztY",
   "featured": 0,
-  "views": 35825,
+  "views": 35830,
   "likes": 281,
   "comments": 24
  },
@@ -5340,7 +5373,7 @@
   "provider": "youtube",
   "provider_id": "t5kFAjqlQik",
   "featured": 0,
-  "views": 41833,
+  "views": 41837,
   "likes": 402,
   "comments": 30
  },
@@ -5370,7 +5403,7 @@
   "provider": "youtube",
   "provider_id": "vqbUJg6Z4v8",
   "featured": 0,
-  "views": 32337,
+  "views": 32342,
   "likes": 334,
   "comments": 19
  },
@@ -5415,7 +5448,7 @@
   "provider": "youtube",
   "provider_id": "yJmNU9xHv4w",
   "featured": 0,
-  "views": 29176,
+  "views": 29180,
   "likes": 275,
   "comments": 44
  },
@@ -5430,7 +5463,7 @@
   "provider": "youtube",
   "provider_id": "59TPB1wDdaM",
   "featured": 0,
-  "views": 8062,
+  "views": 8065,
   "likes": 89,
   "comments": 4
  },
@@ -5445,7 +5478,7 @@
   "provider": "youtube",
   "provider_id": "qwribC5H6EA",
   "featured": 0,
-  "views": 26800,
+  "views": 26802,
   "likes": 456,
   "comments": 38,
   "publish": 1
@@ -5506,7 +5539,7 @@
   "provider": "youtube",
   "provider_id": "vJCU9MsvoQM",
   "featured": 0,
-  "views": 460,
+  "views": 464,
   "likes": 33,
   "comments": 3
  },
@@ -5521,7 +5554,7 @@
   "provider": "youtube",
   "provider_id": "sFvgRXESpfU",
   "featured": 0,
-  "views": 393,
+  "views": 395,
   "likes": 41,
   "comments": 3
  }
