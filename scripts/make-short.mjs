@@ -4,10 +4,9 @@
  * The video sits centered on a solid paper background; the blank bands above and
  * below carry branding rendered in the real site fonts:
  *
- *     IFYOUMAKEIT
- *     <label, e.g. PINK COUCH SESSIONS>
+ *     IFYOUMAKEIT · BAND · Song · <series>
  *                 [ video ]
- *     SEE MORE @ifyoumakeit or at ifyoumakeit.com
+ *     SEE MORE / @ifyoumakeit / ifyoumakeit.com
  *
  * This ffmpeg build has no drawtext (no libfreetype), and Archivo Black ships
  * only as woff2, so the text is rendered to a transparent PNG via headless
@@ -20,7 +19,10 @@
  *   --start, -s <t>   start time (45 | 0:45 | 1:02:03). default 0
  *   --dur,   -t <t>   clip length. default: to end
  *   --end,   -e <t>   end time (instead of --dur)
- *   --label    <txt>  second top line. default "PINK COUCH SESSIONS"
+ *   --id       <v>    fill band/song/series from the archive (video id|slug|provider_id)
+ *   --band     <txt>  band name (overrides --id)
+ *   --song     <txt>  song title (overrides --id)
+ *   --label    <txt>  series line. default from --id, else "PINK COUCH SESSIONS"
  *   --out,   -o <f>   output. default <dir>/shorts/<name>-short.mp4
  *   --crf      <n>    quality (lower=better). default 18
  *   --refresh-overlay re-render the cached text PNG
@@ -56,7 +58,36 @@ const start = flag(["--start", "-s"], "0");
 const dur = flag(["--dur", "-t"], null);
 const end = flag(["--end", "-e"], null);
 const crf = flag(["--crf"], "18");
-const label = flag(["--label"], "PINK COUCH SESSIONS").toUpperCase();
+
+const root = join(dirname(new URL(import.meta.url).pathname), "..");
+const esc = (s) =>
+  String(s).replace(/[&<>"]/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+  );
+
+// Branding text. --band/--song/--label win; otherwise --id fills them from the
+// archive, matching a video by numeric id, slug, or provider_id.
+let band = flag(["--band", "--artist"], null);
+let song = flag(["--song", "--title"], null);
+let label = flag(["--label"], null);
+
+const idArg = flag(["--id", "--video"], null);
+if (idArg) {
+  const load = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
+  const v = load("db/data/videos.json").find(
+    (x) => String(x.id) === idArg || x.provider_id === idArg || x.slug === idArg,
+  );
+  if (!v) {
+    console.error(`no video matching --id ${idArg} (tried numeric id, slug, provider_id)`);
+    process.exit(1);
+  }
+  const artist = load("db/data/artists.json").find((a) => a.id === v.artist_id);
+  const ser = load("db/data/series.json").find((s) => s.id === v.series_id);
+  band ??= artist?.name ?? null;
+  song ??= v.title;
+  label ??= ser?.title ?? null;
+}
+label = (label ?? "PINK COUCH SESSIONS").toUpperCase();
 
 const toSeconds = (t) => String(t).split(":").reduce((a, n) => a * 60 + Number(n), 0);
 let durArg = dur;
@@ -72,11 +103,10 @@ mkdirSync(dirname(outPath), { recursive: true });
 // --- brand overlay (transparent PNG, rendered once per design) ------------
 // Everything sits on a black canvas so the type never competes with the video;
 // the overlay PNG is transparent over the bands and over the video center.
-const BG = "000000"; // ffmpeg pad color (no 0x here; added below)
-const root = join(dirname(new URL(import.meta.url).pathname), "..");
+const BG = "16121A"; // ffmpeg pad color (no 0x here; added below)
 const b64 = (p) => readFileSync(join(root, p)).toString("base64");
 
-async function renderOverlay(labelText) {
+async function renderOverlay(labelText, bandName, songName) {
   const archivo = b64("node_modules/@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2");
   const mono = b64("node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2");
   const html = `<!doctype html><html><head><meta charset="utf-8"><style>
@@ -85,14 +115,21 @@ async function renderOverlay(labelText) {
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{width:1080px;height:1920px;background:transparent;font-synthesis:none}
     .band{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 50px}
-    .top{top:0;height:656px;gap:16px}
+    .top{top:0;height:656px;gap:14px}
     .bottom{bottom:0;height:656px;gap:10px}
-    .brand{font-family:"Archivo Black";font-size:104px;line-height:.9;color:#FF4D8D;text-transform:uppercase;letter-spacing:-.02em}
-    .label{font-family:"Archivo Black";font-size:48px;color:#FAF3E7;text-transform:uppercase;letter-spacing:.01em}
+    .brand{font-family:"Archivo Black";font-size:52px;line-height:.9;color:#FF4D8D;text-transform:uppercase;letter-spacing:.01em}
+    .brand.solo{font-size:104px;letter-spacing:-.02em}
+    .act{font-family:"Archivo Black";font-size:90px;line-height:.9;color:#FAF3E7;text-transform:uppercase;letter-spacing:-.02em;max-width:980px}
+    .song{font-family:"Archivo Black";font-size:44px;line-height:1.02;color:#FAF3E7;text-transform:uppercase;max-width:940px}
+    .label{font-family:"Space Mono";font-weight:700;font-size:27px;color:#FF4D8D;opacity:1;text-transform:uppercase;letter-spacing:.14em}
     .cta-lead{font-family:"Archivo Black";font-size:64px;line-height:.95;color:#FAF3E7;text-transform:uppercase;letter-spacing:-.01em}
     .cta{font-family:"Space Mono";font-weight:700;font-size:42px;color:#FAF3E7;text-transform:uppercase;letter-spacing:.02em}
   </style></head><body>
-    <div class="band top"><div class="brand">IFYOUMAKEIT</div><div class="label">${labelText}</div></div>
+    <div class="band top">
+      <div class="label">${esc(labelText)}</div>
+      ${bandName ? `<div class="act">${esc(bandName)}</div>` : ""}
+      ${songName ? `<div class="song">${esc(songName)}</div>` : ""}
+    </div>
     <div class="band bottom"><div class="cta-lead">SEE MORE</div><div class="cta">@ifyoumakeit</div><div class="cta">ifyoumakeit.com</div></div>
   </body></html>`;
 
@@ -113,7 +150,7 @@ async function renderOverlay(labelText) {
   return out;
 }
 
-const overlay = await renderOverlay(label);
+const overlay = await renderOverlay(label, band, song);
 
 // --- compose ---------------------------------------------------------------
 // Pad the (aspect-preserved) video onto a paper canvas, then lay the
@@ -145,7 +182,10 @@ if (DRY) {
 }
 
 console.log(`Short: ${input}  ->  ${outPath}`);
-console.log(`  start ${start}${durArg != null ? `, ${durArg}s` : ", to end"} · label "${label}"\n`);
+console.log(
+  `  ${band ?? "IYMI"}${song ? ` — ${song}` : ""} · ${label}\n` +
+    `  start ${start}${durArg != null ? `, ${durArg}s` : ", to end"}\n`,
+);
 const res = spawnSync("ffmpeg", ff, { stdio: "inherit" });
 if (res.status !== 0) {
   console.error("\nffmpeg failed.");
