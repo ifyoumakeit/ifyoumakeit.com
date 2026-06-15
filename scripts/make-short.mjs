@@ -25,8 +25,9 @@
  *   --label    <txt>  series line. default from --id, else "PINK COUCH SESSIONS"
  *   --out,   -o <f>   output. default <dir>/shorts/<name>-short.mp4
  *   --crf      <n>    quality (lower=better). default 18
+ *   --caption         also print a ready-to-paste YouTube description
  *   --refresh-overlay re-render the cached text PNG
- *   --dry             print the ffmpeg command and exit
+ *   --dry             print the ffmpeg command and exit (with --caption, just the text)
  */
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -38,6 +39,7 @@ import { createHash } from "node:crypto";
 const args = process.argv.slice(2);
 const DRY = args.includes("--dry");
 const REFRESH = args.includes("--refresh-overlay");
+const CAPTION = args.includes("--caption");
 const flag = (names, def) => {
   for (const n of names) {
     const i = args.indexOf(n);
@@ -70,6 +72,8 @@ const esc = (s) =>
 let band = flag(["--band", "--artist"], null);
 let song = flag(["--song", "--title"], null);
 let label = flag(["--label"], null);
+let year = null;
+let fullUrl = "https://ifyoumakeit.com";
 
 const idArg = flag(["--id", "--video"], null);
 if (idArg) {
@@ -86,8 +90,31 @@ if (idArg) {
   band ??= artist?.name ?? null;
   song ??= v.title;
   label ??= ser?.title ?? null;
+  year = new Date(v.recorded_at).getUTCFullYear();
+  if (artist) {
+    const songSlug = v.slug.startsWith(`${artist.slug}-`)
+      ? v.slug.slice(artist.slug.length + 1)
+      : v.slug;
+    fullUrl = `https://ifyoumakeit.com/video/${artist.slug}/${songSlug}/`;
+  }
 }
-label = (label ?? "PINK COUCH SESSIONS").toUpperCase();
+const seriesText = label ?? "Pink Couch Sessions";
+label = seriesText.toUpperCase();
+
+// Ready-to-paste YouTube description (printed with --caption). First line is the
+// SEO hook; first hashtags surface above the title.
+const hashtag = (s) => "#" + s.replace(/[^A-Za-z0-9]+/g, "");
+const caption =
+  `${band ?? "If You Make It"}${song ? ` – "${song}"` : ""} | ${seriesText}${year ? ` (${year})` : ""}\n\n` +
+  "From If You Make It, a DIY punk video archive. Watch the full session and hundreds more:\n" +
+  `▶ Full video: ${fullUrl}\n` +
+  "🌐 ifyoumakeit.com\n" +
+  "📺 @ifyoumakeit\n\n" +
+  `#Shorts #punk ${hashtag(band ?? "ifyoumakeit")} ${hashtag(seriesText)} #DIY`;
+const printCaption = () =>
+  console.log(
+    `\n──────── YouTube description ────────\n${caption}\n─────────────────────────────────────`,
+  );
 
 const toSeconds = (t) => String(t).split(":").reduce((a, n) => a * 60 + Number(n), 0);
 let durArg = dur;
@@ -124,6 +151,7 @@ async function renderOverlay(labelText, bandName, songName) {
     .label{font-family:"Space Mono";font-weight:700;font-size:27px;color:#FF4D8D;opacity:1;text-transform:uppercase;letter-spacing:.14em}
     .cta-lead{font-family:"Archivo Black";font-size:64px;line-height:.95;color:#FAF3E7;text-transform:uppercase;letter-spacing:-.01em}
     .cta{font-family:"Space Mono";font-weight:700;font-size:42px;color:#FAF3E7;text-transform:uppercase;letter-spacing:.02em}
+    .at{color:#FF4D8D}
   </style></head><body>
     <div class="band top">
       <div class="label">${esc(labelText)}</div>
@@ -178,6 +206,7 @@ const ff = [
 if (DRY) {
   console.log("overlay:", overlay);
   console.log("ffmpeg " + ff.map((a) => (/\s/.test(a) ? `'${a}'` : a)).join(" "));
+  if (CAPTION) printCaption();
   process.exit(0);
 }
 
@@ -192,3 +221,4 @@ if (res.status !== 0) {
   process.exit(res.status ?? 1);
 }
 console.log(`\nwrote ${outPath}`);
+if (CAPTION) printCaption();
