@@ -23,6 +23,7 @@
  *   --band     <txt>  band name (overrides --id)
  *   --song     <txt>  song title (overrides --id)
  *   --label    <txt>  series line. default from --id, else "PINK COUCH SESSIONS"
+ *   --date     <d>    caption date (ISO like 2008-09-25, or free text). default from --id
  *   --out,   -o <f>   output. default <dir>/shorts/<name>-short.mp4
  *   --crf      <n>    quality (lower=better). default 18
  *   --caption         also print a ready-to-paste YouTube description
@@ -66,6 +67,22 @@ const esc = (s) =>
   String(s).replace(/[&<>"]/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
   );
+// Format a date for the caption. ISO dates (YYYY-MM-DD, like recorded_at) become
+// "Month Day, Year" (UTC); anything else (e.g. "Summer 2008") passes through as
+// typed, so free-form --date values aren't mangled by Date's loose parsing.
+const fmtDate = (v) => {
+  const s = String(v);
+  if (!/^\d{4}-\d{2}-\d{2}/.test(s)) return s;
+  const d = new Date(s);
+  return Number.isNaN(d.getTime())
+    ? s
+    : new Intl.DateTimeFormat("en-US", {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(d);
+};
 
 // Branding text. --band/--song/--label win; otherwise --id fills them from the
 // archive, matching a video by numeric id, slug, or provider_id.
@@ -92,12 +109,7 @@ if (idArg) {
   song ??= v.title;
   label ??= ser?.title ?? null;
   year = new Date(v.recorded_at).getUTCFullYear();
-  dateText = new Intl.DateTimeFormat("en-US", {
-    timeZone: "UTC",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(new Date(v.recorded_at));
+  dateText = fmtDate(v.recorded_at);
   if (artist) {
     const songSlug = v.slug.startsWith(`${artist.slug}-`)
       ? v.slug.slice(artist.slug.length + 1)
@@ -105,15 +117,20 @@ if (idArg) {
     fullUrl = `https://ifyoumakeit.com/video/${artist.slug}/${songSlug}/`;
   }
 }
-const seriesText = label ?? "Pink Couch Sessions";
+const seriesText =
+  !label || label === "Sessions" ? "Pink Couch Sessions" : label;
 label = seriesText.toUpperCase();
+
+// --date overrides the looked-up date (and supplies one when not using --id).
+const dateArg = flag(["--date"], null);
+if (dateArg) dateText = fmtDate(dateArg);
 
 // Ready-to-paste YouTube description (printed with --caption). First line is the
 // SEO hook; first hashtags surface above the title.
 const hashtag = (s) => "#" + s.replace(/[^A-Za-z0-9]+/g, "");
 const caption =
-  `${band ?? "If You Make It"}${song ? ` – "${song}"` : ""} | ${seriesText}${dateText ? ` (${dateText})` : year ? ` (${year})` : ""}\n\n` +
-  "From If You Make It. Watch the full session and hundreds more:\n" +
+  `From ${seriesText} by If You Make It${dateText ? ` (${dateText})` : year ? ` (${year})` : ""}\n\n` +
+  "Watch the full session and hundreds more:\n" +
   `▶ Full video: ${fullUrl}\n` +
   "🌐 ifyoumakeit.com\n" +
   "📺 @ifyoumakeit\n\n" +
