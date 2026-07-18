@@ -169,8 +169,12 @@ New UI should use these tokens/utilities plus minimal page-scoped `<style>`.
 Don't introduce new global CSS without good reason, and keep the aesthetic:
 clean black stages, hairlines, big crisp uppercase Anton headings, quiet
 fade/rise motion only. `scripts/generate-og.mjs` re-renders the
-`public/og-*.png` social cards in this style (needs `playwright-core` +
-Chromium; see the script header).
+`public/og-*.png` social cards in this style, and
+`scripts/generate-icons.mjs` re-renders the PWA/app icons
+(`public/icon-*.png`, `apple-touch-icon.png`) — both need
+`playwright-core` + Chromium; see the script headers. The site is
+installable as an app via `public/manifest.webmanifest` (linked in
+`Layout.astro`) — no service worker, by design.
 
 ### Component contracts (`src/components/`)
 
