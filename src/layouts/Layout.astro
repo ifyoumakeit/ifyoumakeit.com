@@ -4,6 +4,17 @@ import "@fontsource-variable/archivo";
 import "@fontsource/space-mono/400.css";
 import "@fontsource/space-mono/700.css";
 import "../styles/global.css";
+// Preload the critical latin font files so they're fetched as soon as the
+// HTML arrives, not after the stylesheet parses. @fontsource ships
+// font-display: swap, so a late font repaints the page in a new face —
+// Anton especially reflows hard against its fallback. Vite dedupes these
+// against the URLs in the CSS, so each file still ships (and caches) once.
+import antonWoff2 from "@fontsource/anton/files/anton-latin-400-normal.woff2?url";
+import archivoWoff2 from "@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url";
+import monoWoff2 from "@fontsource/space-mono/files/space-mono-latin-400-normal.woff2?url";
+import monoBoldWoff2 from "@fontsource/space-mono/files/space-mono-latin-700-normal.woff2?url";
+
+const preloadFonts = [antonWoff2, archivoWoff2, monoWoff2, monoBoldWoff2];
 import { db, eq, asc, series } from "../lib/db";
 import {
   DEFAULT_DESCRIPTION,
@@ -128,6 +139,9 @@ const staticNavLinks: {
     <meta name="theme-color" content="#16121B" id="meta-theme-color" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonicalUrl} />
+    {preloadFonts.map((href) => (
+      <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />
+    ))}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
