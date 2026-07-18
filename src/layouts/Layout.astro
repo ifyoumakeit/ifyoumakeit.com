@@ -185,11 +185,12 @@ const staticNavLinks: {
             aria-hidden="true"
             focusable="false"
           >
-            {/* Quiet line-art couch: paper fills self-mask the overlapping
-                shapes, strokes follow currentColor (muted; pink on hover). */}
+            {/* Pink line-art couch: paper fills self-mask the overlapping
+                shapes, strokes follow currentColor. Stroke width is tuned so
+                the rendered line matches the 2.5px of the nav icons. */}
             <g
               stroke="currentColor"
-              stroke-width="3"
+              stroke-width="3.7"
               stroke-linejoin="round"
               stroke-linecap="round"
             >
@@ -388,12 +389,12 @@ const staticNavLinks: {
         width: 2.7rem;
         height: auto;
         flex: none;
-        color: var(--color-muted);
+        color: var(--color-pink);
         transform-origin: bottom center;
         transition: color 0.12s ease;
       }
       .wordmark:hover .wordmark__mark {
-        color: var(--color-pink);
+        color: var(--color-pink-deep);
       }
       /* The couch squishes like someone just flopped onto it. */
       .wordmark:hover .wordmark__mark {
