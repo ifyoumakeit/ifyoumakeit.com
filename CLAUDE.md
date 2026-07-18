@@ -130,21 +130,32 @@ plus prev/next within the series by `recorded_at`. Keep this when editing
 
 ## Design system
 
-DIY zine / punk-flyer. The contract lives in `src/styles/global.css`:
+Basement-show gig poster: black stock, cream screenprint ink, hot-pink couch
+accent, off-register "misprint" shadows. The contract lives in
+`src/styles/global.css`:
 
-- Tokens: `--color-paper` (#FAF3E7), `--color-ink` (#16121A), `--color-pink`
-  (#FF4D8D), `--color-pink-deep`, `--color-blue`, `--color-yellow`,
-  `--color-muted`, `--font-display` (Archivo Black), `--font-body` (Archivo
-  Variable), `--font-mono` (Space Mono), `--border` (3px solid ink),
-  `--shadow-hard` (hard offset, no blur), `--radius`.
+- Tokens: `--color-paper` (#16121B — the dark page/surface stock),
+  `--color-panel` (#201A29 — raised card surface), `--color-ink` (#F4ECDC —
+  cream text/borders), `--color-pink` (#FF4D8D), `--color-pink-deep` (#FF85AF,
+  bright emphasis/hover pink), `--color-blue`, `--color-yellow`,
+  `--color-muted`, `--font-display` (Anton), `--font-body` (Archivo Variable),
+  `--font-mono` (Space Mono), `--border` (3px solid ink), `--shadow-hard`
+  (hard offset in the section accent — the misprint), `--radius`.
+  Note the semantics: *paper = background* (now near-black), *ink =
+  foreground* (now cream) — like white ink screenprinted on black stock.
 - Utilities: `.container`, `.grid-videos`, `.btn`, `.tag-chip`, `.meta-line`.
+- Every `h1` gets an accent-tinted `text-shadow` misprint automatically.
 - **Series accent theming**: put `data-series={series.slug}` on an element and
-  `--accent` resolves per series (pink-couch-sessions → pink, live-and-direct →
-  blue, shows → yellow). Use `var(--accent, var(--color-pink))` in styles.
+  `--accent` (and the shadow color) resolves per series (sessions → pink,
+  live → blue, series → yellow). Use `var(--accent, var(--color-pink))`.
+  `--accent-ink` is the text color for accent-filled surfaces (dark stock).
 
 New UI should use these tokens/utilities plus minimal page-scoped `<style>`.
 Don't introduce new global CSS without good reason, and keep the aesthetic:
-thick borders, hard shadows, uppercase display headings, sticker-like badges.
+thick cream borders, hard accent shadows, tall uppercase Anton headings,
+halftone/washes for texture. `scripts/generate-og.mjs` re-renders the
+`public/og-*.png` social cards in this style (needs `playwright-core` +
+Chromium; see the script header).
 
 ### Component contracts (`src/components/`)
 

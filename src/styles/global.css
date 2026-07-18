@@ -1,39 +1,51 @@
 /* ============================================================
    IF YOU MAKE IT — global tokens + utilities
-   DIY zine / punk-flyer design system.
-   Fonts are imported in Layout.astro (self-hosted via @fontsource).
+   Basement-show gig-poster design system: black poster stock,
+   cream screenprint ink, hot-pink couch accent, off-registration
+   "misprint" shadows. Fonts are imported in Layout.astro
+   (self-hosted via @fontsource).
+
+   Token semantics (kept from the zine era):
+   - --color-paper = the page/surface color → now near-black stock
+   - --color-ink   = text/border color      → now warm cream ink
    ============================================================ */
 
 :root {
   /* --- palette --- */
-  --color-paper: #faf3e7;
-  --color-ink: #16121a;
+  --color-paper: #16121b;
+  --color-panel: #201a29;
+  --color-ink: #f4ecdc;
   --color-pink: #ff4d8d;
-  --color-pink-deep: #c91550;
-  --color-blue: #0b63ce;
+  --color-pink-deep: #ff85af; /* emphasis/hover pink, bright on dark */
+  --color-blue: #4da3ff;
   --color-yellow: #ffd23f;
-  --color-muted: #6b6470;
+  --color-muted: #a99db5;
 
   /* --- type --- */
-  --font-display: "Archivo Black", "Arial Black", system-ui, sans-serif;
+  --font-display: "Anton", "Arial Narrow", "Archivo Black", system-ui,
+    sans-serif;
   --font-body: "Archivo Variable", system-ui, -apple-system, sans-serif;
   --font-mono: "Space Mono", ui-monospace, "Courier New", monospace;
 
   /* --- structure --- */
   --border: 3px solid var(--color-ink);
   --border-thin: 2px solid var(--color-ink);
-  --shadow-hard: 6px 6px 0 var(--color-ink);
-  --shadow-hard-sm: 4px 4px 0 var(--color-ink);
-  --radius: 4px;
+  /* Misprint shadow: hard offset in the section accent, like a second
+     screenprint pass that slipped off-register. */
+  --shadow-color: var(--accent, var(--color-pink));
+  --shadow-hard: 6px 6px 0 var(--shadow-color);
+  --shadow-hard-sm: 4px 4px 0 var(--shadow-color);
+  --radius: 2px;
 
   /* --- series accent (overridden by [data-series]) --- */
   --accent: var(--color-pink);
-  --accent-ink: var(--color-ink);
+  --accent-ink: var(--color-paper);
   --accent-text: var(--color-pink-deep);
 }
 
 /* Series accent theming via data attribute.
-   Default accent is hot pink. */
+   Default accent is hot pink. --accent-ink is the text color used ON an
+   accent-filled surface (dark stock, since accents are bright). */
 [data-series="live"] {
   --accent: var(--color-blue);
   --accent-ink: var(--color-paper);
@@ -41,13 +53,13 @@
 }
 [data-series="sessions"] {
   --accent: var(--color-pink);
-  --accent-ink: var(--color-ink);
+  --accent-ink: var(--color-paper);
   --accent-text: var(--color-pink-deep);
 }
 [data-series="series"] {
   --accent: var(--color-yellow);
-  --accent-ink: var(--color-ink);
-  --accent-text: var(--color-ink);
+  --accent-ink: var(--color-paper);
+  --accent-text: var(--color-yellow);
 }
 
 /* ============================================================
@@ -72,29 +84,28 @@ body {
   line-height: 1.55;
   color: var(--color-ink);
   background-color: var(--color-paper);
-  /* Broad, uneven staining keeps paper tactile without a screen texture. */
+  /* Halftone dot screen + faint stage-light washes — a photocopied poster
+     under bad venue lighting, without shipping a texture image. */
   background-image:
     radial-gradient(
-      ellipse at 12% 8%,
-      rgba(255, 255, 255, 0.55) 0,
-      transparent 38%
-    ),
-    radial-gradient(
-      ellipse at 88% 28%,
-      rgba(201, 21, 80, 0.025) 0,
+      ellipse at 18% 6%,
+      rgba(255, 77, 141, 0.07) 0,
       transparent 42%
     ),
     radial-gradient(
-      ellipse at 35% 92%,
-      rgba(22, 18, 26, 0.035) 0,
-      transparent 48%
+      ellipse at 85% 80%,
+      rgba(77, 163, 255, 0.05) 0,
+      transparent 45%
     ),
-    linear-gradient(
-      105deg,
-      rgba(255, 255, 255, 0.18),
-      transparent 32%,
-      rgba(22, 18, 26, 0.018)
+    radial-gradient(
+      circle,
+      rgba(244, 236, 220, 0.028) 1px,
+      transparent 1.6px
     );
+  background-size:
+    auto,
+    auto,
+    19px 19px;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -115,21 +126,33 @@ h3 {
   font-family: var(--font-display);
   font-weight: 400;
   text-transform: uppercase;
-  line-height: 0.95;
-  letter-spacing: -0.01em;
+  line-height: 0.98;
+  letter-spacing: 0.015em;
   margin: 0 0 0.4em;
   color: var(--color-ink);
   overflow-wrap: break-word;
 }
 
 h1 {
-  font-size: clamp(2.4rem, 7vw, 4.5rem);
+  font-size: clamp(2.6rem, 8vw, 5rem);
+  /* Every page headline gets the off-register second pass, tinted by the
+     section accent. */
+  text-shadow: 3px 3px 0
+    color-mix(in srgb, var(--accent, var(--color-pink)) 55%, transparent);
 }
 h2 {
-  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+  font-size: clamp(1.9rem, 4.5vw, 3rem);
 }
 h3 {
-  font-size: clamp(1.25rem, 3vw, 1.7rem);
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+}
+
+/* Off-registration headline: a second print pass that slipped.
+   Opt-in via class so long headings stay clean. */
+.misprint {
+  text-shadow:
+    3px 3px 0 var(--accent, var(--color-pink)),
+    -1px -1px 0 var(--color-paper);
 }
 
 p {
@@ -149,14 +172,15 @@ a:hover {
   text-decoration-color: var(--color-pink-deep);
 }
 a:focus-visible {
-  outline: 3px solid var(--color-blue);
+  outline: 3px solid var(--color-yellow);
   outline-offset: 2px;
   border-radius: 2px;
 }
 
 button:focus-visible,
+input:focus-visible,
 [tabindex]:focus-visible {
-  outline: 3px solid var(--color-blue);
+  outline: 3px solid var(--color-yellow);
   outline-offset: 2px;
 }
 
@@ -166,7 +190,7 @@ button:focus-visible,
 
 ::selection {
   background: var(--color-pink);
-  color: var(--color-ink);
+  color: var(--color-paper);
 }
 
 /* ============================================================
@@ -186,18 +210,18 @@ button:focus-visible,
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
 }
 
-/* Cards land like slapped-on stickers: quick rise + settle, staggered
-   left-to-right. `backwards` keeps them hidden until their delay hits. */
+/* Posters get pasted up one after another, left to right.
+   `backwards` keeps them hidden until their delay hits. */
 .grid-videos > * {
-  animation: slap-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: slap-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
-.grid-videos > *:nth-child(1) { animation-delay: 0.05s; }
-.grid-videos > *:nth-child(2) { animation-delay: 0.11s; }
-.grid-videos > *:nth-child(3) { animation-delay: 0.17s; }
-.grid-videos > *:nth-child(4) { animation-delay: 0.23s; }
-.grid-videos > *:nth-child(5) { animation-delay: 0.29s; }
-.grid-videos > *:nth-child(6) { animation-delay: 0.35s; }
-.grid-videos > *:nth-child(n + 7) { animation-delay: 0.4s; }
+.grid-videos > *:nth-child(1) { animation-delay: 0.04s; }
+.grid-videos > *:nth-child(2) { animation-delay: 0.09s; }
+.grid-videos > *:nth-child(3) { animation-delay: 0.14s; }
+.grid-videos > *:nth-child(4) { animation-delay: 0.19s; }
+.grid-videos > *:nth-child(5) { animation-delay: 0.24s; }
+.grid-videos > *:nth-child(6) { animation-delay: 0.29s; }
+.grid-videos > *:nth-child(n + 7) { animation-delay: 0.34s; }
 
 /* ============================================================
    components: buttons, chips, meta
@@ -208,34 +232,35 @@ button:focus-visible,
   align-items: center;
   gap: 0.5em;
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.06em;
   line-height: 1;
   color: var(--color-ink);
   background: var(--color-paper);
   border: var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-hard-sm);
-  padding: 0.7em 1.1em;
+  padding: 0.75em 1.2em;
   min-height: 2.75rem;
   text-decoration: none;
   cursor: pointer;
   transition:
     transform 0.1s ease,
     box-shadow 0.1s ease,
-    background 0.1s ease;
+    background 0.1s ease,
+    color 0.1s ease;
 }
 .btn:hover {
-  background: var(--accent);
-  color: var(--accent-ink, var(--color-ink));
+  background: var(--accent, var(--color-pink));
+  color: var(--accent-ink, var(--color-paper));
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--color-ink);
+  box-shadow: 6px 6px 0 var(--shadow-color);
   text-decoration: none;
 }
 .btn:active {
   transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--color-ink);
+  box-shadow: 1px 1px 0 var(--shadow-color);
 }
 
 .tag-chip {
@@ -249,21 +274,23 @@ button:focus-visible,
   letter-spacing: 0.04em;
   line-height: 1;
   color: var(--color-ink);
-  background: var(--color-paper);
+  background: var(--color-panel);
   border: var(--border-thin);
-  border-radius: 999px;
-  padding: 0.4em 0.8em;
+  border-radius: 0;
+  padding: 0.45em 0.8em;
   min-height: 2rem;
   text-decoration: none;
   transition:
     transform 0.1s ease,
     background 0.1s ease,
-    color 0.1s ease;
+    color 0.1s ease,
+    box-shadow 0.1s ease;
 }
 .tag-chip:hover {
-  background: var(--accent);
-  color: var(--accent-ink, var(--color-ink));
-  transform: translateY(-1px) rotate(-1.5deg);
+  background: var(--accent, var(--color-pink));
+  color: var(--accent-ink, var(--color-paper));
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--shadow-color);
   text-decoration: none;
 }
 
@@ -279,27 +306,28 @@ button:focus-visible,
 
 /* ============================================================
    motion vocabulary
-   Shared keyframes for the zine's "stuff gets slapped on paper"
-   energy. The prefers-reduced-motion block below kills all of it.
+   Shared keyframes for the "posters pasted on a wall" energy.
+   Names are stable — pages reference them — but the motion is
+   tuned to the poster look. prefers-reduced-motion kills all.
    ============================================================ */
 
-/* Sticker slap: rise from the page with a hair of rotation. */
+/* Paste-up: rises from the wall and settles flat. */
 @keyframes slap-in {
   from {
     opacity: 0;
-    transform: translateY(16px) rotate(-1deg) scale(0.97);
+    transform: translateY(14px) scale(0.98);
   }
 }
 
-/* Rubber-stamp: slams down from above, like inked type hitting paper. */
+/* Screenprint pass: slams down like a squeegee pull. */
 @keyframes stamp-in {
   0% {
     opacity: 0;
-    transform: scale(1.5) rotate(2deg);
+    transform: scale(1.4);
   }
   65% {
     opacity: 1;
-    transform: scale(0.94) rotate(-1deg);
+    transform: scale(0.96);
   }
   100% {
     opacity: 1;
@@ -307,8 +335,8 @@ button:focus-visible,
   }
 }
 
-/* Sticker wiggle: a quick shake, ends where the element's own
-   transform leaves it (use on elements without a base transform). */
+/* Sticker wiggle: a quick shake, ends at rest (use on elements
+   without a base transform). */
 @keyframes wiggle {
   20% { transform: rotate(5deg); }
   45% { transform: rotate(-4deg); }

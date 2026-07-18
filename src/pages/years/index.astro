@@ -309,9 +309,9 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
     font-family: var(--font-mono);
     font-size: 0.76rem;
     line-height: 1.45;
-    color: var(--color-ink);
+    color: var(--color-paper);
     background: var(--color-yellow);
-    border: var(--border-thin);
+    border: 2px solid var(--color-paper);
     border-left: 4px solid var(--color-pink);
     border-radius: 2px;
     box-shadow: var(--shadow-hard-sm);
@@ -351,14 +351,14 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     line-height: 1;
-    color: var(--color-ink);
+    color: var(--color-paper);
     background: var(--color-yellow);
-    border: var(--border-thin);
+    border: 2px solid var(--color-paper);
     display: inline-block;
     padding: 0.45em 0.7em;
     margin: 0 0 0.85rem;
     transform: rotate(-1.2deg);
-    box-shadow: 2px 2px 0 var(--color-ink);
+    box-shadow: 2px 2px 0 rgba(244, 236, 220, 0.35);
   }
   .month-entries {
     list-style: none;
@@ -377,7 +377,7 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
     gap: 0.85rem;
     text-decoration: none;
     color: var(--color-ink);
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: var(--border-thin);
     border-radius: var(--radius);
     padding: 0.45rem 0.7rem 0.45rem 0.55rem;
@@ -391,7 +391,7 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
     box-shadow: var(--shadow-hard-sm);
   }
   .entry:focus-visible {
-    outline: 3px solid var(--color-blue);
+    outline: 3px solid var(--color-yellow);
     outline-offset: 2px;
   }
   /* Album releases ride the same spine with a blue accent + tag. */
@@ -430,8 +430,8 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
       -45deg,
       transparent 0,
       transparent 6px,
-      rgba(22, 18, 26, 0.12) 6px,
-      rgba(22, 18, 26, 0.12) 12px
+      rgba(22, 18, 27, 0.18) 6px,
+      rgba(22, 18, 27, 0.18) 12px
     );
   }
   .entry__text {

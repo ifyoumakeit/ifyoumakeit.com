@@ -20,26 +20,26 @@ const linkProps = Tag === "a" ? { href: `/${slug}/` } : {};
     align-items: center;
     gap: 0.45em;
     font-family: var(--font-display);
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.06em;
     line-height: 1;
-    color: var(--accent-ink, var(--color-ink));
+    color: var(--accent-ink, var(--color-paper));
     background: var(--accent);
-    border: var(--border-thin);
-    border-radius: 999px;
+    border: 2px solid var(--color-paper);
+    border-radius: 0;
     padding: 0.5em 0.85em;
-    box-shadow: 3px 3px 0 var(--color-ink);
+    box-shadow: 3px 3px 0 rgba(22, 18, 27, 0.55);
     text-decoration: none;
-    transform: rotate(-2deg);
+    transform: rotate(-1.5deg);
     transition:
       transform 0.12s ease,
       box-shadow 0.12s ease;
   }
   .series-badge:hover {
     text-decoration: none;
-    transform: rotate(-2deg) translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--color-ink);
+    transform: rotate(-1.5deg) translate(-1px, -1px);
+    box-shadow: 4px 4px 0 rgba(22, 18, 27, 0.55);
   }
   .series-badge__dot {
     width: 0.55em;

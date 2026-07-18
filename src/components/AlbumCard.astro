@@ -54,10 +54,10 @@ const downloadsLabel = new Intl.NumberFormat("en-US", {
   .album-card {
     display: flex;
     flex-direction: column;
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
+    box-shadow: 6px 6px 0 var(--color-blue);
     text-decoration: none;
     color: var(--color-ink);
     overflow: hidden;
@@ -67,11 +67,11 @@ const downloadsLabel = new Intl.NumberFormat("en-US", {
   }
   .album-card:hover {
     text-decoration: none;
-    transform: translate(-3px, -3px) rotate(-0.6deg);
-    box-shadow: 9px 9px 0 var(--color-ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--color-blue);
   }
   .album-card:focus-visible {
-    outline: 3px solid var(--color-blue);
+    outline: 3px solid var(--color-yellow);
     outline-offset: 3px;
   }
   .album-card__cover {
@@ -103,15 +103,15 @@ const downloadsLabel = new Intl.NumberFormat("en-US", {
       -45deg,
       transparent 0,
       transparent 10px,
-      rgba(22, 18, 26, 0.08) 10px,
-      rgba(22, 18, 26, 0.08) 20px
+      rgba(22, 18, 27, 0.14) 10px,
+      rgba(22, 18, 27, 0.14) 20px
     );
   }
   .album-card__placeholder-mark {
     font-family: var(--font-display);
     font-size: 3rem;
     color: var(--color-paper);
-    filter: drop-shadow(2px 2px 0 var(--color-ink));
+    filter: drop-shadow(2px 2px 0 rgba(244, 236, 220, 0.5));
   }
   .album-card__downloads {
     position: absolute;
@@ -123,7 +123,7 @@ const downloadsLabel = new Intl.NumberFormat("en-US", {
     color: var(--color-ink);
     background: var(--color-paper);
     border: var(--border-thin);
-    border-radius: 999px;
+    border-radius: 0;
     padding: 0.25em 0.6em;
   }
   .album-card__body {
@@ -136,9 +136,9 @@ const downloadsLabel = new Intl.NumberFormat("en-US", {
     margin: 0;
     font-family: var(--font-display);
     text-transform: uppercase;
-    font-size: 1.1rem;
-    line-height: 0.95;
-    letter-spacing: -0.01em;
+    font-size: 1.15rem;
+    line-height: 1;
+    letter-spacing: 0.015em;
   }
   .album-card:hover .album-card__artist {
     color: var(--color-blue);

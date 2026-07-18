@@ -96,7 +96,7 @@ const thumb =
   .card {
     display: flex;
     flex-direction: column;
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-hard);
@@ -109,11 +109,11 @@ const thumb =
   }
   .card:hover {
     text-decoration: none;
-    transform: translate(-3px, -3px) rotate(-0.6deg);
-    box-shadow: 9px 9px 0 var(--color-ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--shadow-color);
   }
   .card:focus-visible {
-    outline: 3px solid var(--color-blue);
+    outline: 3px solid var(--color-yellow);
     outline-offset: 3px;
   }
 
@@ -124,6 +124,7 @@ const thumb =
     border-bottom: var(--border);
     overflow: hidden;
   }
+  /* Archive footage sits slightly faded until you reach for it. */
   .card__img {
     position: absolute;
     inset: 0;
@@ -131,10 +132,14 @@ const thumb =
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    filter: saturate(0.82) contrast(1.04);
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.25s ease;
   }
   .card:hover .card__img {
-    transform: scale(1.06) rotate(0.5deg);
+    transform: scale(1.05);
+    filter: saturate(1.08) contrast(1.02);
   }
 
   .card__placeholder {
@@ -151,15 +156,15 @@ const thumb =
         -45deg,
         transparent 0,
         transparent 10px,
-        rgba(22, 18, 26, 0.06) 10px,
-        rgba(22, 18, 26, 0.06) 20px
+        rgba(22, 18, 27, 0.12) 10px,
+        rgba(22, 18, 27, 0.12) 20px
       );
   }
   .card__placeholder-mark {
     width: 38%;
     max-width: 5rem;
     height: auto;
-    filter: drop-shadow(2px 2px 0 var(--color-ink));
+    filter: drop-shadow(2px 2px 0 rgba(22, 18, 27, 0.5));
   }
   .card__placeholder-label {
     font-family: var(--font-mono);
@@ -169,8 +174,7 @@ const thumb =
     letter-spacing: 0.12em;
     color: var(--color-ink);
     background: var(--color-paper);
-    border: var(--border-thin);
-    border-radius: 999px;
+    border: 2px solid var(--color-paper);
     padding: 0.3em 0.7em;
   }
 
@@ -191,13 +195,13 @@ const thumb =
     margin: 0;
     font-family: var(--font-display);
     text-transform: uppercase;
-    font-size: 1.15rem;
-    line-height: 0.95;
-    letter-spacing: -0.01em;
+    font-size: 1.2rem;
+    line-height: 1;
+    letter-spacing: 0.015em;
     color: var(--color-ink);
   }
   .card:hover .card__artist {
-    color: var(--color-pink-deep);
+    color: var(--accent-text, var(--color-pink-deep));
   }
   .card__title {
     margin: 0;

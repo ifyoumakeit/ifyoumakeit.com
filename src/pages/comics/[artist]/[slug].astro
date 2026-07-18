@@ -124,14 +124,16 @@ const description = `"${comicData.title}" — a punk comic strip by ${comicData.
     gap: 1.5rem;
     padding-block: 1rem 2rem;
   }
+  /* Comic scans are mostly white paper (some transparent PNGs), so the
+     panel behind them stays white regardless of the site's dark stock. */
   .comic-reader__page {
     display: block;
     width: 100%;
     height: auto;
-    background: var(--color-paper);
+    background: #fff;
     border: var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
+    box-shadow: 6px 6px 0 var(--color-yellow);
   }
 
   .related-section {

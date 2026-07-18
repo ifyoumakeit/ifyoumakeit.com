@@ -174,7 +174,7 @@ const poster =
     position: relative;
     aspect-ratio: 16 / 9;
     width: 100%;
-    background: var(--color-ink);
+    background: #000;
     border: var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-hard);
@@ -190,7 +190,7 @@ const poster =
     padding: 0;
     margin: 0;
     border: 0;
-    background: var(--color-ink);
+    background: #000;
     cursor: pointer;
     display: block;
     overflow: hidden;
@@ -214,10 +214,10 @@ const poster =
         -45deg,
         transparent 0,
         transparent 12px,
-        rgba(250, 243, 231, 0.08) 12px,
-        rgba(250, 243, 231, 0.08) 24px
+        rgba(244, 236, 220, 0.07) 12px,
+        rgba(244, 236, 220, 0.07) 24px
       ),
-      var(--color-ink);
+      var(--color-panel);
   }
   .embed__provider {
     position: absolute;
@@ -231,7 +231,7 @@ const poster =
     color: var(--color-ink);
     background: var(--color-paper);
     border: var(--border);
-    border-radius: 999px;
+    border-radius: 0;
     padding: 0.45em 0.85em;
   }
   .embed__facade:hover .embed__thumb {
@@ -248,7 +248,7 @@ const poster =
     aspect-ratio: 68 / 48;
     display: grid;
     place-items: center;
-    filter: drop-shadow(3px 3px 0 var(--color-ink));
+    filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.55));
     transition: transform 0.12s ease;
   }
   .embed__play svg {
@@ -261,7 +261,7 @@ const poster =
     stroke-width: 3;
   }
   .embed__play-tri {
-    fill: var(--color-ink);
+    fill: var(--color-paper);
   }
   .embed__facade:hover .embed__play {
     transform: translate(-50%, -50%) scale(1.08) rotate(-3deg);
@@ -282,7 +282,7 @@ const poster =
     }
   }
   .embed__facade:focus-visible {
-    outline: 4px solid var(--color-blue);
+    outline: 4px solid var(--color-yellow);
     outline-offset: -4px;
   }
 
@@ -297,13 +297,13 @@ const poster =
     gap: 1rem;
     padding: 1.5rem;
     text-align: center;
-    background: var(--color-paper);
+    background: var(--color-panel);
     background-image: repeating-linear-gradient(
       -45deg,
       transparent 0,
       transparent 12px,
-      rgba(22, 18, 26, 0.05) 12px,
-      rgba(22, 18, 26, 0.05) 24px
+      rgba(244, 236, 220, 0.05) 12px,
+      rgba(244, 236, 220, 0.05) 24px
     );
   }
   .embed__archival-thumb {

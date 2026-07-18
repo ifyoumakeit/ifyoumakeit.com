@@ -292,7 +292,7 @@ const providerRows = [...providerCounts.entries()]
   }
   .stamp {
     text-align: center;
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-hard);
@@ -403,9 +403,9 @@ const providerRows = [...providerCounts.entries()]
   }
   .bar-track {
     height: 1.5rem;
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: var(--border-thin);
-    border-radius: 999px;
+    border-radius: 0;
     overflow: hidden;
   }
   .bar-fill {
@@ -413,7 +413,6 @@ const providerRows = [...providerCounts.entries()]
     min-width: 0.5rem;
     background: var(--accent, var(--color-pink));
     border-right: var(--border-thin);
-    border-radius: 0 999px 999px 0;
     animation: grow-x 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.1s;
     transform-origin: left;
   }
@@ -477,7 +476,7 @@ const providerRows = [...providerCounts.entries()]
     border: var(--border-thin);
     border-bottom: 0;
     border-radius: var(--radius) var(--radius) 0 0;
-    box-shadow: var(--shadow-hard-sm);
+    box-shadow: 4px 0 0 rgba(255, 77, 141, 0.3);
     transition:
       transform 0.12s ease,
       background 0.12s ease;
@@ -555,9 +554,9 @@ const providerRows = [...providerCounts.entries()]
   .chart-bar-wrap {
     display: block;
     height: 0.55rem;
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: 2px solid var(--color-ink);
-    border-radius: 999px;
+    border-radius: 0;
     overflow: hidden;
   }
   .chart-bar {

@@ -36,10 +36,10 @@ const { title, href, artistName, coverFile, pageCount } = Astro.props;
   .comic-card {
     display: flex;
     flex-direction: column;
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
+    box-shadow: 6px 6px 0 var(--color-yellow);
     text-decoration: none;
     color: var(--color-ink);
     overflow: hidden;
@@ -49,8 +49,8 @@ const { title, href, artistName, coverFile, pageCount } = Astro.props;
   }
   .comic-card:hover {
     text-decoration: none;
-    transform: translate(-3px, -3px) rotate(-0.6deg);
-    box-shadow: 9px 9px 0 var(--color-ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--color-yellow);
   }
   .comic-card:focus-visible {
     outline: 3px solid var(--color-yellow);
@@ -88,7 +88,7 @@ const { title, href, artistName, coverFile, pageCount } = Astro.props;
     color: var(--color-ink);
     background: var(--color-paper);
     border: var(--border-thin);
-    border-radius: 999px;
+    border-radius: 0;
     padding: 0.25em 0.6em;
   }
   .comic-card__body {
@@ -101,12 +101,12 @@ const { title, href, artistName, coverFile, pageCount } = Astro.props;
     margin: 0;
     font-family: var(--font-display);
     text-transform: uppercase;
-    font-size: 1.1rem;
-    line-height: 0.95;
-    letter-spacing: -0.01em;
+    font-size: 1.15rem;
+    line-height: 1;
+    letter-spacing: 0.015em;
   }
   .comic-card:hover .comic-card__artist {
-    color: var(--color-pink-deep);
+    color: var(--color-yellow);
   }
   .comic-card__title {
     margin: 0;

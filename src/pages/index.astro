@@ -409,7 +409,7 @@ function formatDate(d: Date) {
     box-shadow: var(--shadow-hard);
     border-radius: var(--radius);
     overflow: hidden;
-    background: var(--color-paper);
+    background: var(--color-panel);
   }
   .featured {
     padding-block: 1.5rem 0;
@@ -426,8 +426,8 @@ function formatDate(d: Date) {
     align-items: center;
     border: var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
-    background: var(--color-yellow);
+    box-shadow: 6px 6px 0 var(--color-yellow);
+    background: var(--color-panel);
     padding: clamp(1.25rem, 3vw, 2rem);
     animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.3s;
   }
@@ -527,18 +527,19 @@ function formatDate(d: Date) {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--color-ink);
+    color: var(--accent-ink, var(--color-paper));
     background: var(--accent, var(--color-pink));
-    border: var(--border-thin);
-    border-radius: 999px;
+    border: 2px solid var(--color-paper);
     padding: 0.35em 0.75em;
     transform: rotate(-1.5deg);
+    box-shadow: 2px 2px 0 rgba(22, 18, 27, 0.55);
   }
   .featured-artist {
     font-family: var(--font-display);
     font-size: clamp(1.5rem, 2.5vw, 2.4rem);
     line-height: 1;
     margin: 0 0 0.65rem;
+    text-shadow: 3px 3px 0 color-mix(in srgb, var(--accent, var(--color-pink)) 55%, transparent);
   }
   .featured-artist a,
   .featured-song a {
