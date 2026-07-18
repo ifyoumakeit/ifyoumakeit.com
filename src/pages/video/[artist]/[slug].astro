@@ -445,15 +445,23 @@ function videoCard(v: typeof videoData) {
     color: var(--accent-text, var(--color-pink-deep));
   }
 
+  /* Mobile: two full-width rows, both left-aligned so the pair reads as
+     one clean list, split by a hairline. */
   @media (max-width: 560px) {
     .prev-next-inner {
       flex-direction: column;
+      gap: 0;
     }
     .prev-next-link {
       max-width: 100%;
+      padding-block: 0.9rem;
     }
     .next-link {
-      align-self: flex-end;
+      text-align: left;
+      margin-inline-start: 0;
+    }
+    .prev-next-link + .prev-next-link {
+      border-top: 1px solid var(--color-line);
     }
   }
 </style>
