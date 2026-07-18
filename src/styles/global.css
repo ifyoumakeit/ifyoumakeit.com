@@ -15,25 +15,39 @@
 :root {
   color-scheme: dark;
 
-  /* --- palette --- */
-  --color-paper: #0b0b0d;
-  --color-panel: #17171b;
-  --color-ink: #f4f2ee;
+  /* --- palette: violet-black night, neon signals --- */
+  --color-paper: #0d0a13;
+  --color-panel: #171126;
+  --color-ink: #f4f1f5;
   --color-pink: #ff4d8d;
   --color-pink-deep: #ff7fae; /* emphasis/hover pink, bright on dark */
-  --color-blue: #5aa7ff;
+  --color-blue: #4dc9f0;
+  --color-violet: #a78bfa;
   --color-yellow: #ffd23f;
-  --color-muted: #98939e;
-  --color-line: rgba(244, 242, 238, 0.16);
+  --color-muted: #9c92ad;
+  --color-line: rgba(240, 235, 245, 0.15);
   /* Text on bright accent fills (pink/yellow/blue). Dark in BOTH themes. */
-  --on-accent: #0b0b0d;
-  /* Faint screen glow at the top of the house, plus barely-there color
-     washes that drift past as you scroll (the gradients are sized to the
-     full page, so scroll position moves through them). */
-  --glow: rgba(244, 242, 238, 0.05);
-  --drift-pink: rgba(255, 77, 141, 0.05);
-  --drift-blue: rgba(90, 167, 255, 0.045);
-  --tone-mid: #110f15;
+  --on-accent: #0d0a13;
+  /* Neon smoke: a screen glow at the top of the house plus color washes
+     that drift past as you scroll (the gradients are sized to the full
+     page, so scroll position moves through them). */
+  --glow: rgba(215, 136, 232, 0.07);
+  --drift-violet: rgba(167, 139, 250, 0.1);
+  --drift-pink: rgba(255, 77, 141, 0.07);
+  --drift-blue: rgba(77, 201, 240, 0.05);
+  --tone-mid: #141021;
+  /* Neon halo for big display type — tinted by the section accent. */
+  --halo-alpha: 45%;
+  --halo: 0 0 34px
+    color-mix(
+      in srgb,
+      var(--accent, var(--color-pink)) var(--halo-alpha),
+      transparent
+    );
+  /* The TV glow: orchid light spilling off the video stages. */
+  --tv-glow:
+    0 0 70px -8px color-mix(in srgb, var(--color-pink) 30%, transparent),
+    0 0 160px -12px color-mix(in srgb, var(--color-violet) 34%, transparent);
 
   /* --- type --- */
   --font-display: "Anton", "Arial Narrow", "Archivo Black", system-ui,
@@ -64,20 +78,27 @@
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --color-paper: #f8f7f4;
+  --color-paper: #f8f6f5;
   --color-panel: #ffffff;
-  --color-ink: #141318;
+  --color-ink: #16121c;
   --color-pink-deep: #d81b60; /* emphasis/hover pink, deep on light */
-  --color-blue: #1f6fd6;
-  --color-muted: #6f6b76;
-  --color-line: rgba(20, 19, 24, 0.16);
-  --glow: rgba(20, 19, 24, 0.04);
-  --drift-pink: rgba(216, 27, 96, 0.035);
-  --drift-blue: rgba(31, 111, 214, 0.03);
-  --tone-mid: #f2f0ea;
+  --color-blue: #0e87b8;
+  --color-violet: #7c5cd6;
+  --color-muted: #6f6a79;
+  --color-line: rgba(22, 18, 28, 0.16);
+  --glow: rgba(22, 18, 28, 0.04);
+  --drift-pink: rgba(216, 27, 96, 0.05);
+  --drift-violet: rgba(124, 92, 214, 0.045);
+  --drift-blue: rgba(14, 135, 184, 0.04);
+  --tone-mid: #f1eeee;
+  /* Daylight: the neon reads as a soft pastel bloom, not a glow. */
+  --halo-alpha: 16%;
+  --tv-glow:
+    0 0 60px -10px color-mix(in srgb, var(--color-pink) 16%, transparent),
+    0 0 120px -14px color-mix(in srgb, var(--color-blue) 12%, transparent);
 
-  --shadow-hard: 0 18px 50px -18px rgba(20, 19, 24, 0.22);
-  --shadow-hard-sm: 0 10px 28px -12px rgba(20, 19, 24, 0.15);
+  --shadow-hard: 0 18px 50px -18px rgba(22, 18, 28, 0.22);
+  --shadow-hard-sm: 0 10px 28px -12px rgba(22, 18, 28, 0.15);
 }
 
 /* Series accent theming via data attribute.
@@ -129,19 +150,25 @@ body {
   line-height: 1.6;
   color: var(--color-ink);
   background-color: var(--color-paper);
-  /* A faint screen-glow at the top of the room, then slow tonal drift
-     down the page: a pink wash high, a blue wash low, and a gentle
-     mid-scroll lift. All percentage-positioned against the full document
-     height, so long scrolls pass through them slowly. */
+  /* Neon smoke: a screen-glow at the top of the room, then slow drift
+     down the page — violet smoke high, a pink breath mid, a cool blue
+     wisp low, and a gentle mid-scroll lift. All percentage-positioned
+     against the full document height, so long scrolls pass through
+     them slowly. */
   background-image:
     radial-gradient(ellipse 90% 40% at 50% -5%, var(--glow), transparent 70%),
     radial-gradient(
-      ellipse 75% 22% at 10% 30%,
+      ellipse 80% 24% at 8% 26%,
+      var(--drift-violet),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 70% 20% at 92% 52%,
       var(--drift-pink),
       transparent 70%
     ),
     radial-gradient(
-      ellipse 75% 22% at 90% 72%,
+      ellipse 75% 20% at 12% 80%,
       var(--drift-blue),
       transparent 70%
     ),
@@ -181,6 +208,8 @@ h3 {
 
 h1 {
   font-size: clamp(2.8rem, 8vw, 6rem);
+  /* Big type carries a soft neon halo in the section accent. */
+  text-shadow: var(--halo);
 }
 h2 {
   font-size: clamp(1.7rem, 4vw, 2.75rem);
@@ -288,6 +317,8 @@ input:focus-visible,
 .btn:hover {
   color: var(--color-pink-deep);
   border-color: var(--color-pink);
+  box-shadow: 0 0 24px -6px
+    color-mix(in srgb, var(--color-pink) 55%, transparent);
   text-decoration: none;
 }
 
@@ -315,6 +346,8 @@ input:focus-visible,
 .tag-chip:hover {
   color: var(--color-pink-deep);
   border-color: var(--color-pink);
+  box-shadow: 0 0 20px -6px
+    color-mix(in srgb, var(--color-pink) 50%, transparent);
   text-decoration: none;
 }
 

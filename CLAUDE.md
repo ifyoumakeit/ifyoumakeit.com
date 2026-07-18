@@ -131,11 +131,13 @@ plus prev/next within the series by `recorded_at`. Keep this when editing
 
 ## Design system
 
-Cinematic screening room: near-black house, true-black stages behind every
-video player, crisp type at generous sizes, hairline chrome, hot-pink couch
-accent. No boxes-on-boxes, no rotations, no hard offset shadows — the
-typography and the footage carry the design. The contract lives in
-`src/styles/global.css`:
+Cinematic screening room with a neon "TV glow" atmosphere (à la *I Saw the
+TV Glow*): violet-black house, true-black stages where the video player is
+the light source (orchid bloom + `--tv-glow` spill), soft neon halos on big
+display type, drifting violet/pink/blue smoke washes down the page, crisp
+type at generous sizes, hairline chrome, hot-pink couch accent. No
+boxes-on-boxes, no rotations, no hard offset shadows — typography, footage,
+and light carry the design. The contract lives in `src/styles/global.css`:
 
 - Tokens: `--color-paper` (#0B0B0D — the page background), `--color-panel`
   (#17171B — raised surface), `--color-ink` (#F4F2EE — crisp off-white

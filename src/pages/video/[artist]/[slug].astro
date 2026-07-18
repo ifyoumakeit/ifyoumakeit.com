@@ -317,7 +317,15 @@ function videoCard(v: typeof videoData) {
   .video-stage {
     display: grid;
     place-items: center;
-    background: #000;
+    /* The room is black; the screen is the light source. */
+    background:
+      radial-gradient(
+        ellipse 62% 58% at 50% 52%,
+        rgba(215, 136, 232, 0.12),
+        rgba(167, 139, 250, 0.05) 55%,
+        transparent 75%
+      ),
+      #000;
     padding: clamp(1.25rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
   }
   .video-top {
@@ -326,7 +334,7 @@ function videoCard(v: typeof videoData) {
     max-width: 1720px;
   }
   .video-top :global(.embed) {
-    box-shadow: none;
+    box-shadow: var(--tv-glow);
   }
   /* Centered title card, mirroring the homepage screening pattern. */
   .video-meta {

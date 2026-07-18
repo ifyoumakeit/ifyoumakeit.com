@@ -390,11 +390,16 @@ const staticNavLinks: {
         height: auto;
         flex: none;
         color: var(--color-pink);
+        /* Lit like a small neon sign over the door. */
+        filter: drop-shadow(0 0 8px rgba(255, 77, 141, 0.55));
         transform-origin: bottom center;
-        transition: color 0.12s ease;
+        transition:
+          color 0.12s ease,
+          filter 0.12s ease;
       }
       .wordmark:hover .wordmark__mark {
         color: var(--color-pink-deep);
+        filter: drop-shadow(0 0 12px rgba(255, 77, 141, 0.75));
       }
       /* The couch squishes like someone just flopped onto it. */
       .wordmark:hover .wordmark__mark {
@@ -461,6 +466,7 @@ const staticNavLinks: {
       .site-nav__link[aria-current="page"] {
         color: var(--color-pink-deep);
         border-bottom-color: var(--color-pink);
+        text-shadow: 0 0 14px rgba(255, 77, 141, 0.5);
       }
 
       /* ---------- icon cluster: random / search / theme ---------- */

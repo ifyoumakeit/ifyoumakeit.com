@@ -19,12 +19,12 @@ const MONO = b64(
   "node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2",
 );
 
-const BLACK = "#0b0b0d";
-const INK = "#f4f2ee";
+const BLACK = "#0b0810";
+const INK = "#f4f1f5";
 const PINK = "#ff4d8d";
-const BLUE = "#5aa7ff";
+const BLUE = "#4dc9f0";
 const YELLOW = "#ffd23f";
-const MUTED = "#98939e";
+const MUTED = "#9c92ad";
 
 const ACCENTS = {
   pink: PINK,
@@ -54,12 +54,14 @@ function cardHtml(v) {
     html,body{width:1200px;height:630px}
     body{
       background:${BLACK};
-      background-image:radial-gradient(ellipse 90% 55% at 50% -8%, rgba(244,242,238,0.07), transparent 70%);
+      background-image:
+        radial-gradient(ellipse 70% 90% at 78% 50%, rgba(215,136,232,0.16), rgba(167,139,250,0.07) 55%, transparent 75%),
+        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(244,241,245,0.06), transparent 70%);
       display:flex;align-items:center;font-synthesis:none}
     .card{padding:0 96px;width:100%}
-    .rule{width:120px;height:8px;background:${accent};margin-bottom:34px}
-    .kicker{font-family:"Space Mono",monospace;font-weight:700;font-size:30px;color:${accent};text-transform:uppercase;letter-spacing:0.3em;margin-bottom:20px}
-    .title{font-family:"Anton",sans-serif;font-size:${titleSize}px;line-height:0.98;letter-spacing:0.01em;color:${INK};text-transform:uppercase}
+    .rule{width:120px;height:8px;background:${accent};box-shadow:0 0 28px ${accent};margin-bottom:34px}
+    .kicker{font-family:"Space Mono",monospace;font-weight:700;font-size:30px;color:${accent};text-transform:uppercase;letter-spacing:0.3em;margin-bottom:20px;text-shadow:0 0 24px ${accent}90}
+    .title{font-family:"Anton",sans-serif;font-size:${titleSize}px;line-height:0.98;letter-spacing:0.01em;color:${INK};text-transform:uppercase;text-shadow:0 0 60px ${accent}b0}
     .est{font-family:"Anton",sans-serif;font-size:42px;color:${accent};text-transform:uppercase;letter-spacing:0.02em;margin-top:22px}
     .tag{font-family:"Space Mono",monospace;font-weight:700;font-size:28px;color:${MUTED};text-transform:uppercase;letter-spacing:0.08em;margin-top:32px}
   </style></head><body>

@@ -325,7 +325,16 @@ function formatDate(d: Date) {
     --stage-pad: clamp(1rem, 3vh, 2.5rem);
     display: grid;
     place-items: center;
-    background: #000;
+    /* The room is black; the screen is the light source — a soft orchid
+       bloom radiates from behind the player. */
+    background:
+      radial-gradient(
+        ellipse 62% 58% at 50% 52%,
+        rgba(215, 136, 232, 0.12),
+        rgba(167, 139, 250, 0.05) 55%,
+        transparent 75%
+      ),
+      #000;
     /* Fill the viewport when the video can use the height; when width is
        the limiting factor (tall/narrow screens), hug the video instead of
        leaving an empty black room. */
@@ -350,7 +359,7 @@ function formatDate(d: Date) {
     margin-inline: auto;
   }
   .featured-player :global(.embed) {
-    box-shadow: none;
+    box-shadow: var(--tv-glow);
   }
   @media (max-width: 560px) {
     .featured-stage {
