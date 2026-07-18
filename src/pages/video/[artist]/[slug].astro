@@ -208,7 +208,7 @@ function videoCard(v: typeof videoData) {
 >
   <article class="video-page" data-series={seriesData.slug}>
     <div class="video-stage">
-      <div class="container video-top">
+      <div class="video-top">
         <VideoEmbed
           provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
           providerId={videoData.provider_id}
@@ -311,20 +311,28 @@ function videoCard(v: typeof videoData) {
 </Layout>
 
 <style>
-  /* Full-bleed screening room behind the player. */
+  /* Full-bleed screening room behind the player — the player takes as
+     much of the viewport as its 16:9 frame allows, leaving a sliver
+     below for the title to peek and invite the scroll. */
   .video-stage {
+    display: grid;
+    place-items: center;
     background: #000;
-    padding-block: clamp(1.25rem, 4vw, 3rem);
+    padding: clamp(1.25rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
   }
   .video-top {
-    padding-block: 0;
+    width: min(100%, calc((100vh - 12rem) * 16 / 9));
+    width: min(100%, calc((100svh - 12rem) * 16 / 9));
+    max-width: 1720px;
   }
   .video-top :global(.embed) {
     box-shadow: none;
   }
+  /* Centered title card, mirroring the homepage screening pattern. */
   .video-meta {
     padding-block: clamp(1.75rem, 4vw, 2.75rem) 2.25rem;
     border-bottom: var(--border);
+    text-align: center;
   }
   .video-title {
     font-family: var(--font-display);
@@ -332,11 +340,13 @@ function videoCard(v: typeof videoData) {
     margin: 0 0 0.4rem;
   }
   .video-badges {
-    margin-block: 0.75rem;
+    margin-block: 0.9rem;
+    display: flex;
+    justify-content: center;
   }
   /* Short blurbs, big type. */
   .video-description {
-    margin-block: 1.25rem;
+    margin: 1.25rem auto;
     max-width: 58ch;
     font-size: clamp(1.1rem, 1.7vw, 1.3rem);
     line-height: 1.55;
@@ -362,6 +372,9 @@ function videoCard(v: typeof videoData) {
   }
   .setlist {
     margin-block: 1.25rem;
+    /* Centered block, left-read list. */
+    display: inline-block;
+    text-align: left;
   }
   .setlist-heading {
     font-family: var(--font-display);
@@ -379,6 +392,7 @@ function videoCard(v: typeof videoData) {
   .video-tags {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.4rem;
     margin-block-start: 1rem;
   }

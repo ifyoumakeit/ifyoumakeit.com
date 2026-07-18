@@ -394,13 +394,13 @@ function videoThumb(v: (typeof allVideos)[number]): string | null {
   }
   .entry__thumb {
     flex: none;
-    width: 5.25rem;
+    width: clamp(5.5rem, 12vw, 8rem);
     aspect-ratio: 16 / 9;
     height: auto;
     object-fit: cover;
     border: var(--border-thin);
-    border-radius: 2px;
-    background: var(--accent, var(--color-pink));
+    border-radius: 4px;
+    background: #101013;
   }
   .entry__thumb--empty {
     display: block;

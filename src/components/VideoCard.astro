@@ -78,6 +78,7 @@ const thumb =
         </div>
       )
     }
+    <span class="card__play" aria-hidden="true"></span>
     {showBadge && (
       <span class="card__badge">
         <SeriesBadge title={seriesTitle} slug={seriesSlug} as="span" />
@@ -87,8 +88,9 @@ const thumb =
 
   <div class="card__body">
     <p class="card__artist">{artistName}</p>
-    <p class="card__title">{title}</p>
-    <p class="meta-line card__year">{year}</p>
+    <p class="card__title">
+      {title}<span class="card__year"> · {year}</span>
+    </p>
   </div>
 </a>
 
@@ -161,6 +163,57 @@ const thumb =
     color: rgba(244, 242, 238, 0.7);
   }
 
+  /* Hover play cue: the still darkens a touch and a pink play mark
+     fades up — the card reads as a video, not a photo. */
+  .card__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 1;
+  }
+  .card__play::before,
+  .card__play::after {
+    content: "";
+    grid-area: 1 / 1;
+    place-self: center;
+  }
+  .card__play::before {
+    width: 3.1rem;
+    height: 3.1rem;
+    border-radius: 999px;
+    background: var(--color-pink);
+    transform: scale(0.85);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card__play::after {
+    width: 0;
+    height: 0;
+    border-left: 0.85rem solid var(--on-accent);
+    border-top: 0.55rem solid transparent;
+    border-bottom: 0.55rem solid transparent;
+    margin-left: 0.2rem;
+    /* The circle's transform makes it a stacking context that paints over
+       plain grid items — lift the triangle above it. */
+    z-index: 1;
+  }
+  .card:hover .card__play,
+  .card:focus-visible .card__play {
+    opacity: 1;
+  }
+  .card:hover .card__play::before {
+    transform: scale(1);
+  }
+  @media (hover: none) {
+    /* No hover on touch — keep stills clean rather than half-triggered. */
+    .card__play {
+      display: none;
+    }
+  }
+
   .card__badge {
     position: absolute;
     left: 0.7rem;
@@ -194,6 +247,8 @@ const thumb =
     color: var(--color-muted);
   }
   .card__year {
-    margin: 0.2rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    white-space: nowrap;
   }
 </style>

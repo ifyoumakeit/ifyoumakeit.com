@@ -214,10 +214,12 @@ input:focus-visible,
   padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
 
+/* Stills lead — columns stay wide so the footage reads from across
+   the room (3-up at full container width). */
 .grid-videos {
   display: grid;
-  gap: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 2.5vw, 1.75rem);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1.75rem, 3.5vw, 2.5rem) clamp(1.25rem, 2.5vw, 1.75rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
 }
 
 /* Stills fade up as the reel starts — quiet, staggered. */

@@ -45,8 +45,9 @@ const downloadsLabel = new Intl.NumberFormat("en-US", {
   </div>
   <div class="album-card__body">
     <p class="album-card__artist">{artistName}</p>
-    <p class="album-card__title">{title}</p>
-    <p class="meta-line album-card__year">{year}</p>
+    <p class="album-card__title">
+      {title}<span class="album-card__year"> · {year}</span>
+    </p>
   </div>
 </a>
 
@@ -142,6 +143,8 @@ const downloadsLabel = new Intl.NumberFormat("en-US", {
     color: var(--color-muted);
   }
   .album-card__year {
-    margin: 0.2rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    white-space: nowrap;
   }
 </style>
