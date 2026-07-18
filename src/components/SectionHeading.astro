@@ -34,47 +34,21 @@ const { title, href, count } = Astro.props;
 
   .section-heading__title {
     display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    align-items: baseline;
+    gap: 0.6rem;
     margin: 0;
     line-height: 0.96;
-    /* Off-register second print pass in the section accent. */
-    text-shadow: 3px 3px 0 color-mix(in srgb, var(--accent, var(--color-pink)) 55%, transparent);
   }
 
+  /* Count reads like a film-can index number, not a sticker. */
   .section-heading__count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.6em;
-    height: 1.6em;
-    padding: 0 0.4em;
     font-family: var(--font-mono);
     font-weight: 700;
-    font-size: 0.5em;
+    font-size: 0.42em;
     line-height: 1;
-    text-shadow: none;
-    color: var(--accent-ink, var(--color-paper));
-    background: var(--accent, var(--color-pink));
-    border: 2px solid var(--color-paper);
-    border-radius: 999px;
-    box-shadow: 2px 2px 0 rgba(22, 18, 27, 0.55);
-    transform: rotate(4deg) translateY(-0.35em);
-  }
-  /* Sticker shake when the section catches your cursor. */
-  .section-heading:hover .section-heading__count {
-    animation: count-wiggle 0.45s ease;
-  }
-  @keyframes count-wiggle {
-    30% {
-      transform: rotate(13deg) translateY(-0.45em);
-    }
-    60% {
-      transform: rotate(-4deg) translateY(-0.3em);
-    }
-    100% {
-      transform: rotate(4deg) translateY(-0.35em);
-    }
+    letter-spacing: 0.08em;
+    color: var(--accent-text, var(--color-pink-deep));
+    transform: translateY(-0.15em);
   }
 
   .section-heading__link {
@@ -82,34 +56,19 @@ const { title, href, count } = Astro.props;
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
-    font-family: var(--font-display);
-    font-size: 0.82rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.78rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.12em;
     line-height: 1;
-    color: var(--color-ink);
-    background: var(--color-paper);
-    border: var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-hard-sm);
-    padding: 0.6em 1em;
+    color: var(--color-muted);
     text-decoration: none;
     white-space: nowrap;
-    transition:
-      transform 0.1s ease,
-      box-shadow 0.1s ease,
-      background 0.1s ease,
-      color 0.1s ease;
+    transition: color 0.12s ease;
   }
   .section-heading__link:hover {
-    background: var(--accent, var(--color-pink));
-    color: var(--accent-ink, var(--color-paper));
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 var(--shadow-color);
+    color: var(--accent-text, var(--color-pink-deep));
     text-decoration: none;
-  }
-  .section-heading__link:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--shadow-color);
   }
 </style>

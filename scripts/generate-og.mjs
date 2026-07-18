@@ -1,5 +1,5 @@
-// Generate the Open Graph images (public/og-*.png) in the site's dark
-// gig-poster style, using the REAL self-hosted fonts (Anton + Space Mono)
+// Generate the Open Graph images (public/og-*.png) in the site's cinematic
+// screening-room style, using the REAL self-hosted fonts (Anton + Space Mono)
 // rather than SVG-rasterizer fallbacks. One default card plus an
 // accent-themed card per section. Rendered headless via Playwright at
 // 1200x630 @2x (2400x1260).
@@ -19,13 +19,12 @@ const MONO = b64(
   "node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2",
 );
 
-const PAPER = "#16121b";
-const PANEL = "#201a29";
-const INK = "#f4ecdc";
+const BLACK = "#0b0b0d";
+const INK = "#f4f2ee";
 const PINK = "#ff4d8d";
-const BLUE = "#4da3ff";
+const BLUE = "#5aa7ff";
 const YELLOW = "#ffd23f";
-const MUTED = "#a99db5";
+const MUTED = "#98939e";
 
 const ACCENTS = {
   pink: PINK,
@@ -46,7 +45,7 @@ const VARIANTS = [
 
 function cardHtml(v) {
   const accent = ACCENTS[v.color];
-  const titleSize = v.title.length > 1 ? 118 : 158;
+  const titleSize = v.title.length > 1 ? 148 : 190;
   const nbsp = (s) => s.replace(/ /g, "&nbsp;");
   return `<!doctype html><html><head><meta charset="utf-8"><style>
     @font-face { font-family:"Anton"; src:url(data:font/woff2;base64,${ANTON}) format("woff2"); font-weight:400; font-display:block; }
@@ -54,20 +53,18 @@ function cardHtml(v) {
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{width:1200px;height:630px}
     body{
-      background:${PAPER};
-      background-image:
-        radial-gradient(ellipse at 18% 6%, rgba(255,77,141,0.1) 0, transparent 45%),
-        radial-gradient(ellipse at 85% 85%, rgba(77,163,255,0.08) 0, transparent 48%),
-        radial-gradient(circle, rgba(244,236,220,0.05) 1.5px, transparent 2.2px);
-      background-size:auto,auto,26px 26px;
-      display:flex;align-items:center;justify-content:center;font-synthesis:none}
-    .card{width:1020px;background:${PANEL};border:9px solid ${INK};border-radius:3px;box-shadow:22px 22px 0 ${accent};padding:56px 64px 52px}
-    .kicker{font-family:"Space Mono",monospace;font-weight:700;font-size:34px;color:${accent};text-transform:uppercase;letter-spacing:0.14em;margin-bottom:18px}
-    .title{font-family:"Anton",sans-serif;font-size:${titleSize}px;line-height:0.98;letter-spacing:0.01em;color:${INK};text-transform:uppercase;text-shadow:6px 6px 0 ${accent}99}
-    .est{font-family:"Anton",sans-serif;font-size:44px;color:${accent};text-transform:uppercase;letter-spacing:0.02em;margin-top:20px}
-    .tag{font-family:"Space Mono",monospace;font-weight:700;font-size:30px;color:${MUTED};text-transform:uppercase;letter-spacing:0.04em;margin-top:30px}
+      background:${BLACK};
+      background-image:radial-gradient(ellipse 90% 55% at 50% -8%, rgba(244,242,238,0.07), transparent 70%);
+      display:flex;align-items:center;font-synthesis:none}
+    .card{padding:0 96px;width:100%}
+    .rule{width:120px;height:8px;background:${accent};margin-bottom:34px}
+    .kicker{font-family:"Space Mono",monospace;font-weight:700;font-size:30px;color:${accent};text-transform:uppercase;letter-spacing:0.3em;margin-bottom:20px}
+    .title{font-family:"Anton",sans-serif;font-size:${titleSize}px;line-height:0.98;letter-spacing:0.01em;color:${INK};text-transform:uppercase}
+    .est{font-family:"Anton",sans-serif;font-size:42px;color:${accent};text-transform:uppercase;letter-spacing:0.02em;margin-top:22px}
+    .tag{font-family:"Space Mono",monospace;font-weight:700;font-size:28px;color:${MUTED};text-transform:uppercase;letter-spacing:0.08em;margin-top:32px}
   </style></head><body>
     <div class="card">
+      <div class="rule"></div>
       ${v.kicker ? `<div class="kicker">${nbsp(v.kicker)}</div>` : ""}
       <div class="title">${v.title.map(nbsp).join("<br>")}</div>
       ${v.est ? `<div class="est">${nbsp(v.est)}</div>` : ""}

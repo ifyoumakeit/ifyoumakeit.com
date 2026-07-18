@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" rx="8" fill="#16121B"/>
-  <g stroke="#F4ECDC" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+  <rect width="64" height="64" rx="8" fill="#0B0B0D"/>
+  <g stroke="#F4F2EE" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
     <!-- couch backrest -->
     <rect x="10" y="22" width="44" height="16" rx="6" fill="#FF4D8D"/>
     <!-- seat / base -->

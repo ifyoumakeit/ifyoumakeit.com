@@ -207,13 +207,15 @@ function videoCard(v: typeof videoData) {
   structuredData={videoStructuredData}
 >
   <article class="video-page" data-series={seriesData.slug}>
-    <div class="container video-top">
-      <VideoEmbed
-        provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
-        providerId={videoData.provider_id}
-        title={videoData.title}
-        thumbnail={localThumbnail}
-      />
+    <div class="video-stage">
+      <div class="container video-top">
+        <VideoEmbed
+          provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
+          providerId={videoData.provider_id}
+          title={videoData.title}
+          thumbnail={localThumbnail}
+        />
+      </div>
     </div>
 
     <div class="container video-meta">
@@ -309,25 +311,35 @@ function videoCard(v: typeof videoData) {
 </Layout>
 
 <style>
+  /* Full-bleed screening room behind the player. */
+  .video-stage {
+    background: #000;
+    padding-block: clamp(1.25rem, 4vw, 3rem);
+  }
   .video-top {
-    padding-block: 1.5rem 0;
+    padding-block: 0;
+  }
+  .video-top :global(.embed) {
+    box-shadow: none;
   }
   .video-meta {
-    padding-block: 1.25rem 2rem;
+    padding-block: clamp(1.75rem, 4vw, 2.75rem) 2.25rem;
     border-bottom: var(--border);
   }
   .video-title {
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, 4vw, 2.8rem);
-    margin: 0 0 0.35rem;
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    margin: 0 0 0.4rem;
   }
   .video-badges {
-    margin-block: 0.5rem;
+    margin-block: 0.75rem;
   }
+  /* Short blurbs, big type. */
   .video-description {
-    margin-block: 1rem;
-    max-width: 65ch;
-    line-height: 1.6;
+    margin-block: 1.25rem;
+    max-width: 58ch;
+    font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+    line-height: 1.55;
   }
   .video-description p {
     margin: 0 0 0.75rem;

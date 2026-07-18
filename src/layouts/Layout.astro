@@ -136,7 +136,7 @@ const staticNavLinks: {
     <title>{documentTitle}</title>
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
-    <meta name="theme-color" content="#16121B" id="meta-theme-color" />
+    <meta name="theme-color" content="#0B0B0D" id="meta-theme-color" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonicalUrl} />
     {preloadFonts.map((href) => (
@@ -332,7 +332,7 @@ const staticNavLinks: {
         } catch {}
         document
           .getElementById("meta-theme-color")
-          ?.setAttribute("content", next === "light" ? "#FAF3E7" : "#16121B");
+          ?.setAttribute("content", next === "light" ? "#F8F7F4" : "#0B0B0D");
       });
     </script>
 
@@ -359,12 +359,10 @@ const staticNavLinks: {
         outline: none;
       }
 
-      /* ---------- header: the marquee ---------- */
+      /* ---------- header: the lobby ---------- */
       .site-header {
         background: var(--color-paper);
         border-bottom: var(--border);
-        /* A thin pink misprint line under the cream rule. */
-        box-shadow: 0 3px 0 var(--color-pink);
       }
       .site-header__inner {
         display: flex;
@@ -388,7 +386,6 @@ const staticNavLinks: {
         width: 2.7rem;
         height: auto;
         flex: none;
-        filter: drop-shadow(2px 2px 0 rgba(255, 77, 141, 0.55));
         transform-origin: bottom center;
       }
       /* The couch squishes like someone just flopped onto it. */
@@ -410,12 +407,10 @@ const staticNavLinks: {
         line-height: 1;
         letter-spacing: 0.02em;
         white-space: nowrap;
-        transition: text-shadow 0.12s ease;
+        transition: color 0.12s ease;
       }
       .wordmark:hover .wordmark__text {
-        text-shadow:
-          2px 2px 0 var(--color-pink),
-          4px 4px 0 var(--color-blue);
+        color: var(--color-pink-deep);
       }
 
       /* ---------- nav: the set list ---------- */
@@ -437,18 +432,17 @@ const staticNavLinks: {
       .site-nav__link {
         font-family: var(--font-mono);
         font-weight: 700;
-        font-size: 0.72rem;
+        font-size: 0.74rem;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
         line-height: 1;
         color: var(--color-muted);
         text-decoration: none;
-        padding: 0.55em 0.6em;
-        border-bottom: 3px solid transparent;
+        padding: 0.6em 0.65em;
+        border-bottom: 2px solid transparent;
         transition:
           color 0.1s ease,
-          border-color 0.1s ease,
-          background 0.1s ease;
+          border-color 0.1s ease;
       }
       .site-nav__link:hover {
         color: var(--color-ink);
@@ -457,8 +451,7 @@ const staticNavLinks: {
       }
       .site-nav__link[data-active],
       .site-nav__link[aria-current="page"] {
-        color: var(--on-accent);
-        background: var(--color-pink);
+        color: var(--color-pink-deep);
         border-bottom-color: var(--color-pink);
       }
 
@@ -569,24 +562,22 @@ const staticNavLinks: {
         }
       }
 
-      /* ---------- footer: the back of the flyer ---------- */
+      /* ---------- footer: the end credits ---------- */
       .site-footer {
         margin-top: clamp(3rem, 8vw, 6rem);
         border-top: var(--border);
-        box-shadow: 0 -3px 0 var(--color-pink);
-        background: var(--color-panel);
+        background: var(--color-paper);
         color: var(--color-ink);
-        padding-block: clamp(2rem, 5vw, 3.5rem);
+        padding-block: clamp(2.5rem, 6vw, 4.5rem);
       }
       .site-footer__tagline {
         font-family: var(--font-display);
         text-transform: uppercase;
-        font-size: clamp(1.4rem, 4vw, 2.4rem);
+        font-size: clamp(1.6rem, 4.5vw, 3rem);
         line-height: 1.02;
         letter-spacing: 0.015em;
-        margin: 0 0 1.4rem;
+        margin: 0 0 1.6rem;
         max-width: 24ch;
-        text-shadow: 3px 3px 0 rgba(255, 77, 141, 0.45);
       }
       .site-footer__nav {
         display: flex;

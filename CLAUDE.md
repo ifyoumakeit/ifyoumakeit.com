@@ -131,37 +131,42 @@ plus prev/next within the series by `recorded_at`. Keep this when editing
 
 ## Design system
 
-Basement-show gig poster: black stock, cream screenprint ink, hot-pink couch
-accent, off-register "misprint" shadows. The contract lives in
+Cinematic screening room: near-black house, true-black stages behind every
+video player, crisp type at generous sizes, hairline chrome, hot-pink couch
+accent. No boxes-on-boxes, no rotations, no hard offset shadows — the
+typography and the footage carry the design. The contract lives in
 `src/styles/global.css`:
 
-- Tokens: `--color-paper` (#16121B — the dark page/surface stock),
-  `--color-panel` (#201A29 — raised card surface), `--color-ink` (#F4ECDC —
-  cream text/borders), `--color-pink` (#FF4D8D), `--color-pink-deep` (#FF85AF,
-  bright emphasis/hover pink), `--color-blue`, `--color-yellow`,
-  `--color-muted`, `--font-display` (Anton), `--font-body` (Archivo Variable),
-  `--font-mono` (Space Mono), `--border` (3px solid ink), `--shadow-hard`
-  (hard offset in the section accent — the misprint), `--radius`.
-  Note the semantics: *paper = background* (now near-black), *ink =
-  foreground* (now cream) — like white ink screenprinted on black stock.
-- **Two themes.** Dark is the default; `html[data-theme="light"]` reprints
-  the same system on cream stock by overriding the tokens (see the light
-  block in `global.css`). A tiny inline script in `Layout.astro` sets
-  `data-theme` before paint (stored choice, else system preference); the
-  header toggle flips + persists it. When styling text on a bright accent
-  fill, use `--on-accent` (dark in both themes) or `--accent-ink` — never
-  `--color-paper`, which is cream in light mode.
-- Utilities: `.container`, `.grid-videos`, `.btn`, `.tag-chip`, `.meta-line`.
-- Every `h1` gets an accent-tinted `text-shadow` misprint automatically.
-- **Series accent theming**: put `data-series={series.slug}` on an element and
-  `--accent` (and the shadow color) resolves per series (sessions → pink,
+- Tokens: `--color-paper` (#0B0B0D — the page background), `--color-panel`
+  (#17171B — raised surface), `--color-ink` (#F4F2EE — crisp off-white
+  text), `--color-line` (hairline borders/dividers), `--color-pink`
+  (#FF4D8D), `--color-pink-deep` (bright emphasis/hover pink),
+  `--color-blue`, `--color-yellow`, `--color-muted`, `--font-display`
+  (Anton), `--font-body` (Archivo Variable), `--font-mono` (Space Mono),
+  `--border` (1px hairline), `--shadow-hard` (soft ambient elevation, no
+  hard offsets), `--radius`.
+- **Video stages are pure #000 in both themes** — full-bleed bands behind
+  the players on the homepage hero and video pages. Thumbnail tiles and
+  placeholders use fixed-dark `#101013`.
+- **Two themes.** Dark is the default; `html[data-theme="light"]` is the
+  white-gallery matinee via token overrides. A tiny inline script in
+  `Layout.astro` sets `data-theme` before paint (stored choice, else system
+  preference); the header toggle flips + persists it. When styling text on
+  a bright accent fill, use `--on-accent` (dark in both themes) or
+  `--accent-ink` — never `--color-paper`, which is light in light mode.
+- Utilities: `.container`, `.grid-videos`, `.btn` (hairline pill),
+  `.tag-chip` (hairline pill), `.meta-line` (mono caption).
+- **Series accent theming**: put `data-series={series.slug}` on an element
+  and `--accent`/`--accent-text` resolve per series (sessions → pink,
   live → blue, series → yellow). Use `var(--accent, var(--color-pink))`.
-  `--accent-ink` is the text color for accent-filled surfaces (dark stock).
+- Blurbs are short — set them big (`clamp(1.1rem, …, 1.3rem)`+), headlines
+  bigger. Cards are unboxed: image tile (hairline + radius) with type
+  below, no card chrome.
 
 New UI should use these tokens/utilities plus minimal page-scoped `<style>`.
 Don't introduce new global CSS without good reason, and keep the aesthetic:
-thick cream borders, hard accent shadows, tall uppercase Anton headings,
-halftone/washes for texture. `scripts/generate-og.mjs` re-renders the
+clean black stages, hairlines, big crisp uppercase Anton headings, quiet
+fade/rise motion only. `scripts/generate-og.mjs` re-renders the
 `public/og-*.png` social cards in this style (needs `playwright-core` +
 Chromium; see the script header).
 

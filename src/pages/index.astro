@@ -161,43 +161,49 @@ function formatDate(d: Date) {
 
   {
     featuredVideo && featuredArtist && featuredSeries && (
-      <section class="featured container" aria-label={featuredEyebrow}>
-        <div class="featured-inner" data-series={featuredSeries.slug}>
-          <VideoEmbed
-            provider={
-              featuredVideo.provider as
-                | "youtube"
-                | "vimeo"
-                | "dailymotion"
-                | "flash"
-            }
-            providerId={featuredVideo.provider_id}
-            title={featuredVideo.title}
-            thumbnail={getLocalThumb(featuredVideo.slug)}
-          />
-          <div class="featured-meta">
-            <p class="featured-eyebrow">{featuredEyebrow}</p>
-            <h2 class="featured-artist">
-              <a href={`/artists/${featuredArtist.slug}/`}>
-                {featuredArtist.name}
-              </a>
-            </h2>
-            <h3 class="featured-song">
-              <a href={getVideoUrl(featuredVideo, featuredArtist)}>
-                &ldquo;{featuredVideo.title}&rdquo;
-              </a>
-            </h3>
-            <p class="meta-line">
-              {featuredSeries.title} &mdash;{" "}
-              {formatDate(new Date(featuredVideo.recorded_at))}
-            </p>
-            {featuredVideo.description && (
-              <div
-                class="featured-description"
-                set:html={renderMarkdown(featuredVideo.description)}
-              />
-            )}
+      <section
+        class="featured"
+        aria-label={featuredEyebrow}
+        data-series={featuredSeries.slug}
+      >
+        <div class="featured-stage">
+          <div class="featured-player">
+            <VideoEmbed
+              provider={
+                featuredVideo.provider as
+                  | "youtube"
+                  | "vimeo"
+                  | "dailymotion"
+                  | "flash"
+              }
+              providerId={featuredVideo.provider_id}
+              title={featuredVideo.title}
+              thumbnail={getLocalThumb(featuredVideo.slug)}
+            />
           </div>
+        </div>
+        <div class="container featured-meta">
+          <p class="featured-eyebrow">{featuredEyebrow}</p>
+          <h2 class="featured-artist">
+            <a href={`/artists/${featuredArtist.slug}/`}>
+              {featuredArtist.name}
+            </a>
+          </h2>
+          <h3 class="featured-song">
+            <a href={getVideoUrl(featuredVideo, featuredArtist)}>
+              &ldquo;{featuredVideo.title}&rdquo;
+            </a>
+          </h3>
+          <p class="meta-line featured-when">
+            {featuredSeries.title} &mdash;{" "}
+            {formatDate(new Date(featuredVideo.recorded_at))}
+          </p>
+          {featuredVideo.description && (
+            <div
+              class="featured-description"
+              set:html={renderMarkdown(featuredVideo.description)}
+            />
+          )}
         </div>
       </section>
     )
@@ -401,51 +407,54 @@ function formatDate(d: Date) {
 </Layout>
 
 <style>
-  .featured-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
-    align-items: stretch;
-    border: var(--border);
-    box-shadow: var(--shadow-hard);
-    border-radius: var(--radius);
-    overflow: hidden;
-    background: var(--color-panel);
-  }
+  /* ---------- the screening room ---------- */
+  /* Full-bleed true-black stage behind the video, title card below. */
   .featured {
-    padding-block: 1.5rem 0;
+    padding: 0;
+  }
+  .featured-stage {
+    background: #000;
+    padding-block: clamp(1.25rem, 4vw, 3rem);
+  }
+  .featured-player {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+  }
+  .featured-player :global(.embed) {
+    box-shadow: none;
   }
 
-  /* ---------- about box: stats, era, and the pitch ---------- */
+  /* ---------- about: stats, era, and the pitch ---------- */
   .about {
-    padding-block: 1.5rem 2rem;
+    padding-block: clamp(2rem, 5vw, 3.5rem);
   }
   .about-box {
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    gap: 1.5rem 2.5rem;
+    gap: 2rem 4rem;
     align-items: center;
-    border: var(--border);
-    border-radius: var(--radius);
-    box-shadow: 6px 6px 0 var(--color-yellow);
-    background: var(--color-panel);
-    padding: clamp(1.25rem, 3vw, 2rem);
-    animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.3s;
+    animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.25s;
   }
+  /* Short copy, big type. */
   .about-blurb {
     margin: 0;
-    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
-    line-height: 1.55;
-    max-width: 48ch;
+    font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+    line-height: 1.5;
+    max-width: 44ch;
   }
   .about-link {
     margin-inline-start: 0.35em;
     font-family: var(--font-mono);
-    font-size: 0.8em;
+    font-size: 0.6em;
     font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-ink);
     text-decoration: underline;
     text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
     white-space: nowrap;
   }
   .about-link:hover {
@@ -470,7 +479,8 @@ function formatDate(d: Date) {
   .about-stats strong {
     display: block;
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+    line-height: 1;
   }
   /* Stats slam down one by one like rubber stamps. */
   .about-stats li {
@@ -506,60 +516,56 @@ function formatDate(d: Date) {
   .about-numbers-link:hover {
     color: var(--color-pink-deep);
   }
-  .featured-inner {
-    animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.18s;
-  }
-  .featured-inner :global(.embed) {
-    height: 100%;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
+  /* The title card: centered, big, crisp. */
   .featured-meta {
-    padding: clamp(1.25rem, 2.5vw, 2rem);
-    border-left: var(--border);
+    padding-block: clamp(1.75rem, 4vw, 3rem) 0.5rem;
+    text-align: center;
+    animation: stamp-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.15s;
   }
   .featured-eyebrow {
-    display: inline-block;
-    margin: 0 0 0.7rem;
+    margin: 0 0 1rem;
     font-family: var(--font-mono);
     font-weight: 700;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--accent-ink, var(--color-paper));
-    background: var(--accent, var(--color-pink));
-    border: 2px solid var(--color-paper);
-    padding: 0.35em 0.75em;
-    transform: rotate(-1.5deg);
-    box-shadow: 2px 2px 0 rgba(22, 18, 27, 0.55);
+    letter-spacing: 0.22em;
+    color: var(--accent-text, var(--color-pink-deep));
   }
   .featured-artist {
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 2.5vw, 2.4rem);
-    line-height: 1;
-    margin: 0 0 0.65rem;
-    text-shadow: 3px 3px 0 color-mix(in srgb, var(--accent, var(--color-pink)) 55%, transparent);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 0.98;
+    margin: 0 0 0.5rem;
   }
   .featured-artist a,
   .featured-song a {
     color: inherit;
     text-decoration: none;
+    transition: color 0.12s ease;
   }
   .featured-artist a:hover,
   .featured-song a:hover {
-    color: var(--accent, var(--color-pink));
-  }
-  .featured-song {
-    margin: 0 0 1rem;
-    font-family: var(--font-body);
-    font-size: clamp(1.05rem, 1.5vw, 1.35rem);
-    line-height: 1.2;
     color: var(--accent-text, var(--color-pink-deep));
   }
+  .featured-song {
+    margin: 0 0 0.9rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    line-height: 1.25;
+    color: var(--color-muted);
+  }
+  .featured-when {
+    margin: 0;
+  }
+  /* Short blurbs get room to speak. */
   .featured-description {
-    margin-block-start: 1.25rem;
-    font-size: 0.9rem;
+    margin: 1.5rem auto 0;
+    max-width: 52ch;
+    font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+    line-height: 1.55;
   }
   .featured-description :global(p) {
     margin-block: 0 0.85rem;
@@ -596,18 +602,6 @@ function formatDate(d: Date) {
   @media (max-width: 420px) {
     .about-stats {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  @media (max-width: 820px) {
-    .featured-inner {
-      grid-template-columns: 1fr;
-    }
-    .featured-inner :global(.embed) {
-      height: auto;
-    }
-    .featured-meta {
-      border-top: var(--border);
-      border-left: 0;
     }
   }
 </style>

@@ -295,15 +295,8 @@ const providerRows = [...providerCounts.entries()]
     background: var(--color-panel);
     border: var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
-    padding: 1.1rem 0.75rem;
+    padding: 1.4rem 0.75rem;
     animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-  .stamp:nth-child(odd) {
-    transform: rotate(-1.4deg);
-  }
-  .stamp:nth-child(even) {
-    transform: rotate(1.4deg);
   }
   .stamp:nth-child(1) {
     animation-delay: 0.05s;
@@ -450,7 +443,7 @@ const providerRows = [...providerCounts.entries()]
     align-items: flex-end;
     gap: clamp(0.4rem, 2vw, 1.25rem);
     height: 14rem;
-    border-bottom: 3px solid var(--color-ink);
+    border-bottom: 1px solid var(--color-line);
     padding-bottom: 0;
   }
   .column {
@@ -476,7 +469,6 @@ const providerRows = [...providerCounts.entries()]
     border: var(--border-thin);
     border-bottom: 0;
     border-radius: var(--radius) var(--radius) 0 0;
-    box-shadow: 4px 0 0 rgba(255, 77, 141, 0.3);
     transition:
       transform 0.12s ease,
       background 0.12s ease;
@@ -555,8 +547,8 @@ const providerRows = [...providerCounts.entries()]
     display: block;
     height: 0.55rem;
     background: var(--color-panel);
-    border: 2px solid var(--color-ink);
-    border-radius: 0;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
     overflow: hidden;
   }
   .chart-bar {

@@ -1,35 +1,34 @@
 /* ============================================================
    IF YOU MAKE IT — global tokens + utilities
-   Basement-show gig-poster design system: black poster stock,
-   cream screenprint ink, hot-pink couch accent, off-registration
-   "misprint" shadows. Fonts are imported in Layout.astro
-   (self-hosted via @fontsource).
+   Cinematic screening-room design system: true-black stage
+   behind the videos, crisp type at generous sizes, hairline
+   chrome, hot-pink couch accent. Fonts are imported in
+   Layout.astro (self-hosted via @fontsource).
 
-   Token semantics (kept from the zine era):
-   - --color-paper = the page/surface color → now near-black stock
-   - --color-ink   = text/border color      → now warm cream ink
+   Token semantics:
+   - --color-paper = the page/surface color (near-black house)
+   - --color-ink   = text color (crisp off-white)
+   - --color-line  = hairline borders/dividers
+   - #000 stages sit behind video players in BOTH themes.
    ============================================================ */
 
 :root {
   color-scheme: dark;
 
   /* --- palette --- */
-  --color-paper: #16121b;
-  --color-panel: #201a29;
-  --color-ink: #f4ecdc;
+  --color-paper: #0b0b0d;
+  --color-panel: #17171b;
+  --color-ink: #f4f2ee;
   --color-pink: #ff4d8d;
-  --color-pink-deep: #ff85af; /* emphasis/hover pink, bright on dark */
-  --color-blue: #4da3ff;
+  --color-pink-deep: #ff7fae; /* emphasis/hover pink, bright on dark */
+  --color-blue: #5aa7ff;
   --color-yellow: #ffd23f;
-  --color-muted: #a99db5;
-  /* Text on bright accent fills (pink/yellow/blue chips). Dark in BOTH
-     themes — accents are bright either way. */
-  --on-accent: #16121b;
-
-  /* --- body texture (halftone dots + stage-light washes) --- */
-  --dot-color: rgba(244, 236, 220, 0.028);
-  --wash-pink: rgba(255, 77, 141, 0.07);
-  --wash-blue: rgba(77, 163, 255, 0.05);
+  --color-muted: #98939e;
+  --color-line: rgba(244, 242, 238, 0.16);
+  /* Text on bright accent fills (pink/yellow/blue). Dark in BOTH themes. */
+  --on-accent: #0b0b0d;
+  /* Faint screen glow at the top of the house. */
+  --glow: rgba(244, 242, 238, 0.05);
 
   /* --- type --- */
   --font-display: "Anton", "Arial Narrow", "Archivo Black", system-ui,
@@ -38,14 +37,12 @@
   --font-mono: "Space Mono", ui-monospace, "Courier New", monospace;
 
   /* --- structure --- */
-  --border: 3px solid var(--color-ink);
-  --border-thin: 2px solid var(--color-ink);
-  /* Misprint shadow: hard offset in the section accent, like a second
-     screenprint pass that slipped off-register. */
-  --shadow-color: var(--accent, var(--color-pink));
-  --shadow-hard: 6px 6px 0 var(--shadow-color);
-  --shadow-hard-sm: 4px 4px 0 var(--shadow-color);
-  --radius: 2px;
+  --border: 1px solid var(--color-line);
+  --border-thin: 1px solid var(--color-line);
+  /* Soft ambient elevation — no hard offsets anywhere. */
+  --shadow-hard: 0 18px 50px -18px rgba(0, 0, 0, 0.65);
+  --shadow-hard-sm: 0 10px 28px -12px rgba(0, 0, 0, 0.5);
+  --radius: 6px;
 
   /* --- series accent (overridden by [data-series]) --- */
   --accent: var(--color-pink);
@@ -54,29 +51,30 @@
 }
 
 /* ============================================================
-   light theme — the daylight matinee flyer
-   Same poster system on cream stock. Applied via data-theme on
-   <html>, set before paint by the tiny inline script in
-   Layout.astro (stored choice, else system preference).
+   light theme — the matinee
+   Same system in a white-walled gallery. Video stages stay
+   pure black. Applied via data-theme on <html>, set before
+   paint by the inline script in Layout.astro.
    ============================================================ */
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --color-paper: #faf3e7;
-  --color-panel: #fffcf2;
-  --color-ink: #16121b;
-  --color-pink-deep: #c91550; /* emphasis/hover pink, deep on cream */
-  --color-blue: #0b63ce;
-  --color-muted: #6b6470;
+  --color-paper: #f8f7f4;
+  --color-panel: #ffffff;
+  --color-ink: #141318;
+  --color-pink-deep: #d81b60; /* emphasis/hover pink, deep on light */
+  --color-blue: #1f6fd6;
+  --color-muted: #6f6b76;
+  --color-line: rgba(20, 19, 24, 0.16);
+  --glow: rgba(20, 19, 24, 0.04);
 
-  --dot-color: rgba(22, 18, 27, 0.05);
-  --wash-pink: rgba(201, 21, 80, 0.04);
-  --wash-blue: rgba(11, 99, 206, 0.035);
+  --shadow-hard: 0 18px 50px -18px rgba(20, 19, 24, 0.22);
+  --shadow-hard-sm: 0 10px 28px -12px rgba(20, 19, 24, 0.15);
 }
 
 /* Series accent theming via data attribute.
    Default accent is hot pink. --accent-ink is the text color used ON an
-   accent-filled surface (dark stock, since accents are bright). */
+   accent-filled surface. */
 [data-series="live"] {
   --accent: var(--color-blue);
   --accent-ink: var(--on-accent);
@@ -92,8 +90,8 @@
   --accent-ink: var(--on-accent);
   --accent-text: var(--color-yellow);
 }
-/* Daylight: yellow ink is unreadable on cream, so its accent-text and the
-   text-on-blue flip. */
+/* Matinee: yellow ink is unreadable on white — its accent text goes dark,
+   and text-on-blue flips light. */
 :root[data-theme="light"] [data-series="series"] {
   --accent-text: var(--color-ink);
 }
@@ -119,22 +117,17 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-body);
-  font-size: 1.0625rem;
-  line-height: 1.55;
+  font-size: 1.125rem;
+  line-height: 1.6;
   color: var(--color-ink);
   background-color: var(--color-paper);
-  /* Halftone dot screen + faint stage-light washes — a photocopied poster
-     under bad venue lighting, without shipping a texture image. Colors are
-     theme tokens so the light theme reprints the same texture on cream. */
-  background-image:
-    radial-gradient(ellipse at 18% 6%, var(--wash-pink) 0, transparent 42%),
-    radial-gradient(ellipse at 85% 80%, var(--wash-blue) 0, transparent 45%),
-    radial-gradient(circle, var(--dot-color) 1px, transparent 1.6px);
-  background-size:
-    auto,
-    auto,
-    19px 19px;
-  background-attachment: fixed;
+  /* One faint screen-glow at the top of the room — otherwise clean. */
+  background-image: radial-gradient(
+    ellipse 90% 40% at 50% -5%,
+    var(--glow),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -146,6 +139,7 @@ img {
 
 /* ============================================================
    headings + text
+   Big, crisp, no decoration — the type IS the design.
    ============================================================ */
 
 h1,
@@ -155,32 +149,20 @@ h3 {
   font-weight: 400;
   text-transform: uppercase;
   line-height: 0.98;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.01em;
   margin: 0 0 0.4em;
   color: var(--color-ink);
   overflow-wrap: break-word;
 }
 
 h1 {
-  font-size: clamp(2.6rem, 8vw, 5rem);
-  /* Every page headline gets the off-register second pass, tinted by the
-     section accent. */
-  text-shadow: 3px 3px 0
-    color-mix(in srgb, var(--accent, var(--color-pink)) 55%, transparent);
+  font-size: clamp(2.8rem, 8vw, 6rem);
 }
 h2 {
-  font-size: clamp(1.9rem, 4.5vw, 3rem);
+  font-size: clamp(1.7rem, 4vw, 2.75rem);
 }
 h3 {
   font-size: clamp(1.3rem, 3vw, 1.8rem);
-}
-
-/* Off-registration headline: a second print pass that slipped.
-   Opt-in via class so long headings stay clean. */
-.misprint {
-  text-shadow:
-    3px 3px 0 var(--accent, var(--color-pink)),
-    -1px -1px 0 var(--color-paper);
 }
 
 p {
@@ -227,29 +209,28 @@ input:focus-visible,
 
 .container {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1200px;
   margin-inline: auto;
-  padding-inline: clamp(1rem, 4vw, 2rem);
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
 
 .grid-videos {
   display: grid;
-  gap: clamp(1.1rem, 2.5vw, 1.75rem);
+  gap: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 2.5vw, 1.75rem);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
 }
 
-/* Posters get pasted up one after another, left to right.
-   `backwards` keeps them hidden until their delay hits. */
+/* Stills fade up as the reel starts — quiet, staggered. */
 .grid-videos > * {
-  animation: slap-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
-.grid-videos > *:nth-child(1) { animation-delay: 0.04s; }
-.grid-videos > *:nth-child(2) { animation-delay: 0.09s; }
-.grid-videos > *:nth-child(3) { animation-delay: 0.14s; }
-.grid-videos > *:nth-child(4) { animation-delay: 0.19s; }
-.grid-videos > *:nth-child(5) { animation-delay: 0.24s; }
-.grid-videos > *:nth-child(6) { animation-delay: 0.29s; }
-.grid-videos > *:nth-child(n + 7) { animation-delay: 0.34s; }
+.grid-videos > *:nth-child(1) { animation-delay: 0.03s; }
+.grid-videos > *:nth-child(2) { animation-delay: 0.07s; }
+.grid-videos > *:nth-child(3) { animation-delay: 0.11s; }
+.grid-videos > *:nth-child(4) { animation-delay: 0.15s; }
+.grid-videos > *:nth-child(5) { animation-delay: 0.19s; }
+.grid-videos > *:nth-child(6) { animation-delay: 0.23s; }
+.grid-videos > *:nth-child(n + 7) { animation-delay: 0.27s; }
 
 /* ============================================================
    components: buttons, chips, meta
@@ -259,36 +240,29 @@ input:focus-visible,
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   line-height: 1;
   color: var(--color-ink);
-  background: var(--color-paper);
-  border: var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-hard-sm);
-  padding: 0.75em 1.2em;
+  background: transparent;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 0.9em 1.5em;
   min-height: 2.75rem;
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform 0.1s ease,
-    box-shadow 0.1s ease,
-    background 0.1s ease,
-    color 0.1s ease;
+    border-color 0.12s ease,
+    color 0.12s ease,
+    background 0.12s ease;
 }
 .btn:hover {
-  background: var(--accent, var(--color-pink));
-  color: var(--accent-ink, var(--color-paper));
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--shadow-color);
+  color: var(--color-pink-deep);
+  border-color: var(--color-pink);
   text-decoration: none;
-}
-.btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--shadow-color);
 }
 
 .tag-chip {
@@ -297,28 +271,24 @@ input:focus-visible,
   gap: 0.35em;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   line-height: 1;
-  color: var(--color-ink);
-  background: var(--color-panel);
-  border: var(--border-thin);
-  border-radius: 0;
-  padding: 0.45em 0.8em;
+  color: var(--color-muted);
+  background: transparent;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 0.55em 0.95em;
   min-height: 2rem;
   text-decoration: none;
   transition:
-    transform 0.1s ease,
-    background 0.1s ease,
-    color 0.1s ease,
-    box-shadow 0.1s ease;
+    color 0.12s ease,
+    border-color 0.12s ease;
 }
 .tag-chip:hover {
-  background: var(--accent, var(--color-pink));
-  color: var(--accent-ink, var(--color-paper));
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  color: var(--color-pink-deep);
+  border-color: var(--color-pink);
   text-decoration: none;
 }
 
@@ -327,44 +297,35 @@ input:focus-visible,
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   color: var(--color-muted);
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 /* ============================================================
    motion vocabulary
-   Shared keyframes for the "posters pasted on a wall" energy.
    Names are stable — pages reference them — but the motion is
-   tuned to the poster look. prefers-reduced-motion kills all.
+   a quiet cinematic fade/rise. prefers-reduced-motion kills all.
    ============================================================ */
 
-/* Paste-up: rises from the wall and settles flat. */
 @keyframes slap-in {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.98);
+    transform: translateY(12px);
   }
 }
 
-/* Screenprint pass: slams down like a squeegee pull. */
 @keyframes stamp-in {
-  0% {
+  from {
     opacity: 0;
-    transform: scale(1.4);
+    transform: translateY(10px);
   }
-  65% {
-    opacity: 1;
-    transform: scale(0.96);
-  }
-  100% {
+  to {
     opacity: 1;
     transform: none;
   }
 }
 
-/* Sticker wiggle: a quick shake, ends at rest (use on elements
-   without a base transform). */
 @keyframes wiggle {
   20% { transform: rotate(5deg); }
   45% { transform: rotate(-4deg); }
