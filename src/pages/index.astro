@@ -408,22 +408,49 @@ function formatDate(d: Date) {
 
 <style>
   /* ---------- the screening room ---------- */
-  /* Full-bleed true-black stage behind the video, title card below. */
+  /* The stage fills the first screen: full-bleed true black sized to the
+     viewport (minus the header), video as large as the height allows,
+     title card below the fold. */
   .featured {
     padding: 0;
   }
   .featured-stage {
+    /* Approximate header height; bumped for the two-row mobile header. */
+    --stage-offset: 3.75rem;
+    --stage-pad: clamp(1rem, 3vh, 2.5rem);
+    display: grid;
+    place-items: center;
     background: #000;
-    padding-block: clamp(1.25rem, 4vw, 3rem);
+    /* Fill the viewport when the video can use the height; when width is
+       the limiting factor (tall/narrow screens), hug the video instead of
+       leaving an empty black room. */
+    min-height: min(
+      calc(100vh - var(--stage-offset)),
+      calc((100vw - 2rem) * 9 / 16 + 2 * var(--stage-pad))
+    );
+    min-height: min(
+      calc(100svh - var(--stage-offset)),
+      calc((100vw - 2rem) * 9 / 16 + 2 * var(--stage-pad))
+    );
+    padding: var(--stage-pad) clamp(1rem, 3vw, 2rem);
   }
   .featured-player {
-    width: 100%;
-    max-width: 1200px;
+    /* 16:9, as big as the stage height permits, edge-capped by width. */
+    width: min(
+      100%,
+      calc((100vh - var(--stage-offset) - 2 * var(--stage-pad)) * 16 / 9),
+      calc((100svh - var(--stage-offset) - 2 * var(--stage-pad)) * 16 / 9)
+    );
+    max-width: 1720px;
     margin-inline: auto;
-    padding-inline: clamp(1rem, 4vw, 2.5rem);
   }
   .featured-player :global(.embed) {
     box-shadow: none;
+  }
+  @media (max-width: 560px) {
+    .featured-stage {
+      --stage-offset: 7rem;
+    }
   }
 
   /* ---------- about: stats, era, and the pitch ---------- */
