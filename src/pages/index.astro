@@ -210,135 +210,40 @@ function formatDate(d: Date) {
   }
 
   <section class="about container" aria-label="About the archive">
-    <div class="about-box">
-      <p class="about-blurb">
-        Dave Garwacke started If You Make It in New Paltz, NY and followed the
-        couch to Brooklyn: bands passing through would sit down and play a song
-        or two on a pink couch. From {minYear} to 2014 it grew into an archive of
-        acoustic sessions, basement shows, and music videos from the DIY punk world.
-        Hop Along, Waxahatchee, Tigers Jaw, The Bouncing Souls, and a couple hundred
-        friends.
-        <a class="about-link" href="/about/">Read the full story&nbsp;→</a>
-      </p>
-      <div class="about-figures">
-        <ul class="about-stats">
+    <p class="about-blurb">
+      Dave Garwacke started If You Make It in New Paltz, NY and followed the
+      couch to Brooklyn: bands passing through would sit down and play a song
+      or two on a pink couch. From {minYear} to 2014 it grew into an archive of
+      acoustic sessions, basement shows, and music videos from the DIY punk world.
+      Hop Along, Waxahatchee, Tigers Jaw, The Bouncing Souls, and a couple hundred
+      friends.
+      <a class="about-link" href="/about/">Read the full story&nbsp;→</a>
+    </p>
+    <ul class="about-stats">
+      <li>
+        <strong>{totalVideos}</strong>
+        <span>videos</span>
+      </li>
+      <li>
+        <strong>{totalArtists}</strong>
+        <span>artists</span>
+      </li>
+      <li>
+        <strong>{totalYears}</strong>
+        <span>years</span>
+      </li>
+      {
+        totalViews > 0 && (
           <li>
-            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <rect
-                x="2.5"
-                y="4.5"
-                width="19"
-                height="15"
-                rx="3"
-                fill="var(--color-paper)"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"></rect>
-              <path
-                d="M10 9l6 3-6 3z"
-                fill="var(--color-pink)"
-                stroke="var(--color-ink)"
-                stroke-width="1.5"
-                stroke-linejoin="round"></path>
-            </svg>
-            <strong>{totalVideos}</strong> videos
+            <strong>{formattedViews}</strong>
+            <span>views</span>
           </li>
-          <li>
-            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <rect
-                x="9"
-                y="2.5"
-                width="6"
-                height="11"
-                rx="3"
-                fill="var(--color-pink)"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"></rect>
-              <path
-                d="M5.5 11a6.5 6.5 0 0 0 13 0"
-                fill="none"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"
-                stroke-linecap="round"></path>
-              <line
-                x1="12"
-                y1="17.5"
-                x2="12"
-                y2="21.5"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"
-                stroke-linecap="round"></line>
-            </svg>
-            <strong>{totalArtists}</strong> artists
-          </li>
-          <li>
-            <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <rect
-                x="2.5"
-                y="4.5"
-                width="19"
-                height="17"
-                rx="3"
-                fill="var(--color-paper)"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"></rect>
-              <line
-                x1="2.5"
-                y1="10"
-                x2="21.5"
-                y2="10"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"></line>
-              <line
-                x1="8"
-                y1="2"
-                x2="8"
-                y2="6"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"
-                stroke-linecap="round"></line>
-              <line
-                x1="16"
-                y1="2"
-                x2="16"
-                y2="6"
-                stroke="var(--color-ink)"
-                stroke-width="2.5"
-                stroke-linecap="round"></line>
-              <rect x="6" y="13" width="5" height="5" fill="var(--color-pink)"
-              ></rect>
-            </svg>
-            <strong>{totalYears}</strong> years
-          </li>
-          {
-            totalViews > 0 && (
-              <li>
-                <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"
-                    fill="var(--color-paper)"
-                    stroke="var(--color-ink)"
-                    stroke-width="2.5"
-                    stroke-linejoin="round"
-                  />
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="3"
-                    fill="var(--color-pink)"
-                    stroke="var(--color-ink)"
-                    stroke-width="1.5"
-                  />
-                </svg>
-                <strong>{formattedViews}</strong> views
-              </li>
-            )
-          }
-        </ul>
-        <a class="about-numbers-link" href="/stats/"
-          >See the full breakdown&nbsp;→</a
-        >
-      </div>
-    </div>
+        )
+      }
+    </ul>
+    <a class="about-numbers-link" href="/stats/"
+      >See the full breakdown&nbsp;→</a
+    >
   </section>
 
   {
@@ -453,23 +358,17 @@ function formatDate(d: Date) {
     }
   }
 
-  /* ---------- about: stats, era, and the pitch ---------- */
+  /* ---------- about: the pitch, then the credits band ---------- */
   .about {
-    padding-block: clamp(2rem, 5vw, 3.5rem);
-  }
-  .about-box {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    gap: 2rem 4rem;
-    align-items: center;
+    padding-block: clamp(3rem, 8vw, 5.5rem);
     animation: slap-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.25s;
   }
   /* Short copy, big type. */
   .about-blurb {
-    margin: 0;
+    margin: 0 0 clamp(2.5rem, 6vw, 4rem);
     font-size: clamp(1.25rem, 2.2vw, 1.6rem);
     line-height: 1.5;
-    max-width: 44ch;
+    max-width: 52ch;
   }
   .about-link {
     margin-inline-start: 0.35em;
@@ -487,58 +386,78 @@ function formatDate(d: Date) {
   .about-link:hover {
     color: var(--color-pink-deep);
   }
-  .stat-icon {
-    display: block;
-    width: 1.6rem;
-    height: 1.6rem;
-    margin: 0 auto 0.35rem;
-  }
+  /* The credits band: four big figures with hairline rules between,
+     each in a run of the house colors. */
   .about-stats {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.9rem 1.5rem;
-    font-size: 0.85rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-block: 1px solid var(--color-line);
+  }
+  .about-stats li {
+    padding: clamp(1.5rem, 3.5vw, 2.5rem) 1rem;
     text-align: center;
+    border-left: 1px solid var(--color-line);
+    animation: stamp-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .about-stats li:first-child {
+    border-left: 0;
+  }
+  .about-stats li:nth-child(1) {
+    animation-delay: 0.35s;
+  }
+  .about-stats li:nth-child(2) {
+    animation-delay: 0.45s;
+  }
+  .about-stats li:nth-child(3) {
+    animation-delay: 0.55s;
+  }
+  .about-stats li:nth-child(4) {
+    animation-delay: 0.65s;
   }
   .about-stats strong {
     display: block;
     font-family: var(--font-display);
-    font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 6vw, 4rem);
     line-height: 1;
   }
-  /* Stats slam down one by one like rubber stamps. */
-  .about-stats li {
-    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  .about-stats li:nth-child(1) strong {
+    color: var(--color-pink);
   }
-  .about-stats li:nth-child(1) {
-    animation-delay: 0.4s;
+  .about-stats li:nth-child(2) strong {
+    color: var(--color-blue);
   }
-  .about-stats li:nth-child(2) {
-    animation-delay: 0.52s;
+  .about-stats li:nth-child(3) strong {
+    color: var(--color-ink);
   }
-  .about-stats li:nth-child(3) {
-    animation-delay: 0.64s;
+  .about-stats li:nth-child(4) strong {
+    color: var(--color-pink-deep);
   }
-  .about-stats li:nth-child(4) {
-    animation-delay: 0.76s;
+  .about-stats span {
+    display: block;
+    margin-top: 0.7rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--color-muted);
   }
   .about-numbers-link {
-    display: block;
-    margin-top: 1rem;
-    text-align: center;
+    display: inline-block;
+    margin-top: clamp(1.5rem, 3.5vw, 2.25rem);
     font-family: var(--font-mono);
     font-weight: 700;
     font-size: 0.78rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-ink);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-    animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.88s;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color 0.12s ease;
+    animation: stamp-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.75s;
   }
   .about-numbers-link:hover {
     color: var(--color-pink-deep);
@@ -603,7 +522,7 @@ function formatDate(d: Date) {
 
   .series-section,
   .browse-strip {
-    padding-block: 2rem;
+    padding-block: clamp(2.5rem, 6vw, 4rem);
     border-top: var(--border);
   }
 
@@ -614,21 +533,22 @@ function formatDate(d: Date) {
     margin-block-start: 0.75rem;
   }
 
+  /* Mobile: a roomy 2×2 credits grid with internal hairlines. */
   @media (max-width: 640px) {
-    .about-box {
-      grid-template-columns: 1fr;
-    }
-    .about-stats {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0.5rem;
-    }
-    .about-stats strong {
-      font-size: 1.2rem;
-    }
-  }
-  @media (max-width: 420px) {
     .about-stats {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .about-stats li {
+      padding: 1.75rem 0.75rem;
+    }
+    .about-stats li:nth-child(odd) {
+      border-left: 0;
+    }
+    .about-stats li:nth-child(n + 3) {
+      border-top: 1px solid var(--color-line);
+    }
+    .about-stats strong {
+      font-size: clamp(2.4rem, 11vw, 3rem);
     }
   }
 </style>
