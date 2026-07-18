@@ -11,6 +11,8 @@
    ============================================================ */
 
 :root {
+  color-scheme: dark;
+
   /* --- palette --- */
   --color-paper: #16121b;
   --color-panel: #201a29;
@@ -20,6 +22,14 @@
   --color-blue: #4da3ff;
   --color-yellow: #ffd23f;
   --color-muted: #a99db5;
+  /* Text on bright accent fills (pink/yellow/blue chips). Dark in BOTH
+     themes — accents are bright either way. */
+  --on-accent: #16121b;
+
+  /* --- body texture (halftone dots + stage-light washes) --- */
+  --dot-color: rgba(244, 236, 220, 0.028);
+  --wash-pink: rgba(255, 77, 141, 0.07);
+  --wash-blue: rgba(77, 163, 255, 0.05);
 
   /* --- type --- */
   --font-display: "Anton", "Arial Narrow", "Archivo Black", system-ui,
@@ -39,8 +49,29 @@
 
   /* --- series accent (overridden by [data-series]) --- */
   --accent: var(--color-pink);
-  --accent-ink: var(--color-paper);
+  --accent-ink: var(--on-accent);
   --accent-text: var(--color-pink-deep);
+}
+
+/* ============================================================
+   light theme — the daylight matinee flyer
+   Same poster system on cream stock. Applied via data-theme on
+   <html>, set before paint by the tiny inline script in
+   Layout.astro (stored choice, else system preference).
+   ============================================================ */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-paper: #faf3e7;
+  --color-panel: #fffcf2;
+  --color-ink: #16121b;
+  --color-pink-deep: #c91550; /* emphasis/hover pink, deep on cream */
+  --color-blue: #0b63ce;
+  --color-muted: #6b6470;
+
+  --dot-color: rgba(22, 18, 27, 0.05);
+  --wash-pink: rgba(201, 21, 80, 0.04);
+  --wash-blue: rgba(11, 99, 206, 0.035);
 }
 
 /* Series accent theming via data attribute.
@@ -48,18 +79,26 @@
    accent-filled surface (dark stock, since accents are bright). */
 [data-series="live"] {
   --accent: var(--color-blue);
-  --accent-ink: var(--color-paper);
+  --accent-ink: var(--on-accent);
   --accent-text: var(--color-blue);
 }
 [data-series="sessions"] {
   --accent: var(--color-pink);
-  --accent-ink: var(--color-paper);
+  --accent-ink: var(--on-accent);
   --accent-text: var(--color-pink-deep);
 }
 [data-series="series"] {
   --accent: var(--color-yellow);
-  --accent-ink: var(--color-paper);
+  --accent-ink: var(--on-accent);
   --accent-text: var(--color-yellow);
+}
+/* Daylight: yellow ink is unreadable on cream, so its accent-text and the
+   text-on-blue flip. */
+:root[data-theme="light"] [data-series="series"] {
+  --accent-text: var(--color-ink);
+}
+:root[data-theme="light"] [data-series="live"] {
+  --accent-ink: var(--color-paper);
 }
 
 /* ============================================================
@@ -85,23 +124,12 @@ body {
   color: var(--color-ink);
   background-color: var(--color-paper);
   /* Halftone dot screen + faint stage-light washes — a photocopied poster
-     under bad venue lighting, without shipping a texture image. */
+     under bad venue lighting, without shipping a texture image. Colors are
+     theme tokens so the light theme reprints the same texture on cream. */
   background-image:
-    radial-gradient(
-      ellipse at 18% 6%,
-      rgba(255, 77, 141, 0.07) 0,
-      transparent 42%
-    ),
-    radial-gradient(
-      ellipse at 85% 80%,
-      rgba(77, 163, 255, 0.05) 0,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle,
-      rgba(244, 236, 220, 0.028) 1px,
-      transparent 1.6px
-    );
+    radial-gradient(ellipse at 18% 6%, var(--wash-pink) 0, transparent 42%),
+    radial-gradient(ellipse at 85% 80%, var(--wash-blue) 0, transparent 45%),
+    radial-gradient(circle, var(--dot-color) 1px, transparent 1.6px);
   background-size:
     auto,
     auto,
@@ -190,7 +218,7 @@ input:focus-visible,
 
 ::selection {
   background: var(--color-pink);
-  color: var(--color-paper);
+  color: var(--on-accent);
 }
 
 /* ============================================================

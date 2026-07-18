@@ -106,10 +106,26 @@ const staticNavLinks: {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Theme init — must run before first paint to avoid a flash.
+      // Stored choice wins; first visit follows the system preference.
+      (() => {
+        let t;
+        try {
+          t = localStorage.getItem("theme");
+        } catch {}
+        if (t !== "light" && t !== "dark") {
+          t = matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark";
+        }
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
     <title>{documentTitle}</title>
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
-    <meta name="theme-color" content="#16121B" />
+    <meta name="theme-color" content="#16121B" id="meta-theme-color" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -156,7 +172,7 @@ const staticNavLinks: {
             focusable="false"
           >
             <g
-              stroke="#F4ECDC"
+              stroke="var(--color-ink)"
               stroke-width="3"
               stroke-linejoin="round"
               stroke-linecap="round"
@@ -215,6 +231,36 @@ const staticNavLinks: {
                 </a>
               ))
             }
+            <button
+              class="theme-toggle"
+              id="theme-toggle"
+              type="button"
+              aria-label="Toggle light/dark theme"
+              title="Toggle light/dark theme"
+            >
+              <svg class="nav-icon theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+                <g stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <line x1="12" y1="1.5" x2="12" y2="4.5" />
+                  <line x1="12" y1="19.5" x2="12" y2="22.5" />
+                  <line x1="1.5" y1="12" x2="4.5" y2="12" />
+                  <line x1="19.5" y1="12" x2="22.5" y2="12" />
+                  <line x1="4.8" y1="4.8" x2="6.9" y2="6.9" />
+                  <line x1="17.1" y1="17.1" x2="19.2" y2="19.2" />
+                  <line x1="4.8" y1="19.2" x2="6.9" y2="17.1" />
+                  <line x1="17.1" y1="6.9" x2="19.2" y2="4.8" />
+                </g>
+              </svg>
+              <svg class="nav-icon theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
           </nav>
         </div>
       </div>
@@ -242,6 +288,22 @@ const staticNavLinks: {
       </div>
     </footer>
 
+    <script is:inline>
+      // Theme toggle: flip data-theme on <html>, persist, and keep the
+      // browser-chrome color in sync. (Init runs in <head> before paint.)
+      document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === "light" ? "dark" : "light";
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem("theme", next);
+        } catch {}
+        document
+          .getElementById("meta-theme-color")
+          ?.setAttribute("content", next === "light" ? "#FAF3E7" : "#16121B");
+      });
+    </script>
+
     <style>
       .skip-link {
         position: absolute;
@@ -249,7 +311,7 @@ const staticNavLinks: {
         top: -3.1rem;
         z-index: 100;
         background: var(--color-yellow);
-        color: var(--color-paper);
+        color: var(--on-accent);
         border: var(--border);
         border-radius: var(--radius);
         padding: 0.5rem 0.9rem;
@@ -363,7 +425,7 @@ const staticNavLinks: {
       }
       .site-nav__link[data-active],
       .site-nav__link[aria-current="page"] {
-        color: var(--color-paper);
+        color: var(--on-accent);
         background: var(--color-pink);
         border-bottom-color: var(--color-pink);
       }
@@ -392,6 +454,39 @@ const staticNavLinks: {
         display: block;
         width: 1.5rem;
         height: 1.5rem;
+      }
+
+      /* Theme toggle rides with the icon links. The sun shows in the dark
+         (click for daylight), the moon shows in the light. */
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.15em;
+        margin: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-ink);
+        cursor: pointer;
+        transition:
+          color 0.1s ease,
+          transform 0.1s ease;
+      }
+      .theme-toggle:hover {
+        color: var(--color-yellow);
+        transform: translateY(-1px) rotate(-6deg) scale(1.08);
+      }
+      .theme-toggle__moon {
+        display: none;
+      }
+      :global([data-theme="light"]) .theme-toggle__sun {
+        display: none;
+      }
+      :global([data-theme="light"]) .theme-toggle__moon {
+        display: block;
+      }
+      :global([data-theme="light"]) .theme-toggle:hover {
+        color: var(--color-pink-deep);
       }
 
       @media (max-width: 560px) {
@@ -424,7 +519,8 @@ const staticNavLinks: {
         .site-nav::-webkit-scrollbar {
           display: none;
         }
-        .site-nav__link {
+        .site-nav__link,
+        .theme-toggle {
           flex: none;
         }
       }

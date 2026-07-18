@@ -15,7 +15,8 @@ a couple of unmigrated Flash-era files.
 1. **Fully static.** No SSR adapter, no server. Every dynamic route MUST export
    `getStaticPaths`. API routes are prerendered JSON only.
 2. **Near-zero client JS.** The only JavaScript shipped is the click-to-play
-   embed shim inside `VideoEmbed.astro`. No client frameworks, no client-side
+   embed shim inside `VideoEmbed.astro` and the ~20-line inline theme
+   init/toggle in `Layout.astro`. No client frameworks, no client-side
    routing, no animation libraries. Interactivity comes from HTML/CSS.
 3. **No runtime third-party requests except media.** Fonts are self-hosted via
    `@fontsource` packages. YouTube thumbnails (`i.ytimg.com`) and the
@@ -143,6 +144,13 @@ accent, off-register "misprint" shadows. The contract lives in
   (hard offset in the section accent — the misprint), `--radius`.
   Note the semantics: *paper = background* (now near-black), *ink =
   foreground* (now cream) — like white ink screenprinted on black stock.
+- **Two themes.** Dark is the default; `html[data-theme="light"]` reprints
+  the same system on cream stock by overriding the tokens (see the light
+  block in `global.css`). A tiny inline script in `Layout.astro` sets
+  `data-theme` before paint (stored choice, else system preference); the
+  header toggle flips + persists it. When styling text on a bright accent
+  fill, use `--on-accent` (dark in both themes) or `--accent-ink` — never
+  `--color-paper`, which is cream in light mode.
 - Utilities: `.container`, `.grid-videos`, `.btn`, `.tag-chip`, `.meta-line`.
 - Every `h1` gets an accent-tinted `text-shadow` misprint automatically.
 - **Series accent theming**: put `data-series={series.slug}` on an element and
