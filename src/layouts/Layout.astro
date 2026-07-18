@@ -185,17 +185,19 @@ const staticNavLinks: {
             aria-hidden="true"
             focusable="false"
           >
+            {/* Quiet line-art couch: paper fills self-mask the overlapping
+                shapes, strokes follow currentColor (muted; pink on hover). */}
             <g
-              stroke="var(--color-ink)"
+              stroke="currentColor"
               stroke-width="3"
               stroke-linejoin="round"
               stroke-linecap="round"
             >
-              <rect x="10" y="6" width="44" height="14" rx="6" fill="#FF4D8D"></rect>
-              <rect x="8" y="17" width="48" height="13" rx="5" fill="#FF4D8D"></rect>
+              <rect x="10" y="6" width="44" height="14" rx="6" fill="var(--color-paper)"></rect>
+              <rect x="8" y="17" width="48" height="13" rx="5" fill="var(--color-paper)"></rect>
               <line x1="32" y1="19" x2="32" y2="28"></line>
-              <rect x="6" y="13" width="10" height="17" rx="4" fill="#C91550"></rect>
-              <rect x="48" y="13" width="10" height="17" rx="4" fill="#C91550"></rect>
+              <rect x="6" y="13" width="10" height="17" rx="4" fill="var(--color-paper)"></rect>
+              <rect x="48" y="13" width="10" height="17" rx="4" fill="var(--color-paper)"></rect>
               <line x1="14" y1="30" x2="14" y2="36"></line>
               <line x1="50" y1="30" x2="50" y2="36"></line>
             </g>
@@ -386,7 +388,12 @@ const staticNavLinks: {
         width: 2.7rem;
         height: auto;
         flex: none;
+        color: var(--color-muted);
         transform-origin: bottom center;
+        transition: color 0.12s ease;
+      }
+      .wordmark:hover .wordmark__mark {
+        color: var(--color-pink);
       }
       /* The couch squishes like someone just flopped onto it. */
       .wordmark:hover .wordmark__mark {
