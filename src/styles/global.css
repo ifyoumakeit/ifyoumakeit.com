@@ -27,8 +27,13 @@
   --color-line: rgba(244, 242, 238, 0.16);
   /* Text on bright accent fills (pink/yellow/blue). Dark in BOTH themes. */
   --on-accent: #0b0b0d;
-  /* Faint screen glow at the top of the house. */
+  /* Faint screen glow at the top of the house, plus barely-there color
+     washes that drift past as you scroll (the gradients are sized to the
+     full page, so scroll position moves through them). */
   --glow: rgba(244, 242, 238, 0.05);
+  --drift-pink: rgba(255, 77, 141, 0.05);
+  --drift-blue: rgba(90, 167, 255, 0.045);
+  --tone-mid: #110f15;
 
   /* --- type --- */
   --font-display: "Anton", "Arial Narrow", "Archivo Black", system-ui,
@@ -67,6 +72,9 @@
   --color-muted: #6f6b76;
   --color-line: rgba(20, 19, 24, 0.16);
   --glow: rgba(20, 19, 24, 0.04);
+  --drift-pink: rgba(216, 27, 96, 0.035);
+  --drift-blue: rgba(31, 111, 214, 0.03);
+  --tone-mid: #f2f0ea;
 
   --shadow-hard: 0 18px 50px -18px rgba(20, 19, 24, 0.22);
   --shadow-hard-sm: 0 10px 28px -12px rgba(20, 19, 24, 0.15);
@@ -121,12 +129,28 @@ body {
   line-height: 1.6;
   color: var(--color-ink);
   background-color: var(--color-paper);
-  /* One faint screen-glow at the top of the room — otherwise clean. */
-  background-image: radial-gradient(
-    ellipse 90% 40% at 50% -5%,
-    var(--glow),
-    transparent 70%
-  );
+  /* A faint screen-glow at the top of the room, then slow tonal drift
+     down the page: a pink wash high, a blue wash low, and a gentle
+     mid-scroll lift. All percentage-positioned against the full document
+     height, so long scrolls pass through them slowly. */
+  background-image:
+    radial-gradient(ellipse 90% 40% at 50% -5%, var(--glow), transparent 70%),
+    radial-gradient(
+      ellipse 75% 22% at 10% 30%,
+      var(--drift-pink),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 75% 22% at 90% 72%,
+      var(--drift-blue),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      var(--color-paper) 0%,
+      var(--tone-mid) 50%,
+      var(--color-paper) 100%
+    );
   background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
