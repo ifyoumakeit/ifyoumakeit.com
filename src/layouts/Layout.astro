@@ -217,35 +217,54 @@ const staticNavLinks: {
               ))
             }
             {
-              staticNavLinks.map((item) => (
-                <a
-                  class:list={["site-nav__link", { "site-nav__link--icon": item.icon }]}
-                  href={item.href}
-                  aria-label={item.icon ? item.label : undefined}
-                  title={item.icon ? item.label : undefined}
-                  {...navState(item.href)}
-                >
-                  {item.icon === "search" ? (
-                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5" />
-                      <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
-                    </svg>
-                  ) : item.icon === "dice" ? (
-                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="2.5" />
-                      <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" />
-                      <circle cx="15.5" cy="8.5" r="1.6" fill="currentColor" />
-                      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-                      <circle cx="8.5" cy="15.5" r="1.6" fill="currentColor" />
-                      <circle cx="15.5" cy="15.5" r="1.6" fill="currentColor" />
-                    </svg>
-                  ) : (
-                    item.label
-                  )}
-                </a>
-              ))
+              staticNavLinks
+                .filter((item) => !item.icon)
+                .map((item) => (
+                  <a
+                    class="site-nav__link"
+                    href={item.href}
+                    {...navState(item.href)}
+                  >
+                    {item.label}
+                  </a>
+                ))
             }
-            <button
+          </nav>
+        </div>
+
+        <nav
+          class="site-header__icons"
+          aria-label="Random video, search, and theme"
+        >
+          <a
+            class="icon-link"
+            href="/random/"
+            aria-label="Random"
+            title="Random"
+            {...navState("/random/")}
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+              <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" />
+              <circle cx="15.5" cy="8.5" r="1.6" fill="currentColor" />
+              <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+              <circle cx="8.5" cy="15.5" r="1.6" fill="currentColor" />
+              <circle cx="15.5" cy="15.5" r="1.6" fill="currentColor" />
+            </svg>
+          </a>
+          <a
+            class="icon-link"
+            href="/search/"
+            aria-label="Search"
+            title="Search"
+            {...navState("/search/")}
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+              <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </a>
+          <button
               class="theme-toggle"
               id="theme-toggle"
               type="button"
@@ -275,8 +294,7 @@ const staticNavLinks: {
                 />
               </svg>
             </button>
-          </nav>
-        </div>
+        </nav>
       </div>
     </header>
 
@@ -444,23 +462,29 @@ const staticNavLinks: {
         border-bottom-color: var(--color-pink);
       }
 
-      /* Icon links (Random, Search) — bigger, borderless. The SVG follows
-         currentColor; hover/active just recolor and nudge it. Rules come
-         after the active block so they win the equal-specificity ties. */
-      .site-nav__link--icon,
-      .site-nav__link--icon[data-active],
-      .site-nav__link--icon[aria-current="page"] {
+      /* ---------- icon cluster: random / search / theme ---------- */
+      /* Lives outside the scrolling nav so it can pin to the top right on
+         small screens. The SVGs follow currentColor; hover/active just
+         recolor and nudge them. */
+      .site-header__icons {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        flex: none;
+      }
+      .icon-link {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 0;
-        background: transparent;
         padding: 0.15em;
         color: var(--color-ink);
+        text-decoration: none;
+        transition:
+          color 0.1s ease,
+          transform 0.1s ease;
       }
-      .site-nav__link--icon:hover,
-      .site-nav__link--icon[aria-current="page"] {
-        background: transparent;
+      .icon-link:hover,
+      .icon-link[aria-current="page"] {
         color: var(--color-pink);
         transform: translateY(-1px) rotate(-6deg) scale(1.08);
       }
@@ -507,10 +531,17 @@ const staticNavLinks: {
         .site-header__inner {
           padding-block-end: 0;
         }
+        /* The icon cluster pins to the top right, beside the wordmark;
+           the text nav drops below it as a full-width scrolling strip. */
+        .site-header__icons {
+          order: 1;
+          margin-inline-start: auto;
+        }
         /* Nav becomes a single edge-to-edge scrolling strip: no wrap, swipe
            to reach the tail. Bleed past the container padding so links can
            slide under the screen edge, with a fade hinting at more. */
         .site-header__nav {
+          order: 2;
           width: 100%;
           margin-inline: calc(-1 * clamp(1rem, 4vw, 2rem));
         }
@@ -533,8 +564,7 @@ const staticNavLinks: {
         .site-nav::-webkit-scrollbar {
           display: none;
         }
-        .site-nav__link,
-        .theme-toggle {
+        .site-nav__link {
           flex: none;
         }
       }
