@@ -15,7 +15,8 @@ a couple of unmigrated Flash-era files.
 1. **Fully static.** No SSR adapter, no server. Every dynamic route MUST export
    `getStaticPaths`. API routes are prerendered JSON only.
 2. **Near-zero client JS.** The only JavaScript shipped is the click-to-play
-   embed shim inside `VideoEmbed.astro`. No client frameworks, no client-side
+   embed shim inside `VideoEmbed.astro` and the ~20-line inline theme
+   init/toggle in `Layout.astro`. No client frameworks, no client-side
    routing, no animation libraries. Interactivity comes from HTML/CSS.
 3. **No runtime third-party requests except media.** Fonts are self-hosted via
    `@fontsource` packages. YouTube thumbnails (`i.ytimg.com`) and the
@@ -130,21 +131,46 @@ plus prev/next within the series by `recorded_at`. Keep this when editing
 
 ## Design system
 
-DIY zine / punk-flyer. The contract lives in `src/styles/global.css`:
+Cinematic screening room with a neon "TV glow" atmosphere (à la *I Saw the
+TV Glow*): violet-black house, true-black stages where the video player is
+the light source (orchid bloom + `--tv-glow` spill), soft neon halos on big
+display type, drifting violet/pink/blue smoke washes down the page, crisp
+type at generous sizes, hairline chrome, hot-pink couch accent. No
+boxes-on-boxes, no rotations, no hard offset shadows — typography, footage,
+and light carry the design. The contract lives in `src/styles/global.css`:
 
-- Tokens: `--color-paper` (#FAF3E7), `--color-ink` (#16121A), `--color-pink`
-  (#FF4D8D), `--color-pink-deep`, `--color-blue`, `--color-yellow`,
-  `--color-muted`, `--font-display` (Archivo Black), `--font-body` (Archivo
-  Variable), `--font-mono` (Space Mono), `--border` (3px solid ink),
-  `--shadow-hard` (hard offset, no blur), `--radius`.
-- Utilities: `.container`, `.grid-videos`, `.btn`, `.tag-chip`, `.meta-line`.
-- **Series accent theming**: put `data-series={series.slug}` on an element and
-  `--accent` resolves per series (pink-couch-sessions → pink, live-and-direct →
-  blue, shows → yellow). Use `var(--accent, var(--color-pink))` in styles.
+- Tokens: `--color-paper` (#0B0B0D — the page background), `--color-panel`
+  (#17171B — raised surface), `--color-ink` (#F4F2EE — crisp off-white
+  text), `--color-line` (hairline borders/dividers), `--color-pink`
+  (#FF4D8D), `--color-pink-deep` (bright emphasis/hover pink),
+  `--color-blue`, `--color-yellow`, `--color-muted`, `--font-display`
+  (Anton), `--font-body` (Archivo Variable), `--font-mono` (Space Mono),
+  `--border` (1px hairline), `--shadow-hard` (soft ambient elevation, no
+  hard offsets), `--radius`.
+- **Video stages are pure #000 in both themes** — full-bleed bands behind
+  the players on the homepage hero and video pages. Thumbnail tiles and
+  placeholders use fixed-dark `#101013`.
+- **Two themes.** Dark is the default; `html[data-theme="light"]` is the
+  white-gallery matinee via token overrides. A tiny inline script in
+  `Layout.astro` sets `data-theme` before paint (stored choice, else system
+  preference); the header toggle flips + persists it. When styling text on
+  a bright accent fill, use `--on-accent` (dark in both themes) or
+  `--accent-ink` — never `--color-paper`, which is light in light mode.
+- Utilities: `.container`, `.grid-videos`, `.btn` (hairline pill),
+  `.tag-chip` (hairline pill), `.meta-line` (mono caption).
+- **Series accent theming**: put `data-series={series.slug}` on an element
+  and `--accent`/`--accent-text` resolve per series (sessions → pink,
+  live → blue, series → yellow). Use `var(--accent, var(--color-pink))`.
+- Blurbs are short — set them big (`clamp(1.1rem, …, 1.3rem)`+), headlines
+  bigger. Cards are unboxed: image tile (hairline + radius) with type
+  below, no card chrome.
 
 New UI should use these tokens/utilities plus minimal page-scoped `<style>`.
 Don't introduce new global CSS without good reason, and keep the aesthetic:
-thick borders, hard shadows, uppercase display headings, sticker-like badges.
+clean black stages, hairlines, big crisp uppercase Anton headings, quiet
+fade/rise motion only. `scripts/generate-og.mjs` re-renders the
+`public/og-*.png` social cards in this style (needs `playwright-core` +
+Chromium; see the script header).
 
 ### Component contracts (`src/components/`)
 

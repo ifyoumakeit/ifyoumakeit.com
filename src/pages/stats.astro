@@ -292,18 +292,11 @@ const providerRows = [...providerCounts.entries()]
   }
   .stamp {
     text-align: center;
-    background: var(--color-paper);
+    background: var(--color-panel);
     border: var(--border);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
-    padding: 1.1rem 0.75rem;
+    padding: 1.4rem 0.75rem;
     animation: stamp-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-  .stamp:nth-child(odd) {
-    transform: rotate(-1.4deg);
-  }
-  .stamp:nth-child(even) {
-    transform: rotate(1.4deg);
   }
   .stamp:nth-child(1) {
     animation-delay: 0.05s;
@@ -402,8 +395,8 @@ const providerRows = [...providerCounts.entries()]
     letter-spacing: 0.03em;
   }
   .bar-track {
-    height: 1.5rem;
-    background: var(--color-paper);
+    height: 1.4rem;
+    background: var(--color-panel);
     border: var(--border-thin);
     border-radius: 999px;
     overflow: hidden;
@@ -412,8 +405,7 @@ const providerRows = [...providerCounts.entries()]
     height: 100%;
     min-width: 0.5rem;
     background: var(--accent, var(--color-pink));
-    border-right: var(--border-thin);
-    border-radius: 0 999px 999px 0;
+    border-radius: 999px;
     animation: grow-x 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards 0.1s;
     transform-origin: left;
   }
@@ -451,7 +443,7 @@ const providerRows = [...providerCounts.entries()]
     align-items: flex-end;
     gap: clamp(0.4rem, 2vw, 1.25rem);
     height: 14rem;
-    border-bottom: 3px solid var(--color-ink);
+    border-bottom: 1px solid var(--color-line);
     padding-bottom: 0;
   }
   .column {
@@ -477,7 +469,6 @@ const providerRows = [...providerCounts.entries()]
     border: var(--border-thin);
     border-bottom: 0;
     border-radius: var(--radius) var(--radius) 0 0;
-    box-shadow: var(--shadow-hard-sm);
     transition:
       transform 0.12s ease,
       background 0.12s ease;
@@ -555,8 +546,8 @@ const providerRows = [...providerCounts.entries()]
   .chart-bar-wrap {
     display: block;
     height: 0.55rem;
-    background: var(--color-paper);
-    border: 2px solid var(--color-ink);
+    background: var(--color-panel);
+    border: 1px solid var(--color-line);
     border-radius: 999px;
     overflow: hidden;
   }

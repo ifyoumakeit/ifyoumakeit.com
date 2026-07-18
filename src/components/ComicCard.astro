@@ -33,36 +33,32 @@ const { title, href, artistName, coverFile, pageCount } = Astro.props;
 </a>
 
 <style>
+  /* Clean page tile, type below, no box. */
   .comic-card {
     display: flex;
     flex-direction: column;
-    background: var(--color-paper);
-    border: var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
+    gap: 0.75rem;
+    background: transparent;
     text-decoration: none;
     color: var(--color-ink);
-    overflow: hidden;
-    transition:
-      transform 0.12s ease,
-      box-shadow 0.12s ease;
   }
   .comic-card:hover {
     text-decoration: none;
-    transform: translate(-3px, -3px) rotate(-0.6deg);
-    box-shadow: 9px 9px 0 var(--color-ink);
   }
   .comic-card:focus-visible {
     outline: 3px solid var(--color-yellow);
-    outline-offset: 3px;
+    outline-offset: 4px;
+    border-radius: var(--radius);
   }
   /* Comic art varies (wide strips, tall pages). Show a square crop from the
-     top so the title panel reads in the grid. */
+     top so the title panel reads in the grid. Pages are mostly white scans,
+     so the tile stays white in both themes. */
   .comic-card__cover {
     position: relative;
     aspect-ratio: 1 / 1;
-    background: var(--color-yellow);
-    border-bottom: var(--border);
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
     overflow: hidden;
   }
   .comic-card__img {
@@ -73,10 +69,10 @@ const { title, href, artistName, coverFile, pageCount } = Astro.props;
     object-fit: cover;
     object-position: top center;
     display: block;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .comic-card:hover .comic-card__img {
-    transform: scale(1.04);
+    transform: scale(1.03);
   }
   .comic-card__pages {
     position: absolute;
@@ -85,33 +81,34 @@ const { title, href, artistName, coverFile, pageCount } = Astro.props;
     font-family: var(--font-mono);
     font-weight: 700;
     font-size: 0.68rem;
-    color: var(--color-ink);
-    background: var(--color-paper);
-    border: var(--border-thin);
+    color: #f4f2ee;
+    background: rgba(11, 11, 13, 0.72);
+    border: 1px solid rgba(244, 242, 238, 0.25);
     border-radius: 999px;
-    padding: 0.25em 0.6em;
+    padding: 0.35em 0.75em;
   }
   .comic-card__body {
-    padding: 0.85rem 1rem 1.05rem;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    padding-inline: 0.15rem;
   }
   .comic-card__artist {
     margin: 0;
     font-family: var(--font-display);
     text-transform: uppercase;
-    font-size: 1.1rem;
-    line-height: 0.95;
-    letter-spacing: -0.01em;
+    font-size: 1.2rem;
+    line-height: 1;
+    letter-spacing: 0.015em;
+    transition: color 0.12s ease;
   }
   .comic-card:hover .comic-card__artist {
-    color: var(--color-pink-deep);
+    color: var(--accent-text, var(--color-pink-deep));
   }
   .comic-card__title {
     margin: 0;
     font-size: 0.95rem;
-    line-height: 1.25;
+    line-height: 1.3;
     color: var(--color-muted);
   }
 </style>

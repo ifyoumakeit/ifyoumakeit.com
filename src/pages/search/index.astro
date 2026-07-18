@@ -253,27 +253,24 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     width: 100%;
     font-family: var(--font-mono);
     font-weight: 700;
-    font-size: clamp(1rem, 3vw, 1.4rem);
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
     color: var(--color-ink);
-    background: var(--color-paper);
-    border: var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-hard-sm);
-    padding: 0.7em 0.85em;
-    transition:
-      box-shadow 0.12s ease,
-      transform 0.12s ease;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid var(--color-line);
+    border-radius: 0;
+    padding: 0.6em 0.1em;
+    transition: border-color 0.12s ease;
   }
   .search-input::placeholder {
     color: var(--color-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     font-size: 0.85em;
   }
   .search-input:focus {
     outline: none;
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-hard);
+    border-bottom-color: var(--color-pink);
   }
   /* hide the native clear button so the zine look stays clean */
   .search-input::-webkit-search-cancel-button {
@@ -301,21 +298,18 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     gap: 1.15rem;
     text-decoration: none;
     color: var(--color-ink);
-    background: var(--color-paper);
-    border: var(--border-thin);
+    background: var(--color-panel);
+    border: 1px solid var(--color-line);
     border-radius: var(--radius);
     padding: 1rem 1.2rem;
-    transition:
-      transform 0.12s ease,
-      box-shadow 0.12s ease;
+    transition: border-color 0.12s ease;
   }
   #results :global(.result:hover) {
     text-decoration: none;
-    transform: translate(-2px, -2px) rotate(-0.3deg);
-    box-shadow: var(--shadow-hard-sm);
+    border-color: var(--accent, var(--color-pink));
   }
   #results :global(.result:focus-visible) {
-    outline: 3px solid var(--color-blue);
+    outline: 3px solid var(--color-yellow);
     outline-offset: 2px;
   }
   #results :global(.result__dot) {
@@ -323,7 +317,6 @@ const indexJson = JSON.stringify(index).replace(/</g, "\\u003c");
     width: 0.85rem;
     height: 0.85rem;
     border-radius: 999px;
-    border: 3px solid var(--color-ink);
     background: var(--accent, var(--color-pink));
   }
   /* Album results carry no series — give them the albums blue accent. */

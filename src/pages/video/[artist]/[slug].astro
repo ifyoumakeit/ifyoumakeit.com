@@ -207,13 +207,15 @@ function videoCard(v: typeof videoData) {
   structuredData={videoStructuredData}
 >
   <article class="video-page" data-series={seriesData.slug}>
-    <div class="container video-top">
-      <VideoEmbed
-        provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
-        providerId={videoData.provider_id}
-        title={videoData.title}
-        thumbnail={localThumbnail}
-      />
+    <div class="video-stage">
+      <div class="video-top">
+        <VideoEmbed
+          provider={videoData.provider as "youtube" | "vimeo" | "dailymotion" | "flash"}
+          providerId={videoData.provider_id}
+          title={videoData.title}
+          thumbnail={localThumbnail}
+        />
+      </div>
     </div>
 
     <div class="container video-meta">
@@ -309,25 +311,53 @@ function videoCard(v: typeof videoData) {
 </Layout>
 
 <style>
-  .video-top {
-    padding-block: 1.5rem 0;
+  /* Full-bleed screening room behind the player — the player takes as
+     much of the viewport as its 16:9 frame allows, leaving a sliver
+     below for the title to peek and invite the scroll. */
+  .video-stage {
+    display: grid;
+    place-items: center;
+    /* The room is black; the screen is the light source. */
+    background:
+      radial-gradient(
+        ellipse 62% 58% at 50% 52%,
+        rgba(215, 136, 232, 0.12),
+        rgba(167, 139, 250, 0.05) 55%,
+        transparent 75%
+      ),
+      #000;
+    padding: clamp(1.25rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
   }
+  .video-top {
+    width: min(100%, calc((100vh - 12rem) * 16 / 9));
+    width: min(100%, calc((100svh - 12rem) * 16 / 9));
+    max-width: 1720px;
+  }
+  .video-top :global(.embed) {
+    box-shadow: var(--tv-glow);
+  }
+  /* Centered title card, mirroring the homepage screening pattern. */
   .video-meta {
-    padding-block: 1.25rem 2rem;
+    padding-block: clamp(1.75rem, 4vw, 2.75rem) 2.25rem;
     border-bottom: var(--border);
+    text-align: center;
   }
   .video-title {
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, 4vw, 2.8rem);
-    margin: 0 0 0.35rem;
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    margin: 0 0 0.4rem;
   }
   .video-badges {
-    margin-block: 0.5rem;
+    margin-block: 0.9rem;
+    display: flex;
+    justify-content: center;
   }
+  /* Short blurbs, big type. */
   .video-description {
-    margin-block: 1rem;
-    max-width: 65ch;
-    line-height: 1.6;
+    margin: 1.25rem auto;
+    max-width: 58ch;
+    font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+    line-height: 1.55;
   }
   .video-description p {
     margin: 0 0 0.75rem;
@@ -350,6 +380,9 @@ function videoCard(v: typeof videoData) {
   }
   .setlist {
     margin-block: 1.25rem;
+    /* Centered block, left-read list. */
+    display: inline-block;
+    text-align: left;
   }
   .setlist-heading {
     font-family: var(--font-display);
@@ -367,6 +400,7 @@ function videoCard(v: typeof videoData) {
   .video-tags {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.4rem;
     margin-block-start: 1rem;
   }
@@ -411,15 +445,23 @@ function videoCard(v: typeof videoData) {
     color: var(--accent-text, var(--color-pink-deep));
   }
 
+  /* Mobile: two full-width rows, both left-aligned so the pair reads as
+     one clean list, split by a hairline. */
   @media (max-width: 560px) {
     .prev-next-inner {
       flex-direction: column;
+      gap: 0;
     }
     .prev-next-link {
       max-width: 100%;
+      padding-block: 0.9rem;
     }
     .next-link {
-      align-self: flex-end;
+      text-align: left;
+      margin-inline-start: 0;
+    }
+    .prev-next-link + .prev-next-link {
+      border-top: 1px solid var(--color-line);
     }
   }
 </style>

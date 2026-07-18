@@ -1,9 +1,20 @@
 ---
-import "@fontsource/archivo-black";
+import "@fontsource/anton/400.css";
 import "@fontsource-variable/archivo";
 import "@fontsource/space-mono/400.css";
 import "@fontsource/space-mono/700.css";
 import "../styles/global.css";
+// Preload the critical latin font files so they're fetched as soon as the
+// HTML arrives, not after the stylesheet parses. @fontsource ships
+// font-display: swap, so a late font repaints the page in a new face —
+// Anton especially reflows hard against its fallback. Vite dedupes these
+// against the URLs in the CSS, so each file still ships (and caches) once.
+import antonWoff2 from "@fontsource/anton/files/anton-latin-400-normal.woff2?url";
+import archivoWoff2 from "@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url";
+import monoWoff2 from "@fontsource/space-mono/files/space-mono-latin-400-normal.woff2?url";
+import monoBoldWoff2 from "@fontsource/space-mono/files/space-mono-latin-700-normal.woff2?url";
+
+const preloadFonts = [antonWoff2, archivoWoff2, monoWoff2, monoBoldWoff2];
 import { db, eq, asc, series } from "../lib/db";
 import {
   DEFAULT_DESCRIPTION,
@@ -106,12 +117,31 @@ const staticNavLinks: {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Theme init — must run before first paint to avoid a flash.
+      // Stored choice wins; first visit follows the system preference.
+      (() => {
+        let t;
+        try {
+          t = localStorage.getItem("theme");
+        } catch {}
+        if (t !== "light" && t !== "dark") {
+          t = matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark";
+        }
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
     <title>{documentTitle}</title>
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
-    <meta name="theme-color" content="#FF4D8D" />
+    <meta name="theme-color" content="#0B0B0D" id="meta-theme-color" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonicalUrl} />
+    {preloadFonts.map((href) => (
+      <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />
+    ))}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
@@ -155,17 +185,20 @@ const staticNavLinks: {
             aria-hidden="true"
             focusable="false"
           >
+            {/* Pink line-art couch: paper fills self-mask the overlapping
+                shapes, strokes follow currentColor. Stroke width is tuned so
+                the rendered line matches the 2.5px of the nav icons. */}
             <g
-              stroke="#16121A"
-              stroke-width="3"
+              stroke="currentColor"
+              stroke-width="3.7"
               stroke-linejoin="round"
               stroke-linecap="round"
             >
-              <rect x="10" y="6" width="44" height="14" rx="6" fill="#FF4D8D"></rect>
-              <rect x="8" y="17" width="48" height="13" rx="5" fill="#FF4D8D"></rect>
+              <rect x="10" y="6" width="44" height="14" rx="6" fill="var(--color-paper)"></rect>
+              <rect x="8" y="17" width="48" height="13" rx="5" fill="var(--color-paper)"></rect>
               <line x1="32" y1="19" x2="32" y2="28"></line>
-              <rect x="6" y="13" width="10" height="17" rx="4" fill="#D81E5B"></rect>
-              <rect x="48" y="13" width="10" height="17" rx="4" fill="#D81E5B"></rect>
+              <rect x="6" y="13" width="10" height="17" rx="4" fill="var(--color-paper)"></rect>
+              <rect x="48" y="13" width="10" height="17" rx="4" fill="var(--color-paper)"></rect>
               <line x1="14" y1="30" x2="14" y2="36"></line>
               <line x1="50" y1="30" x2="50" y2="36"></line>
             </g>
@@ -187,36 +220,84 @@ const staticNavLinks: {
               ))
             }
             {
-              staticNavLinks.map((item) => (
-                <a
-                  class:list={["site-nav__link", { "site-nav__link--icon": item.icon }]}
-                  href={item.href}
-                  aria-label={item.icon ? item.label : undefined}
-                  title={item.icon ? item.label : undefined}
-                  {...navState(item.href)}
-                >
-                  {item.icon === "search" ? (
-                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5" />
-                      <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
-                    </svg>
-                  ) : item.icon === "dice" ? (
-                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="2.5" />
-                      <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" />
-                      <circle cx="15.5" cy="8.5" r="1.6" fill="currentColor" />
-                      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-                      <circle cx="8.5" cy="15.5" r="1.6" fill="currentColor" />
-                      <circle cx="15.5" cy="15.5" r="1.6" fill="currentColor" />
-                    </svg>
-                  ) : (
-                    item.label
-                  )}
-                </a>
-              ))
+              staticNavLinks
+                .filter((item) => !item.icon)
+                .map((item) => (
+                  <a
+                    class="site-nav__link"
+                    href={item.href}
+                    {...navState(item.href)}
+                  >
+                    {item.label}
+                  </a>
+                ))
             }
           </nav>
         </div>
+
+        <nav
+          class="site-header__icons"
+          aria-label="Random video, search, and theme"
+        >
+          <a
+            class="icon-link"
+            href="/random/"
+            aria-label="Random"
+            title="Random"
+            {...navState("/random/")}
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+              <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" />
+              <circle cx="15.5" cy="8.5" r="1.6" fill="currentColor" />
+              <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+              <circle cx="8.5" cy="15.5" r="1.6" fill="currentColor" />
+              <circle cx="15.5" cy="15.5" r="1.6" fill="currentColor" />
+            </svg>
+          </a>
+          <a
+            class="icon-link"
+            href="/search/"
+            aria-label="Search"
+            title="Search"
+            {...navState("/search/")}
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+              <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </a>
+          <button
+              class="theme-toggle"
+              id="theme-toggle"
+              type="button"
+              aria-label="Toggle light/dark theme"
+              title="Toggle light/dark theme"
+            >
+              <svg class="nav-icon theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+                <g stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <line x1="12" y1="1.5" x2="12" y2="4.5" />
+                  <line x1="12" y1="19.5" x2="12" y2="22.5" />
+                  <line x1="1.5" y1="12" x2="4.5" y2="12" />
+                  <line x1="19.5" y1="12" x2="22.5" y2="12" />
+                  <line x1="4.8" y1="4.8" x2="6.9" y2="6.9" />
+                  <line x1="17.1" y1="17.1" x2="19.2" y2="19.2" />
+                  <line x1="4.8" y1="19.2" x2="6.9" y2="17.1" />
+                  <line x1="17.1" y1="6.9" x2="19.2" y2="4.8" />
+                </g>
+              </svg>
+              <svg class="nav-icon theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+        </nav>
       </div>
     </header>
 
@@ -242,6 +323,22 @@ const staticNavLinks: {
       </div>
     </footer>
 
+    <script is:inline>
+      // Theme toggle: flip data-theme on <html>, persist, and keep the
+      // browser-chrome color in sync. (Init runs in <head> before paint.)
+      document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === "light" ? "dark" : "light";
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem("theme", next);
+        } catch {}
+        document
+          .getElementById("meta-theme-color")
+          ?.setAttribute("content", next === "light" ? "#F8F7F4" : "#0B0B0D");
+      });
+    </script>
+
     <style>
       .skip-link {
         position: absolute;
@@ -249,7 +346,7 @@ const staticNavLinks: {
         top: -3.1rem;
         z-index: 100;
         background: var(--color-yellow);
-        color: var(--color-ink);
+        color: var(--on-accent);
         border: var(--border);
         border-radius: var(--radius);
         padding: 0.5rem 0.9rem;
@@ -265,33 +362,44 @@ const staticNavLinks: {
         outline: none;
       }
 
-      /* ---------- header ---------- */
+      /* ---------- header: the lobby ---------- */
+      .site-header {
+        background: var(--color-paper);
+        border-bottom: var(--border);
+      }
       .site-header__inner {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 0.5rem 1rem;
-        padding-block: 0.7rem;
+        padding-block: 0.85rem;
       }
 
       .wordmark {
         display: inline-flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.7rem;
         text-decoration: none;
         color: var(--color-ink);
-        transition: transform 0.12s ease;
       }
       .wordmark:hover {
         text-decoration: none;
-        transform: rotate(-1deg);
       }
       .wordmark__mark {
-        width: 2.6rem;
+        width: 2.7rem;
         height: auto;
         flex: none;
-        filter: drop-shadow(2px 2px 0 var(--color-ink));
+        color: var(--color-pink);
+        /* Lit like a small neon sign over the door. */
+        filter: drop-shadow(0 0 8px rgba(255, 77, 141, 0.55));
         transform-origin: bottom center;
+        transition:
+          color 0.12s ease,
+          filter 0.12s ease;
+      }
+      .wordmark:hover .wordmark__mark {
+        color: var(--color-pink-deep);
+        filter: drop-shadow(0 0 12px rgba(255, 77, 141, 0.75));
       }
       /* The couch squishes like someone just flopped onto it. */
       .wordmark:hover .wordmark__mark {
@@ -308,13 +416,17 @@ const staticNavLinks: {
       .wordmark__text {
         font-family: var(--font-display);
         text-transform: uppercase;
-        font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+        font-size: clamp(1.3rem, 2.8vw, 1.9rem);
         line-height: 1;
-        letter-spacing: -0.01em;
+        letter-spacing: 0.02em;
         white-space: nowrap;
+        transition: color 0.12s ease;
+      }
+      .wordmark:hover .wordmark__text {
+        color: var(--color-pink-deep);
       }
 
-      /* ---------- nav ---------- */
+      /* ---------- nav: the set list ---------- */
       .site-header__nav {
         display: flex;
         align-items: center;
@@ -327,61 +439,61 @@ const staticNavLinks: {
       .site-nav {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.4rem 0.5rem;
+        gap: 0.15rem 0.2rem;
         align-items: center;
       }
       .site-nav__link {
         font-family: var(--font-mono);
         font-weight: 700;
-        font-size: 0.72rem;
+        font-size: 0.74rem;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.08em;
         line-height: 1;
-        color: var(--color-ink);
+        color: var(--color-muted);
         text-decoration: none;
-        border: var(--border-thin);
-        border-radius: 999px;
-        padding: 0.45em 0.75em;
-        background: var(--color-paper);
+        padding: 0.6em 0.65em;
+        border-bottom: 2px solid transparent;
         transition:
-          transform 0.1s ease,
-          background 0.1s ease,
-          color 0.1s ease;
+          color 0.1s ease,
+          border-color 0.1s ease;
       }
       .site-nav__link:hover {
-        background: var(--color-ink);
-        color: var(--color-paper);
+        color: var(--color-ink);
+        border-bottom-color: var(--color-pink);
         text-decoration: none;
-        transform: translateY(-1px) rotate(-1.5deg);
       }
       .site-nav__link[data-active],
       .site-nav__link[aria-current="page"] {
-        background: var(--color-ink);
-        color: var(--color-paper);
-        box-shadow: 2px 2px 0 var(--color-pink);
+        color: var(--color-pink-deep);
+        border-bottom-color: var(--color-pink);
+        text-shadow: 0 0 14px rgba(255, 77, 141, 0.5);
       }
 
-      /* Icon links (Random, Search) — bigger, borderless, no pill. The SVG
-         follows currentColor; hover/active just recolor and nudge it. Rules
-         come after the active block so they win the equal-specificity ties. */
-      .site-nav__link--icon,
-      .site-nav__link--icon[data-active],
-      .site-nav__link--icon[aria-current="page"] {
+      /* ---------- icon cluster: random / search / theme ---------- */
+      /* Lives outside the scrolling nav so it can pin to the top right on
+         small screens. The SVGs follow currentColor; hover/active just
+         recolor and nudge them. */
+      .site-header__icons {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        flex: none;
+      }
+      .icon-link {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 0;
-        background: transparent;
-        box-shadow: none;
         padding: 0.15em;
         color: var(--color-ink);
+        text-decoration: none;
+        transition:
+          color 0.1s ease,
+          transform 0.1s ease;
       }
-      .site-nav__link--icon:hover,
-      .site-nav__link--icon[aria-current="page"] {
-        background: transparent;
-        color: var(--color-pink-deep);
+      .icon-link:hover,
+      .icon-link[aria-current="page"] {
+        color: var(--color-pink);
         transform: translateY(-1px) rotate(-6deg) scale(1.08);
-        box-shadow: none;
       }
       .nav-icon {
         display: block;
@@ -389,14 +501,54 @@ const staticNavLinks: {
         height: 1.5rem;
       }
 
+      /* Theme toggle rides with the icon links. The sun shows in the dark
+         (click for daylight), the moon shows in the light. */
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.15em;
+        margin: 0;
+        border: 0;
+        background: transparent;
+        color: var(--color-ink);
+        cursor: pointer;
+        transition:
+          color 0.1s ease,
+          transform 0.1s ease;
+      }
+      .theme-toggle:hover {
+        color: var(--color-yellow);
+        transform: translateY(-1px) rotate(-6deg) scale(1.08);
+      }
+      .theme-toggle__moon {
+        display: none;
+      }
+      :global([data-theme="light"]) .theme-toggle__sun {
+        display: none;
+      }
+      :global([data-theme="light"]) .theme-toggle__moon {
+        display: block;
+      }
+      :global([data-theme="light"]) .theme-toggle:hover {
+        color: var(--color-pink-deep);
+      }
+
       @media (max-width: 560px) {
         .site-header__inner {
           padding-block-end: 0;
         }
-        /* Nav becomes a single edge-to-edge scrolling sticker strip: no wrap,
-           swipe to reach the tail. Bleed past the container padding so pills
-           can slide under the screen edge, with a fade hinting at more. */
+        /* The icon cluster pins to the top right, beside the wordmark;
+           the text nav drops below it as a full-width scrolling strip. */
+        .site-header__icons {
+          order: 1;
+          margin-inline-start: auto;
+        }
+        /* Nav becomes a single edge-to-edge scrolling strip: no wrap, swipe
+           to reach the tail. Bleed past the container padding so links can
+           slide under the screen edge, with a fade hinting at more. */
         .site-header__nav {
+          order: 2;
           width: 100%;
           margin-inline: calc(-1 * clamp(1rem, 4vw, 2rem));
         }
@@ -404,7 +556,7 @@ const staticNavLinks: {
           flex-wrap: nowrap;
           overflow-x: auto;
           width: 100%;
-          /* End padding exceeds the fade width so the last pill is fully
+          /* End padding exceeds the fade width so the last link is fully
              visible once scrolled to the end. */
           padding-inline: clamp(1rem, 4vw, 2rem) 2rem;
           padding-block: 0.2rem 0.7rem;
@@ -424,21 +576,22 @@ const staticNavLinks: {
         }
       }
 
-      /* ---------- footer ---------- */
+      /* ---------- footer: the end credits ---------- */
       .site-footer {
         margin-top: clamp(3rem, 8vw, 6rem);
         border-top: var(--border);
-        background: var(--color-ink);
-        color: var(--color-paper);
-        padding-block: clamp(2rem, 5vw, 3rem);
+        background: var(--color-paper);
+        color: var(--color-ink);
+        padding-block: clamp(2.5rem, 6vw, 4.5rem);
       }
       .site-footer__tagline {
         font-family: var(--font-display);
         text-transform: uppercase;
-        font-size: clamp(1.1rem, 3vw, 1.6rem);
-        line-height: 1.05;
-        margin: 0 0 1.2rem;
-        max-width: 28ch;
+        font-size: clamp(1.6rem, 4.5vw, 3rem);
+        line-height: 1.02;
+        letter-spacing: 0.015em;
+        margin: 0 0 1.6rem;
+        max-width: 24ch;
       }
       .site-footer__nav {
         display: flex;
@@ -451,7 +604,7 @@ const staticNavLinks: {
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: var(--color-paper);
+        color: var(--color-ink);
         text-decoration: none;
         border-bottom: 2px solid var(--color-pink);
         padding-bottom: 2px;

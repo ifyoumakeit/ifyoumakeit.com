@@ -1,37 +1,35 @@
-// Generate the Open Graph images (public/og-*.png) in the site's zine style,
-// using the REAL self-hosted fonts (Archivo Black + Space Mono) rather than
-// SVG-rasterizer fallbacks. One default card plus an accent-themed card per
-// section. Rendered headless via Playwright at 1200x630 @2x (2400x1260).
+// Generate the Open Graph images (public/og-*.png) in the site's cinematic
+// screening-room style, using the REAL self-hosted fonts (Anton + Space Mono)
+// rather than SVG-rasterizer fallbacks. One default card plus an
+// accent-themed card per section. Rendered headless via Playwright at
+// 1200x630 @2x (2400x1260).
 //
 // Usage: node scripts/generate-og.mjs
-import { readFileSync, writeFileSync } from "node:fs";
-import { createRequire } from "node:module";
-
-const require = createRequire(import.meta.url);
-const { chromium } = require(
-  "/Users/davidgarwacke/.npm/_npx/e41f203b7505f1fb/node_modules/playwright-core",
-);
+// Needs playwright-core (devDependency). Chromium resolution order:
+//   1. $OG_CHROMIUM  2. playwright-core's own resolution
+//   3. /opt/pw-browsers/chromium (preinstalled path in CI containers)
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { chromium } from "playwright-core";
 
 const b64 = (p) => readFileSync(p).toString("base64");
-const ARCHIVO = b64(
-  "node_modules/@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2",
+const ANTON = b64(
+  "node_modules/@fontsource/anton/files/anton-latin-400-normal.woff2",
 );
 const MONO = b64(
   "node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2",
 );
 
-const PAPER = "#faf3e7";
-const INK = "#16121a";
+const BLACK = "#0b0810";
+const INK = "#f4f1f5";
 const PINK = "#ff4d8d";
-const PINK_DEEP = "#c91550";
-const BLUE = "#0b63ce";
+const BLUE = "#4dc9f0";
 const YELLOW = "#ffd23f";
+const MUTED = "#9c92ad";
 
-// accent = card frame; deep = kicker/est text on the paper panel.
 const ACCENTS = {
-  pink: { accent: PINK, deep: PINK_DEEP },
-  blue: { accent: BLUE, deep: BLUE },
-  yellow: { accent: YELLOW, deep: PINK_DEEP },
+  pink: PINK,
+  blue: BLUE,
+  yellow: YELLOW,
 };
 
 const VARIANTS = [
@@ -46,32 +44,52 @@ const VARIANTS = [
 ];
 
 function cardHtml(v) {
-  const { accent, deep } = ACCENTS[v.color];
-  const titleSize = v.title.length > 1 ? 112 : 150;
+  const accent = ACCENTS[v.color];
+  const titleSize = v.title.length > 1 ? 148 : 190;
   const nbsp = (s) => s.replace(/ /g, "&nbsp;");
   return `<!doctype html><html><head><meta charset="utf-8"><style>
-    @font-face { font-family:"Archivo Black"; src:url(data:font/woff2;base64,${ARCHIVO}) format("woff2"); font-weight:400; font-display:block; }
+    @font-face { font-family:"Anton"; src:url(data:font/woff2;base64,${ANTON}) format("woff2"); font-weight:400; font-display:block; }
     @font-face { font-family:"Space Mono"; src:url(data:font/woff2;base64,${MONO}) format("woff2"); font-weight:700; font-display:block; }
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{width:1200px;height:630px}
-    body{background:${PAPER};background-image:repeating-linear-gradient(-45deg,transparent 0 13px,rgba(22,18,26,0.035) 13px 14px);display:flex;align-items:center;justify-content:center;font-synthesis:none}
-    .card{width:1000px;transform:rotate(-2deg);background:${accent};border:8px solid ${INK};border-radius:12px;box-shadow:18px 18px 0 ${INK};padding:22px}
-    .panel{background:${PAPER};border:4px solid ${INK};border-radius:5px;padding:50px 60px 46px}
-    .kicker{font-family:"Archivo Black",sans-serif;font-size:40px;color:${deep};text-transform:uppercase;letter-spacing:0.01em;margin-bottom:14px}
-    .title{font-family:"Archivo Black",sans-serif;font-size:${titleSize}px;line-height:0.9;letter-spacing:-0.02em;color:${INK};text-transform:uppercase}
-    .est{font-family:"Archivo Black",sans-serif;font-size:46px;color:${deep};text-transform:uppercase;margin-top:18px}
-    .tag{font-family:"Space Mono",monospace;font-weight:700;font-size:32px;color:${INK};text-transform:uppercase;letter-spacing:0.02em;margin-top:28px}
+    body{
+      background:${BLACK};
+      background-image:
+        radial-gradient(ellipse 70% 90% at 78% 50%, rgba(215,136,232,0.16), rgba(167,139,250,0.07) 55%, transparent 75%),
+        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(244,241,245,0.06), transparent 70%);
+      display:flex;align-items:center;font-synthesis:none}
+    .card{padding:0 96px;width:100%}
+    .rule{width:120px;height:8px;background:${accent};box-shadow:0 0 28px ${accent};margin-bottom:34px}
+    .kicker{font-family:"Space Mono",monospace;font-weight:700;font-size:30px;color:${accent};text-transform:uppercase;letter-spacing:0.3em;margin-bottom:20px;text-shadow:0 0 24px ${accent}90}
+    .title{font-family:"Anton",sans-serif;font-size:${titleSize}px;line-height:0.98;letter-spacing:0.01em;color:${INK};text-transform:uppercase;text-shadow:0 0 60px ${accent}b0}
+    .est{font-family:"Anton",sans-serif;font-size:42px;color:${accent};text-transform:uppercase;letter-spacing:0.02em;margin-top:22px}
+    .tag{font-family:"Space Mono",monospace;font-weight:700;font-size:28px;color:${MUTED};text-transform:uppercase;letter-spacing:0.08em;margin-top:32px}
   </style></head><body>
-    <div class="card"><div class="panel">
+    <div class="card">
+      <div class="rule"></div>
       ${v.kicker ? `<div class="kicker">${nbsp(v.kicker)}</div>` : ""}
       <div class="title">${v.title.map(nbsp).join("<br>")}</div>
       ${v.est ? `<div class="est">${nbsp(v.est)}</div>` : ""}
       <div class="tag">${nbsp(v.tag)}</div>
-    </div></div>
+    </div>
   </body></html>`;
 }
 
-const browser = await chromium.launch();
+async function launch() {
+  const candidates = [process.env.OG_CHROMIUM, undefined, "/opt/pw-browsers/chromium"];
+  let lastErr;
+  for (const executablePath of candidates) {
+    if (executablePath && !existsSync(executablePath)) continue;
+    try {
+      return await chromium.launch(executablePath ? { executablePath } : {});
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
+}
+
+const browser = await launch();
 for (const v of VARIANTS) {
   const page = await browser.newPage({
     viewport: { width: 1200, height: 630 },

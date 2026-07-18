@@ -62,22 +62,23 @@ const thumb =
             focusable="false"
           >
             <g
-              stroke="var(--color-ink)"
+              stroke="#F4F2EE"
               stroke-width="3"
               stroke-linejoin="round"
               stroke-linecap="round"
             >
-              <rect x="10" y="6" width="44" height="14" rx="6" fill="var(--color-paper)" />
-              <rect x="8" y="17" width="48" height="13" rx="5" fill="var(--color-paper)" />
+              <rect x="10" y="6" width="44" height="14" rx="6" fill="var(--accent, var(--color-pink))" />
+              <rect x="8" y="17" width="48" height="13" rx="5" fill="var(--accent, var(--color-pink))" />
               <line x1="32" y1="19" x2="32" y2="28" />
-              <rect x="6" y="13" width="10" height="17" rx="4" fill="var(--color-paper)" />
-              <rect x="48" y="13" width="10" height="17" rx="4" fill="var(--color-paper)" />
+              <rect x="6" y="13" width="10" height="17" rx="4" fill="var(--accent, var(--color-pink))" />
+              <rect x="48" y="13" width="10" height="17" rx="4" fill="var(--accent, var(--color-pink))" />
             </g>
           </svg>
           <span class="card__placeholder-label">{provider}</span>
         </div>
       )
     }
+    <span class="card__play" aria-hidden="true"></span>
     {showBadge && (
       <span class="card__badge">
         <SeriesBadge title={seriesTitle} slug={seriesSlug} as="span" />
@@ -87,43 +88,53 @@ const thumb =
 
   <div class="card__body">
     <p class="card__artist">{artistName}</p>
-    <p class="card__title">{title}</p>
-    <p class="meta-line card__year">{year}</p>
+    <p class="card__title">
+      {title}<span class="card__year"> · {year}</span>
+    </p>
   </div>
 </a>
 
 <style>
+  /* A still from the archive: clean image tile, type below, no box. */
   .card {
     display: flex;
     flex-direction: column;
-    background: var(--color-paper);
-    border: var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-hard);
+    gap: 0.85rem;
+    background: transparent;
     text-decoration: none;
     color: var(--color-ink);
-    overflow: hidden;
-    transition:
-      transform 0.12s ease,
-      box-shadow 0.12s ease;
   }
   .card:hover {
     text-decoration: none;
-    transform: translate(-3px, -3px) rotate(-0.6deg);
-    box-shadow: 9px 9px 0 var(--color-ink);
   }
   .card:focus-visible {
-    outline: 3px solid var(--color-blue);
-    outline-offset: 3px;
+    outline: 3px solid var(--color-yellow);
+    outline-offset: 4px;
+    border-radius: var(--radius);
   }
 
   .card__thumb {
     position: relative;
     aspect-ratio: 16 / 9;
-    background: var(--accent, var(--color-pink));
-    border-bottom: var(--border);
+    background: #100d17;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
     overflow: hidden;
+    transition:
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
   }
+  /* On hover the still switches on, spilling a little accent light. */
+  .card:hover .card__thumb {
+    border-color: color-mix(
+      in srgb,
+      var(--accent, var(--color-pink)) 55%,
+      var(--color-line)
+    );
+    box-shadow: 0 0 44px -10px
+      color-mix(in srgb, var(--accent, var(--color-pink)) 55%, transparent);
+  }
+  /* Footage sits slightly dimmed until you reach for it. */
   .card__img {
     position: absolute;
     inset: 0;
@@ -131,10 +142,14 @@ const thumb =
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    filter: saturate(0.85) brightness(0.92);
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.3s ease;
   }
   .card:hover .card__img {
-    transform: scale(1.06) rotate(0.5deg);
+    transform: scale(1.04);
+    filter: saturate(1.05) brightness(1);
   }
 
   .card__placeholder {
@@ -144,34 +159,73 @@ const thumb =
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
-    background: var(--accent, var(--color-pink));
-    background-image:
-      repeating-linear-gradient(
-        -45deg,
-        transparent 0,
-        transparent 10px,
-        rgba(22, 18, 26, 0.06) 10px,
-        rgba(22, 18, 26, 0.06) 20px
-      );
+    gap: 0.7rem;
+    background: #101013;
   }
   .card__placeholder-mark {
-    width: 38%;
-    max-width: 5rem;
+    width: 34%;
+    max-width: 4.5rem;
     height: auto;
-    filter: drop-shadow(2px 2px 0 var(--color-ink));
   }
   .card__placeholder-label {
     font-family: var(--font-mono);
     font-weight: 700;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--color-ink);
-    background: var(--color-paper);
-    border: var(--border-thin);
+    letter-spacing: 0.14em;
+    color: rgba(244, 242, 238, 0.7);
+  }
+
+  /* Hover play cue: the still darkens a touch and a pink play mark
+     fades up — the card reads as a video, not a photo. */
+  .card__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 1;
+  }
+  .card__play::before,
+  .card__play::after {
+    content: "";
+    grid-area: 1 / 1;
+    place-self: center;
+  }
+  .card__play::before {
+    width: 3.1rem;
+    height: 3.1rem;
     border-radius: 999px;
-    padding: 0.3em 0.7em;
+    background: var(--color-pink);
+    box-shadow: 0 0 28px rgba(255, 77, 141, 0.6);
+    transform: scale(0.85);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card__play::after {
+    width: 0;
+    height: 0;
+    border-left: 0.85rem solid var(--on-accent);
+    border-top: 0.55rem solid transparent;
+    border-bottom: 0.55rem solid transparent;
+    margin-left: 0.2rem;
+    /* The circle's transform makes it a stacking context that paints over
+       plain grid items — lift the triangle above it. */
+    z-index: 1;
+  }
+  .card:hover .card__play,
+  .card:focus-visible .card__play {
+    opacity: 1;
+  }
+  .card:hover .card__play::before {
+    transform: scale(1);
+  }
+  @media (hover: none) {
+    /* No hover on touch — keep stills clean rather than half-triggered. */
+    .card__play {
+      display: none;
+    }
   }
 
   .card__badge {
@@ -182,30 +236,33 @@ const thumb =
   }
 
   .card__body {
-    padding: 0.9rem 1rem 1.1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.3rem;
+    padding-inline: 0.15rem;
   }
   .card__artist {
     margin: 0;
     font-family: var(--font-display);
     text-transform: uppercase;
-    font-size: 1.15rem;
-    line-height: 0.95;
-    letter-spacing: -0.01em;
+    font-size: 1.35rem;
+    line-height: 1;
+    letter-spacing: 0.015em;
     color: var(--color-ink);
+    transition: color 0.12s ease;
   }
   .card:hover .card__artist {
-    color: var(--color-pink-deep);
+    color: var(--accent-text, var(--color-pink-deep));
   }
   .card__title {
     margin: 0;
-    font-size: 0.95rem;
-    line-height: 1.25;
+    font-size: 1rem;
+    line-height: 1.3;
     color: var(--color-muted);
   }
   .card__year {
-    margin: 0.35rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    white-space: nowrap;
   }
 </style>
