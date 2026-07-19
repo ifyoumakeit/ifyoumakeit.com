@@ -379,6 +379,10 @@ const staticNavLinks: {
       }
 
       .wordmark {
+        position: relative;
+        /* New stacking context so the smoke pseudo (z-index -1) stays in
+           front of the header background instead of vanishing behind it. */
+        isolation: isolate;
         display: inline-flex;
         align-items: center;
         gap: 0.7rem;
@@ -388,21 +392,41 @@ const staticNavLinks: {
       .wordmark:hover {
         text-decoration: none;
       }
+      /* Smoke drifting behind the couch — no neon tube, the mark stays a
+         solid object in front of a soft violet-pink haze. */
+      .wordmark::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        left: -1rem;
+        top: 50%;
+        width: 4.7rem;
+        height: 3.2rem;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background: radial-gradient(
+          closest-side,
+          color-mix(in srgb, var(--color-violet) 40%, transparent),
+          color-mix(in srgb, var(--color-pink) 16%, transparent) 62%,
+          transparent
+        );
+        filter: blur(7px);
+        pointer-events: none;
+        transition: transform 0.2s ease;
+      }
+      .wordmark:hover::before {
+        transform: translateY(-50%) scale(1.18);
+      }
       .wordmark__mark {
         width: 2.7rem;
         height: auto;
         flex: none;
         color: var(--color-pink);
-        /* Lit like a small neon sign over the door. */
-        filter: drop-shadow(0 0 8px rgba(255, 77, 141, 0.55));
         transform-origin: bottom center;
-        transition:
-          color 0.12s ease,
-          filter 0.12s ease;
+        transition: color 0.12s ease;
       }
       .wordmark:hover .wordmark__mark {
         color: var(--color-pink-deep);
-        filter: drop-shadow(0 0 12px rgba(255, 77, 141, 0.75));
       }
       /* The couch squishes like someone just flopped onto it. */
       .wordmark:hover .wordmark__mark {
